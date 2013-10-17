@@ -19,6 +19,8 @@ class mapctrl : public Fl_Widget, public layer_observer
         mapctrl(int x, int y, int w, int h, const char *label);
         ~mapctrl();
 
+        void push_layer(layer* l);
+
         // TODO: review
         virtual int handle(int event);
         virtual void resize(int x, int y, int w, int h);

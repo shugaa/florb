@@ -45,17 +45,9 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     dynamic_cast<osmlayer*>(l)->numdownloads(2);
     m_layers.push_back(l);
 
-    l = new gpxlayer("/home/bjoern/track.gpx");
-    l->addobserver(*this);
-    m_layers.push_back(l);
-
-    l = new gpsdlayer();
-    l->addobserver(*this);
-    m_layers.push_back(l);
-
-    tileserver t("hui", "bu", 200);
-    std::istringstream tiss("bla blub 10");
-    tiss >> t;
+    //l = new gpsdlayer();
+    //l->addobserver(*this);
+    //m_layers.push_back(l);
 
 
     YAML::Node config = YAML::LoadFile("/home/bjoern/florb2.cfg");
@@ -91,6 +83,18 @@ void mapctrl::zoom(unsigned int z)
    
     // Issue a WAKEUP message to the drawing thread.
     refresh();
+}
+
+void mapctrl::push_layer(layer* l)
+{
+    if (m_layers.size() > 1)
+    {
+        delete m_layers.back();
+        m_layers.pop_back();
+    }
+
+    l->addobserver(*this);
+    m_layers.push_back(l);
 }
 
 point<double> mapctrl::mousegps()

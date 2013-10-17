@@ -6,6 +6,15 @@
 #include <iostream>
 #include <map>
 
+struct tileserver_config
+{
+    std::string name;
+    std::string url;
+    int zmin;
+    int zmax;
+    int parallel;
+};
+
 class settings
 {
     public:
