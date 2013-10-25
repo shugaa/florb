@@ -20,6 +20,7 @@ class mapctrl : public Fl_Widget, public layer_observer
         ~mapctrl();
 
         void push_layer(layer* l);
+        void basemap(std::string url, int numdownloads);
 
         // TODO: review
         virtual int handle(int event);
@@ -34,6 +35,7 @@ class mapctrl : public Fl_Widget, public layer_observer
     private:
         static const int MSG_WAKEUP = 0;
         static const int MSG_EXIT   = 1;
+        layer *m_basemap;
 
         point<int> m_mousepos;
         viewport m_viewport;

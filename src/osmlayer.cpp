@@ -8,12 +8,14 @@
 #define TILE_W                  (256)
 #define TILE_H                  (256)
 
-osmlayer::osmlayer() :
+osmlayer::osmlayer(std::string url, int numdownloads) :
     layer(), 
     m_canvas_0(500, 500),
     m_canvas_1(500, 500),
     m_canvas_tmp(500,500),
-    m_numdownloads(1)
+    m_shutdown(false),
+    m_url(url),
+    m_numdownloads(numdownloads)
 {
     // Set map name
     name("OSM Basemap");
@@ -21,12 +23,15 @@ osmlayer::osmlayer() :
     // Create cache
     //m_cache = new sqlitecache("/home/bjoern/florb.db");
     m_cache = new sqlitecache("/run/media/bjoern/78c0dcdf-f7f0-473d-9b3d-fe93d2491097/florb.db");
-    m_cache->sessionid("http://tile.openstreetmap.org/");
+    m_cache->sessionid(url);
 };
 
 osmlayer::~osmlayer()
 {
-    // Clear the download queue
+    // No new downloads will be started by asynchronous callbacks
+    m_shutdown = true;
+
+    // Clear the download queue, only active downloads may finish now
     m_downloadq.clear();
 
     // Wait for all pending downloads to be processed. download_process() will
@@ -34,45 +39,14 @@ osmlayer::~osmlayer()
     // Unfortunately the UI thread is now stuck right here, waiting for our
     // destruction. So we need to poll the status of each remaining download.
     do {
-        download_process(false);
-        boost::this_thread::sleep(boost::posix_time::milliseconds(100)); 
+        // Wait for something to happen, specifically the callback routine
+        // issued by the pending download
+        Fl::wait();
     } while (m_downloads.size() > 0);
 
     // Destroy the cache
     delete m_cache;
 };
-
-std::ostream& operator<< (std::ostream& out, const tileserver& ts)
-{
-    out << ts.m_name << ts.m_separator;
-    out << ts.m_url << ts.m_separator;
-    out << ts.m_parallel;
-    return out;
-};
-
-std::istream &operator>> (std::istream& in, tileserver &ts)
-{
-    std::stringbuf sb;
-    std::istringstream iss;
-
-    in.get(sb, ' ');
-    iss.str(sb.str());
-    iss >> ts.m_name;
-    in.ignore();
-   
-    in.get(sb, ' ');
-    iss.str(sb.str());
-    iss >> ts.m_url;
-    in.ignore();
-    
-    in.get(sb, ' ');
-    iss.str(sb.str());
-    iss >> ts.m_parallel;
-
-    std::cout << ts.m_name << " " << ts.m_url << " " << ts.m_parallel << std::endl;
-
-    return in;
-}
 
 void osmlayer::download_notify(void)
 {
@@ -82,10 +56,10 @@ void osmlayer::download_notify(void)
 void osmlayer::download_callback(void *data)
 {
     osmlayer *m = reinterpret_cast<osmlayer*>(data);
-    m->download_process(true);
+    m->download_process();
 }
 
-void osmlayer::download_process(bool startnext)
+void osmlayer::download_process(void)
 {
     // There was a download status change, check what has happened
     for(std::vector<dlref_t>::iterator it=m_downloads.begin(); it!=m_downloads.end(); ) 
@@ -117,7 +91,7 @@ void osmlayer::download_process(bool startnext)
     }
        
     // Maybe we can start another download
-    if (startnext) 
+    if (!m_shutdown) 
         download_startnext();
 }
 
@@ -131,20 +105,28 @@ void osmlayer::download_startnext(void)
     if (m_downloadq.size() == 0)
         return;
 
-    // Get the request from the queue and start it
+    // Get the request from the queue and start it...
     tile_t next = m_downloadq.back();
     m_downloadq.pop_back();
 
+
+    //...if it is not already in the cache
     if (m_cache->exists(next.z, next.x, next.y) == sqlitecache::FOUND)
         return;
 
     // Consruct the url
-    std::ostringstream ss;
-    ss << "http://tile.openstreetmap.org/" << next.z << "/" << next.x << "/" << next.y << ".png"; 
-    //ss << "http://a.tile2.opencyclemap.org/transport/" << next.z << "/" << next.x << "/" << next.y << ".png"; 
+    std::ostringstream sz, sx, sy;
+    sz << next.z;
+    sx << next.x;
+    sy << next.y;
+
+    std::string url(m_url);
+    url.replace (url.find("$FLORBZ$"), std::string("$FLORBZ$").length(), sz.str());
+    url.replace (url.find("$FLORBX$"), std::string("$FLORBX$").length(), sx.str());
+    url.replace (url.find("$FLORBY$"), std::string("$FLORBY$").length(), sy.str());
 
     // Create and start the download
-    download *dl = new download(ss.str(), this);
+    download *dl = new download(url, this);
 
     // Put the download into the queue
     dlref_t ndl;
@@ -158,7 +140,7 @@ void osmlayer::download_startnext(void)
 
 void osmlayer::download_qtile(const tile_t &tile)
 {
-    // Queue is full, erase oldes entry
+    // Queue is full, erase oldest entry
     if (m_downloadq.size() >= MAX_TILE_BACKLOG)
         m_downloadq.erase(m_downloadq.begin());
 
@@ -179,8 +161,8 @@ void osmlayer::update_map(const viewport &vp)
 {
    static bool dirty = true;
 
-   // Make sure the new viewport any different from the last one before going
-   // through the hassle of drawing the map anew.
+   // Make sure the new viewport is any different from the last one before
+   // going through the hassle of drawing the map anew.
    if ((m_vp != vp) || (dirty))
    {
      // Check if the old and new viewport intersect and eventually recycle any
@@ -269,7 +251,7 @@ void osmlayer::update_map(const viewport &vp)
          if ((m_canvas_tmp.w() < vp_tmp.w()) || (m_canvas_tmp.h() < vp_tmp.h()))
              m_canvas_tmp.resize(vp_tmp.w(), vp_tmp.h());
 
-         // Traw the rectangle
+         // Draw the rectangle
          if (!drawvp(vp_tmp, m_canvas_tmp))
             dirty = true;
 

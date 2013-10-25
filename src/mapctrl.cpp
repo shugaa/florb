@@ -11,6 +11,7 @@
 #include "mapctrl.hpp"
 #include "utils.hpp"
 
+#if 0
 namespace YAML {
    template<>
    struct convert<tileserver> {
@@ -33,28 +34,28 @@ namespace YAML {
       }
    };
 }
+#endif
 
 mapctrl::mapctrl(int x, int y, int w, int h, const char *label) : 
     Fl_Widget(x, y, w, h, label),
+    m_basemap(NULL),
     m_mousepos(0, 0),
     m_viewport((unsigned long)w, (unsigned long)h),
     m_offscreen(500,500)
 {
-    layer *l = new osmlayer();
-    l->addobserver(*this);
-    dynamic_cast<osmlayer*>(l)->numdownloads(2);
-    m_layers.push_back(l);
-
     //l = new gpsdlayer();
     //l->addobserver(*this);
     //m_layers.push_back(l);
 
+#if 0
+    basemap("http://tile.openstreetmap.org/$FLORBZ$/$FLORBX$/$FLORBY$.png", 2);
 
     YAML::Node config = YAML::LoadFile("/home/bjoern/florb2.cfg");
     YAML::Node tileservers = config["tileservers"];
 
     for(YAML::const_iterator it=tileservers.begin();it!=tileservers.end();++it)
         std::cout << (*it).as<tileserver>() << "\n";
+#endif
 
     //std::cout << t << std::endl;
 }
@@ -87,7 +88,7 @@ void mapctrl::zoom(unsigned int z)
 
 void mapctrl::push_layer(layer* l)
 {
-    if (m_layers.size() > 1)
+    if (m_layers.size() > 0)
     {
         delete m_layers.back();
         m_layers.pop_back();
@@ -95,6 +96,28 @@ void mapctrl::push_layer(layer* l)
 
     l->addobserver(*this);
     m_layers.push_back(l);
+}
+
+void mapctrl::basemap(std::string url, int numdownloads)
+{
+    // Save a reference to the original basemap layer. This layer is not
+    // removed before the new basemap layer is created, so the cache won't be
+    // closed and reopened in the process.
+    layer *tmp = m_basemap;
+    m_basemap = NULL;
+
+    // Create a new basemap layer
+    m_basemap = new osmlayer(url, numdownloads);
+    m_basemap->addobserver(*this);
+
+    // Destroy the original basemap layer 
+    if (tmp)
+    {
+        delete tmp;
+    }
+
+    // Redraw
+    refresh();
 }
 
 point<double> mapctrl::mousegps()
@@ -225,6 +248,12 @@ void mapctrl::draw()
 
     // Background-fill thecanvas buffer (tiles might be missing)
     fl_rectf(0, 0, m_viewport.w(), m_viewport.h(), 80, 80, 80);
+
+    // Draw the basemap
+    if (m_basemap)
+    {
+        m_basemap->draw(m_viewport, m_offscreen);
+    }
 
     // Draw all the layers
     for (std::vector<layer*>::iterator iter=m_layers.begin();iter!=m_layers.end();++iter)

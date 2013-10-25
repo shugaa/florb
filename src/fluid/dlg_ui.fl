@@ -14,16 +14,7 @@ decl {\#include <sstream>} {private global
 decl {\#include <curl/curl.h>} {private global
 } 
 
-decl {\#include <FL/Fl_File_Chooser.H>} {private global
-} 
-
-decl {\#include "orb_dlg_ui.hpp"} {private global
-} 
-
-decl {\#include "mapctrl.hpp"} {public global
-} 
-
-decl {\#include "gpxlayer.hpp"} {public global
+decl {\#include "dlg_ui.hpp"} {private global
 } 
 
 decl {\#include "orb_dlg_layers.hpp"} {public global
@@ -41,8 +32,25 @@ decl {\#include "orb_dlg_elpro.hpp"} {public global
 decl {\#include "dlg_servers.hpp"} {public global
 } 
 
-class orb_dlg_ui {open
+decl {\#include "mapctrl.hpp"} {public global
+} 
+
+class dlg_ui {open
 } {
+  decl {void create_ex(void);} {private local
+  }
+  decl {void destroy_ex(void);} {private local
+  }
+  decl {void show_ex(int argc, char *argv[]);} {private local
+  }
+  decl {void cb_btn_loadtrack_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_choice_basemap_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_menu_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_close_ex(Fl_Widget *widget);} {private local
+  }
   decl {orb_dlg_layers *m_dlg_layers;} {private local
   }
   decl {orb_dlg_about *m_dlg_about;} {private local
@@ -53,16 +61,14 @@ class orb_dlg_ui {open
   }
   decl {dlg_servers *m_dlg_servers;} {private local
   }
-  decl {void cb_btn_loadtrack_ex(Fl_Widget *widget);} {private local
-  }
-  Function {orb_dlg_ui()} {open
+  Function {dlg_ui()} {open
   } {
     Fl_Window m_window {
       label florb open
-      private xywh {447 251 805 500} type Double align 80 resizable visible
+      private xywh {551 109 805 540} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
-        private xywh {0 0 805 505} resizable
+        private xywh {0 0 805 540} resizable
       } {
         Fl_Menu_Bar m_menubar {
           private xywh {0 0 805 25}
@@ -112,103 +118,63 @@ class orb_dlg_ui {open
             }
           }
         }
+        Fl_Choice m_choice_basemap {
+          user_data this
+          callback cb_choice_basemap
+          private xywh {0 25 805 25} down_box BORDER_BOX
+        } {}
         Fl_Pack {} {open
-          xywh {0 25 805 475} type HORIZONTAL resizable
+          xywh {0 50 805 490} type HORIZONTAL resizable
         } {
           Fl_Box m_mapctrl {
             label {Slippy Map}
-            private xywh {0 25 600 475} resizable
+            private xywh {0 50 600 490} resizable
             class mapctrl
           }
           Fl_Pack {} {open
-            xywh {600 25 205 475}
+            xywh {600 50 205 490}
           } {
             Fl_Button m_btn_loadtrack {
               label {Load Track}
               user_data this
-              callback cb_btn_loadtrack selected
-              private xywh {600 25 205 25}
+              callback cb_btn_loadtrack
+              private xywh {600 50 205 25}
             }
-            Fl_Box {} {
-              xywh {600 50 205 450} resizable
+            Fl_Box {} {selected
+              xywh {600 75 205 465} resizable
             }
           }
         }
       }
     }
-    code {// Create UI dialogs
-m_dlg_about = new orb_dlg_about();
-m_dlg_layers = new orb_dlg_layers();
-m_dlg_settings = new orb_dlg_settings();
-m_dlg_elpro = new orb_dlg_elpro();
-m_dlg_servers = new dlg_servers();
-
-// Register UI callbacks
-m_window->callback(cb_close, this);
-m_menu_help_about->callback(cb_menu, this);
-m_menu_file_close->callback(cb_menu, this);
-m_menu_edit_layers->callback(cb_menu, this);
-m_menu_edit_servers->callback(cb_menu, this);
-m_menu_edit_settings->callback(cb_menu, this);
-m_menu_view_elevationprofile->callback(cb_menu, this);} {}
+    code {create_ex();} {}
   }
-  Function {~orb_dlg_ui()} {} {
-    code {// Delete UI dialogs
-delete(m_dlg_about);
-delete(m_dlg_layers);
-delete(m_dlg_settings);
-delete(m_dlg_elpro);
-delete(m_dlg_servers);
-
-// Delete toplevel window
-delete(m_window);
-
-// Aaand we're out
-std::cout << "Goodbye" << std::endl;} {}
+  Function {~dlg_ui()} {} {
+    code {destroy_ex();} {}
   }
   Function {show(int argc, char *argv[])} {return_type void
   } {
-    code {m_window->show(argc, argv);} {}
+    code {show_ex(argc, argv);} {}
   }
   Function {cb_close(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
-    code {reinterpret_cast<orb_dlg_ui*>(userdata)->m_window->hide();} {}
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_close_ex(widget);} {}
   }
   Function {cb_menu(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
-    code {orb_dlg_ui *ui = reinterpret_cast<orb_dlg_ui*>(userdata);
-
-char picked[80];
-ui->m_menubar->item_pathname(picked, sizeof(picked)-1);
-
-if (strcmp(picked, "File/Quit") == 0) {
-    ui->m_window->hide();
-}
-else if (strcmp(picked, "Help/About") == 0) { 
-    ui->m_dlg_about->show();
-}
-else if (strcmp(picked, "Edit/Layers") == 0) {
-    // Show the layers editor dialog
-    int rc = ui->m_dlg_layers->show();
-    if (rc != 0)
-       return;
-}
-else if (strcmp(picked, "Edit/Settings") == 0) {
-    ui->m_dlg_settings->show();
-}
-else if (strcmp(picked, "Edit/Tileservers") == 0) {
-    ui->m_dlg_servers->show();
-}
-else if (strcmp(picked, "View/Elevation profile") == 0) {
-    ui->m_dlg_elpro->show();
-}
-
-ui->m_mapctrl->refresh();} {}
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_menu_ex(widget);} {}
   }
-  Function {cb_btn_loadtrack(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  Function {cb_btn_loadtrack(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
-    code {orb_dlg_ui *ui = reinterpret_cast<orb_dlg_ui*>(userdata);
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_loadtrack_ex(widget);} {}
+  }
+  Function {cb_choice_basemap(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_choice_basemap_ex(widget);} {}
   }
 } 
 
@@ -219,6 +185,6 @@ curl_global_init(CURL_GLOBAL_ALL);
 
 // Start the application
 Fl::lock();
-orb_dlg_ui ui;
+dlg_ui ui;
 ui.show(argc, argv);} {}
 } 
