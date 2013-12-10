@@ -2,7 +2,10 @@
 version 1.0300 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <FL/fl_ask.H>} {private global
+decl {\#include "settings.hpp"} {public global
+} 
+
+decl {\#include <FL/fl_ask.H>} {public global
 } 
 
 decl {\#include <vector>} {public global
@@ -11,10 +14,7 @@ decl {\#include <vector>} {public global
 decl {\#include <string>} {public global
 } 
 
-decl {\#include <sstream>} {private global
-} 
-
-decl {\#include "settings.hpp"} {private global
+decl {\#include <sstream>} {public global
 } 
 
 class orb_dlg_settings {open
@@ -37,10 +37,11 @@ class orb_dlg_settings {open
   }
   decl {unsigned int m_opt_zoommax;} {private global
   }
-  Function {orb_dlg_settings()} {} {
+  Function {orb_dlg_settings()} {open
+  } {
     Fl_Window m_window {
       label {Edit settings}
-      private xywh {107 155 500 295} type Double resizable modal visible
+      private xywh {543 196 500 295} type Double resizable modal visible
     } {
       Fl_Pack {} {open
         xywh {0 0 500 297} resizable
@@ -136,11 +137,12 @@ class orb_dlg_settings {open
     }
     code {} {}
   }
-  Function {~orb_dlg_settings()} {} {
+  Function {~orb_dlg_settings()} {open
+  } {
     code {if (m_window)
     delete(m_window);} {}
   }
-  Function {show()} {return_type int
+  Function {show()} {open return_type int
   } {
     code {settings &settings = settings::get_instance();
 
@@ -160,12 +162,13 @@ for (;;) {
 
 // OK, store settings
 if (r == 1) {
-    settings.serialize();
+    //settings.serialize();
 }
 
 m_window->hide();
 
-return r;} {}
+return r;} {selected
+    }
   }
   Function {cb_close(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
@@ -420,7 +423,6 @@ else if (key.compare("osm::tempfolder") == 0) {
 }
 
 dlg->refresh(sitem);
-dlg->assertui();} {selected
-    }
+dlg->assertui();} {}
   }
 } 

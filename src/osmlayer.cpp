@@ -1,6 +1,5 @@
 #include <cmath>
 #include "utils.hpp"
-#include "settings.hpp"
 #include "osmlayer.hpp"
 
 #define ONE_WEEK                (7*24*60*60)
@@ -9,20 +8,20 @@
 #define TILE_H                  (256)
 
 osmlayer::osmlayer(std::string url, int numdownloads) :
-    layer(), 
-    m_canvas_0(500, 500),
-    m_canvas_1(500, 500),
-    m_canvas_tmp(500,500),
-    m_shutdown(false),
-    m_url(url),
-    m_numdownloads(numdownloads)
+    layer(),                        // Base class constructor 
+    m_canvas_0(500, 500),           // Canvas for 'double buffering'. Will be resized as needed
+    m_canvas_1(500, 500),           // Canvas for 'double buffering'. Will be resized as needed
+    m_canvas_tmp(500,500),          // Temporary drawing canvas. Will be resized as needed
+    m_shutdown(false),              // Shutdown flag
+    m_url(url),                     // Tileserver URL
+    m_numdownloads(numdownloads),   // Number of simultaneous downloads
+    m_s(settings::get_instance())   // Settings instance reference
 {
     // Set map name
     name("OSM Basemap");
 
     // Create cache
-    //m_cache = new sqlitecache("/home/bjoern/florb.db");
-    m_cache = new sqlitecache("/run/media/bjoern/78c0dcdf-f7f0-473d-9b3d-fe93d2491097/florb.db");
+    m_cache = new sqlitecache(m_s["cache"]["location"].as<std::string>());
     m_cache->sessionid(url);
 };
 

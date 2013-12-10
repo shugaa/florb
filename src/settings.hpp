@@ -2,11 +2,12 @@
 #define SETTINGS_HPP
 
 #include <string>
-#include <sstream>
-#include <iostream>
-#include <map>
 
-struct tileserver_config
+// The YAML namespace defines an enumerator "None". This clashes with a
+// definition of "None" in X.h which is included by FLTK. So if there is any
+// module including FLTK and YAML headers, things get nasty. Thus this clumsy
+// attempt at hiding the YAML-cpp internals.
+struct cfg_tileserver
 {
     std::string name;
     std::string url;
@@ -15,84 +16,42 @@ struct tileserver_config
     int parallel;
 };
 
+// Forward declaration of YAML-cpp node container
+class yaml_node;
+
+// A configuration node
+class node
+{
+    public:
+        node(yaml_node *in) : m_ref(in) {};
+        node(const std::string& path);
+        ~node();
+
+        node operator[] (const int idx);
+        node operator[] (const std::string &name);
+        template<typename T> node& operator= (const T& rhs);
+        
+        template<typename T> T as() const;
+        template<typename T> void push_back(const T& rhs);
+		void push_back(const node& rhs);
+
+        void serialize(const std::string& path);
+    private:
+        yaml_node *m_ref;
+};
+
+// Settings singleton
 class settings
 {
     public:
         ~settings();
         static settings& get_instance();
-        void serialize();
 
-        template <class T>
-            bool getopt(const std::string& section, const std::string& key, T& t)
-            {
-                std::map<std::string,std::string>::iterator it;
-
-                // Check if section exists at all
-                smap_t::iterator sit;
-                sit = m_settings.find(section);
-
-                // No, exit
-                if (sit == m_settings.end())
-                    return false;
-
-                // Try to find the key
-                kvmap_t::iterator kvit;
-                kvit = m_settings[section].find(key);
-
-                // Not found, exit
-                if (kvit == m_settings[section].end())
-                    return false;
-
-                // Convert and return value
-                std::istringstream iss(m_settings[section][key]);
-                if ((iss >> t).fail())
-                    return false;
-
-                return true;
-            }
-
-        template <class T>
-            void setopt(const std::string& section, const std::string& key, const T& val)
-            {
-                // Convert whatever type we got to string
-                std::ostringstream oss;
-                oss << val;
-
-                // Check if section already exists
-                smap_t::iterator sit;
-                sit = m_settings.find(section);
-
-                // No, create
-                if (sit == m_settings.end())
-                    m_settings.insert(make_pair(section, kvmap_t()));
-
-                // Check if key already exists
-                kvmap_t::iterator kvit;
-                kvit = m_settings[section].find(key);
-
-                // Yes, update value
-                if (kvit != m_settings[section].end())
-                    m_settings[section][key] = oss.str();
-                // No, insert new key-value pair
-                else
-                    m_settings[section].insert(make_pair(key, oss.str()));
-
-                return true;
-            }
-
+        node operator[] (const int idx) { return m_rootnode[idx]; };
+        node operator[] (const std::string &name) { return m_rootnode[name]; };
     private:
-        typedef std::map<std::string, std::string> kvmap_t;
-        typedef std::map<std::string, kvmap_t> smap_t;
-
-        static const std::string m_separator;
-        std::string m_path;
-        smap_t m_settings;
-
         settings();
-        //settings(const settings&);
-
-        void marshal(void);
-        std::string strip(const std::string &str, const std::string &what = " ");
+        node m_rootnode;
 };
 
 #endif // SETTINGS_HPP

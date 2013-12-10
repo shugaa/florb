@@ -20,7 +20,12 @@ class mapctrl : public Fl_Widget, public layer_observer
         ~mapctrl();
 
         void push_layer(layer* l);
-        void basemap(std::string url, int numdownloads);
+        void basemap(
+                const std::string& name, 
+                const std::string& url, 
+                int zmin, 
+                int zmax, 
+                int parallel);
 
         // TODO: review
         virtual int handle(int event);

@@ -8,6 +8,7 @@
 #include "download.hpp"
 #include "sqlitecache.hpp"
 #include "gfx.hpp"
+#include "settings.hpp"
 
 class osmlayer : public layer, public download_observer
 {
@@ -42,6 +43,8 @@ class osmlayer : public layer, public download_observer
 
         std::vector<dlref_t> m_downloads;
         std::vector<tile_t> m_downloadq;
+
+        settings &m_s;
 
         bool drawvp(const viewport &viewport, canvas &c);
         void update_map(const viewport &vp);

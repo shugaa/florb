@@ -1,6 +1,7 @@
 #include <Fl/Fl_File_Chooser.H>
 #include "gpxlayer.hpp"
 #include "mapctrl.hpp"
+#include "settings.hpp"
 #include "fluid/dlg_ui.hpp"
 
 void dlg_ui::create_ex(void)
@@ -21,11 +22,12 @@ void dlg_ui::create_ex(void)
     m_menu_edit_settings->callback(cb_menu, this);
     m_menu_view_elevationprofile->callback(cb_menu, this);
 
-    m_choice_basemap->add("http:\\/\\/tile.openstreetmap.org\\/$FLORBZ$\\/$FLORBX$\\/$FLORBY$.png", 0, NULL, NULL, 0);
-    m_choice_basemap->add("http:\\/\\/a.tile.opencyclemap.org\\/cycle\\/$FLORBZ$\\/$FLORBX$\\/$FLORBY$.png", 0, NULL, NULL, 0);
-    m_choice_basemap->add("https:\\/\\/toolserver.org\\/tiles\\/hikebike\\/$FLORBZ$\\/$FLORBX$\\/$FLORBY$.png", 0,  NULL, NULL, 0);
-    //m_choice_basemap->add("http:\\/\\/toolserver.org\\/~cmarqu\\/hill\\/$FLORBZ$\\/$FLORBX$\\/$FLORBY$.png", 0, NULL, NULL, 0);
 
+    std::vector<cfg_tileserver> tileservers(settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >());
+    for(std::vector<cfg_tileserver>::iterator it=tileservers.begin(); it!=tileservers.end(); ++it ) 
+    {
+        m_choice_basemap->add((*it).name.c_str(), 0, NULL, NULL, 0);
+    }
     m_choice_basemap->value(0);
 }
 
@@ -74,7 +76,13 @@ void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
 
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
 {
-    m_mapctrl->basemap(m_choice_basemap->text(), 2);
+    std::vector<cfg_tileserver> tileservers(settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >());
+    m_mapctrl->basemap(
+            tileservers[m_choice_basemap->value()].name, 
+            tileservers[m_choice_basemap->value()].url, 
+            tileservers[m_choice_basemap->value()].zmin, 
+            tileservers[m_choice_basemap->value()].zmax, 
+            tileservers[m_choice_basemap->value()].parallel);
 }
 
 void dlg_ui::cb_menu_ex(Fl_Widget *widget)

@@ -11,30 +11,6 @@
 #include "mapctrl.hpp"
 #include "utils.hpp"
 
-#if 0
-namespace YAML {
-   template<>
-   struct convert<tileserver> {
-      static Node encode(const tileserver& rhs) {
-         Node node;
-         node["name"] = rhs.name();
-         node["url"] = rhs.url();
-         node["parallel"] = rhs.parallel();
-         return node;
-      }
-
-      static bool decode(const Node& node, tileserver& rhs) {
-         if(!node.IsMap() || node.size() != 3)
-            return false;
-
-         rhs.name(node["name"].as<std::string>());
-         rhs.url(node["url"].as<std::string>());
-         rhs.parallel(node["parallel"].as<int>());
-         return true;
-      }
-   };
-}
-#endif
 
 mapctrl::mapctrl(int x, int y, int w, int h, const char *label) : 
     Fl_Widget(x, y, w, h, label),
@@ -43,21 +19,6 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_viewport((unsigned long)w, (unsigned long)h),
     m_offscreen(500,500)
 {
-    //l = new gpsdlayer();
-    //l->addobserver(*this);
-    //m_layers.push_back(l);
-
-#if 0
-    basemap("http://tile.openstreetmap.org/$FLORBZ$/$FLORBX$/$FLORBY$.png", 2);
-
-    YAML::Node config = YAML::LoadFile("/home/bjoern/florb2.cfg");
-    YAML::Node tileservers = config["tileservers"];
-
-    for(YAML::const_iterator it=tileservers.begin();it!=tileservers.end();++it)
-        std::cout << (*it).as<tileserver>() << "\n";
-#endif
-
-    //std::cout << t << std::endl;
 }
 
 mapctrl::~mapctrl()
@@ -98,7 +59,12 @@ void mapctrl::push_layer(layer* l)
     m_layers.push_back(l);
 }
 
-void mapctrl::basemap(std::string url, int numdownloads)
+void mapctrl::basemap(
+                const std::string& name, 
+                const std::string& url, 
+                int zmin, 
+                int zmax, 
+                int parallel)
 {
     // Save a reference to the original basemap layer. This layer is not
     // removed before the new basemap layer is created, so the cache won't be
@@ -107,7 +73,7 @@ void mapctrl::basemap(std::string url, int numdownloads)
     m_basemap = NULL;
 
     // Create a new basemap layer
-    m_basemap = new osmlayer(url, numdownloads);
+    m_basemap = new osmlayer(url, parallel);
     m_basemap->addobserver(*this);
 
     // Destroy the original basemap layer 

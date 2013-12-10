@@ -3,10 +3,9 @@
 #include "viewport.hpp"
 #include "utils.hpp"
 #include <iostream>
+#include <vector>
 viewport::viewport(unsigned long w, unsigned long h)
 {
-   settings &settings = settings::get_instance();
-
    m_zmin = 0;
    m_zmax = 18;
 

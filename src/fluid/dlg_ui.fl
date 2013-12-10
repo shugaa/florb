@@ -17,13 +17,13 @@ decl {\#include <curl/curl.h>} {private global
 decl {\#include "dlg_ui.hpp"} {private global
 } 
 
+decl {\#include "orb_dlg_settings.hpp"} {selected public global
+} 
+
 decl {\#include "orb_dlg_layers.hpp"} {public global
 } 
 
 decl {\#include "orb_dlg_about.hpp"} {public global
-} 
-
-decl {\#include "orb_dlg_settings.hpp"} {public global
 } 
 
 decl {\#include "orb_dlg_elpro.hpp"} {public global
@@ -140,7 +140,7 @@ class dlg_ui {open
               callback cb_btn_loadtrack
               private xywh {600 50 205 25}
             }
-            Fl_Box {} {selected
+            Fl_Box {} {
               xywh {600 75 205 465} resizable
             }
           }
