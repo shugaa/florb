@@ -44,6 +44,76 @@ class yaml_node
         YAML::Node m_node;  
 };
 
+class yaml_iterator
+{
+    public:
+        yaml_iterator(YAML::iterator i) : m_iter(i) {};
+        ~yaml_iterator() {};
+
+        YAML::iterator& get() { return m_iter; };
+    private:
+        YAML::iterator m_iter;  
+};
+
+
+node::iterator::iterator(const node& n, int be) 
+{
+    if (be <= 0)
+        m_ref = new yaml_iterator(n.m_ref->get().begin());
+    else
+        m_ref = new yaml_iterator(n.m_ref->get().end());
+}
+
+node::iterator::~iterator()
+{   
+    delete m_ref;
+}
+
+bool node::iterator::operator==(iterator const& rhs) const 
+{
+    return (m_ref->get() == rhs.m_ref->get());
+}
+
+bool node::iterator::operator!=(iterator const& rhs) const 
+{
+    return !(m_ref->get() == rhs.m_ref->get());
+}
+
+node::iterator& node::iterator::operator++() 
+{
+    (m_ref->get())++;
+    return *this;
+}   
+
+node::iterator node::iterator::operator++(int) 
+{
+    iterator tmp (*this);
+    ++(*this);
+    return tmp;
+}
+
+// Bidirectional iterators are not supported by YAML-Cpp
+#if 0
+iterator& node::iterator::operator--() 
+{
+    (m_ref.get())--;
+    return *this;
+}
+
+iterator node::iterator::operator--(int) 
+{
+    iterator tmp (*this);
+    --(*this);
+    return tmp;
+}
+#endif
+
+node node::iterator::operator* () const 
+{
+    yaml_node *tmp = new yaml_node(*(m_ref->get()));
+    return node(tmp);
+}
+
 settings::settings() :
     m_rootnode(std::string("/home/bjoern/florb2.cfg"))
 {
@@ -63,6 +133,11 @@ settings& settings::get_instance()
 node::node(const std::string& path)
 {
     m_ref = new yaml_node(path);
+};
+
+node::node(const node& n)
+{
+    m_ref = new yaml_node(n.m_ref->get());
 };
 
 node::~node()

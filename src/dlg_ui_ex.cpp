@@ -22,11 +22,10 @@ void dlg_ui::create_ex(void)
     m_menu_edit_settings->callback(cb_menu, this);
     m_menu_view_elevationprofile->callback(cb_menu, this);
 
-
-    std::vector<cfg_tileserver> tileservers(settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >());
-    for(std::vector<cfg_tileserver>::iterator it=tileservers.begin(); it!=tileservers.end(); ++it ) 
-    {
-        m_choice_basemap->add((*it).name.c_str(), 0, NULL, NULL, 0);
+    // Populate the Basemap selector
+    node section = settings::get_instance()["tileservers"];
+    for(node::iterator it=section.begin(); it!=section.end(); ++it) {
+        m_choice_basemap->add((*it).as<cfg_tileserver>().name.c_str(), 0, NULL, NULL, 0);
     }
     m_choice_basemap->value(0);
 }
@@ -76,13 +75,15 @@ void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
 
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
 {
+    int idx = m_choice_basemap->value();
+
     std::vector<cfg_tileserver> tileservers(settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >());
     m_mapctrl->basemap(
-            tileservers[m_choice_basemap->value()].name, 
-            tileservers[m_choice_basemap->value()].url, 
-            tileservers[m_choice_basemap->value()].zmin, 
-            tileservers[m_choice_basemap->value()].zmax, 
-            tileservers[m_choice_basemap->value()].parallel);
+            tileservers[idx].name, 
+            tileservers[idx].url, 
+            tileservers[idx].zmin, 
+            tileservers[idx].zmax, 
+            tileservers[idx].parallel);
 }
 
 void dlg_ui::cb_menu_ex(Fl_Widget *widget)
