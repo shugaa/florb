@@ -7,21 +7,33 @@
 #define TILE_W                  (256)
 #define TILE_H                  (256)
 
-osmlayer::osmlayer(std::string url, int numdownloads) :
+osmlayer::osmlayer(
+        const std::string& nm,  
+        const std::string& url, 
+        unsigned int zmin,
+        unsigned int zmax,
+        unsigned int parallel,
+        int imgtype) :
     layer(),                        // Base class constructor 
     m_canvas_0(500, 500),           // Canvas for 'double buffering'. Will be resized as needed
     m_canvas_1(500, 500),           // Canvas for 'double buffering'. Will be resized as needed
     m_canvas_tmp(500,500),          // Temporary drawing canvas. Will be resized as needed
     m_shutdown(false),              // Shutdown flag
+    m_name(nm),                     // Layer name
     m_url(url),                     // Tileserver URL
-    m_numdownloads(numdownloads),   // Number of simultaneous downloads
-    m_s(settings::get_instance())   // Settings instance reference
+    m_zmin(zmin),                   // Min. zoomlevel supported by server
+    m_zmax(zmax),                   // Max. zoomlevel supported by server
+    m_parallel(parallel),           // Number of simultaneous downloads
+    m_type(imgtype)                 // Tile image data type    
 {
-    // Set map name
-    name("OSM Basemap");
+    // Set map layer name
+    name(m_name);
 
     // Create cache
-    m_cache = new sqlitecache(m_s["cache"]["location"].as<std::string>());
+    m_cache = new sqlitecache(
+            settings::get_instance()["cache"]["location"].as<std::string>());
+
+    // Create a cache session for the given URL
     m_cache->sessionid(url);
 };
 
@@ -97,7 +109,7 @@ void osmlayer::download_process(void)
 void osmlayer::download_startnext(void)
 {
     // No more free download slots
-    if (m_downloads.size() >= m_numdownloads)
+    if (m_downloads.size() >= m_parallel)
         return;
 
     // See whether there are more requests in the queue
@@ -150,14 +162,34 @@ void osmlayer::download_qtile(const tile_t &tile)
     download_startnext();
 }
 
-void osmlayer::draw(const viewport &viewport, canvas &os)
+void osmlayer::draw(const viewport &vp, canvas &os)
 {
-    update_map(viewport);
-    os.draw(m_canvas_0, 0, 0, (int)viewport.w(), (int)viewport.h(), 0, 0);
+    // Zoomlevel not supported by this tile layer
+    if ((vp.z() < m_zmin) || (vp.z() > m_zmax))
+    {
+        // Simple white background. We might need to do something a little more
+        // sophisticated in the future.
+        m_canvas_0.resize(vp.w(), vp.h());
+        m_canvas_0.fillrect(0, 0, (int)vp.w(), (int)vp.h(), 255, 255, 255);
+        os.draw(m_canvas_0, 0, 0, (int)vp.w(), (int)vp.h(), 0, 0);
+
+        // Make sure the map is redrawn on zoomlevel change by invalidating the
+        // current local viewport
+        m_vp.w(0);
+        m_vp.h(0);
+
+        return;
+    }
+
+    // Regular tile drawig
+    update_map(vp);
+    os.draw(m_canvas_0, 0, 0, (int)vp.w(), (int)vp.h(), 0, 0);
 }
 
 void osmlayer::update_map(const viewport &vp)
 {
+   // the current layer view is dirty if it is incomplete (tiles are missing or
+   // outdated)
    static bool dirty = true;
 
    // Make sure the new viewport is any different from the last one before
@@ -321,7 +353,7 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
           // Draw the tile if we either have a valid or expired version of it...
           if (rc != sqlitecache::NOTFOUND)
           {
-              image img(image::PNG, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
+              image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
               c.draw(img, px, py);
           }
           // ...otherwise draw placeholder image

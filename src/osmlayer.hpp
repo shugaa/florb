@@ -13,11 +13,18 @@
 class osmlayer : public layer, public download_observer
 {
     public:
-        osmlayer(std::string url, int numdownloads);
+        osmlayer(
+            const std::string& nm,  
+            const std::string& url, 
+            unsigned int zmin,
+            unsigned int zmax,
+            unsigned int parallel,
+            int imgtype);
         ~osmlayer();
-        void draw(const viewport &viewport, canvas &c);
-        void numdownloads(unsigned int n) { m_numdownloads = n; };
-        unsigned int numdownloads(void) { return m_numdownloads; };
+        void draw(const viewport &vp, canvas &c);
+
+        int zoom_min() { return m_zmin; };
+        int zoom_max() { return m_zmax; };
 
     private:
         typedef struct {
@@ -35,16 +42,20 @@ class osmlayer : public layer, public download_observer
         canvas m_canvas_tmp;
 
         bool m_shutdown;
+
+        std::string m_name;
         std::string m_url;
-        unsigned int m_numdownloads;
+        unsigned int m_zmin;
+        unsigned int m_zmax;
+        unsigned int m_parallel;
+        int m_type;
+        
         sqlitecache *m_cache;
         viewport m_vp;
         std::vector<char> m_imgbuf;
 
         std::vector<dlref_t> m_downloads;
         std::vector<tile_t> m_downloadq;
-
-        settings &m_s;
 
         bool drawvp(const viewport &viewport, canvas &c);
         void update_map(const viewport &vp);

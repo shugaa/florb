@@ -62,6 +62,7 @@ void canvas::trycreate(void)
 };
 
 image::image(int type, const unsigned char *buffer, int bufsize) :
+    m_type(type),
     m_init(false),
     m_buf(NULL)
 {
@@ -69,9 +70,15 @@ image::image(int type, const unsigned char *buffer, int bufsize) :
     {
         case PNG:
         {
-           m_buf = new Fl_PNG_Image(NULL, buffer, bufsize);
-           m_init = true;
-           break;
+            m_buf = new Fl_PNG_Image(NULL, buffer, bufsize);
+            m_init = true;
+            break;
+        }
+        case JPG:
+        {
+            m_buf = new Fl_JPEG_Image(NULL, buffer);
+            m_init = true;
+            break;
         }
         default:
            m_buf = NULL;

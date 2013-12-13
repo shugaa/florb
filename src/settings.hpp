@@ -8,13 +8,16 @@
 // definition of "None" in X.h which is included by FLTK. So if there is any
 // module including FLTK and YAML headers, things get nasty. Thus this clumsy
 // attempt at hiding the YAML-cpp internals. It could have been so easy...
+// On a positive note it is now relatively easy to swap out YAML-cpp for some
+// other backend.
 struct cfg_tileserver
 {
     std::string name;
     std::string url;
-    int zmin;
-    int zmax;
-    int parallel;
+    unsigned int zmin;
+    unsigned int zmax;
+    unsigned int parallel;
+    int type;
 };
 
 // Forward declaration of YAML-cpp node container and iterator container

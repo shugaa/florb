@@ -15,6 +15,8 @@
 mapctrl::mapctrl(int x, int y, int w, int h, const char *label) : 
     Fl_Widget(x, y, w, h, label),
     m_basemap(NULL),
+    m_gpxlayer(NULL),
+    m_gpsdlayer(NULL),
     m_mousepos(0, 0),
     m_viewport((unsigned long)w, (unsigned long)h),
     m_offscreen(500,500)
@@ -29,10 +31,12 @@ mapctrl::~mapctrl()
 
 void mapctrl::layer_notify()
 {
-    redraw();
+    // Quote from the doc The public method Fl_Widget::redraw() simply does
+    // Fl_Widget::damage(FL_DAMAGE_ALL)
+    refresh();
 }
 
-int mapctrl::zoom()
+unsigned int mapctrl::zoom()
 {
     // Return current zoomlevel
     return m_viewport.z();
@@ -43,28 +47,17 @@ void mapctrl::zoom(unsigned int z)
     // Set tne new zoomlevel
     m_viewport.z(z, m_viewport.w()/2, m_viewport.h()/2);
    
-    // Issue a WAKEUP message to the drawing thread.
+    // Request a redraw
     refresh();
-}
-
-void mapctrl::push_layer(layer* l)
-{
-    if (m_layers.size() > 0)
-    {
-        delete m_layers.back();
-        m_layers.pop_back();
-    }
-
-    l->addobserver(*this);
-    m_layers.push_back(l);
 }
 
 void mapctrl::basemap(
                 const std::string& name, 
                 const std::string& url, 
-                int zmin, 
-                int zmax, 
-                int parallel)
+                unsigned int zmin, 
+                unsigned int zmax, 
+                unsigned int parallel,
+                int imgtype)
 {
     // Save a reference to the original basemap layer. This layer is not
     // removed before the new basemap layer is created, so the cache won't be
@@ -73,7 +66,7 @@ void mapctrl::basemap(
     m_basemap = NULL;
 
     // Create a new basemap layer
-    m_basemap = new osmlayer(url, parallel);
+    m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
     m_basemap->addobserver(*this);
 
     // Destroy the original basemap layer 
@@ -88,13 +81,15 @@ void mapctrl::basemap(
 
 point<double> mapctrl::mousegps()
 {
-    // Calculate the mouse's current pixel position on the active viewport
+    // The currently active viewport might be smaller than the current widget
+    // size. Calculate the delta first
     unsigned long dpx = 0, dpy = 0;
     if ((unsigned long)w() > m_viewport.w())
         dpx = ((unsigned long)w() - m_viewport.w())/2;
     if ((unsigned long)h() > m_viewport.h())
         dpy = ((unsigned long)h() - m_viewport.h())/2;
 
+    // Get the current mouse position over the widget
     unsigned long px = m_mousepos.get_x();
     unsigned long py = m_mousepos.get_y();
 
@@ -124,8 +119,29 @@ point<double> mapctrl::mousegps()
 
 void mapctrl::refresh()
 {
+    // Quote from the doc: The public method Fl_Widget::redraw() simply does
+    // Fl_Widget::damage(FL_DAMAGE_ALL)
     redraw();
 }
+
+
+void mapctrl::addobserver(mapctrl_observer &o)
+{
+    m_observers.insert(&o);
+};
+
+void mapctrl::removeobserver(mapctrl_observer &o)
+{
+    m_observers.erase(&o);
+};
+
+void mapctrl::notifyobservers()
+{
+    std::set<mapctrl_observer*>::iterator it;
+    for (it = m_observers.begin(); it != m_observers.end(); it++)
+        (*it)->mapctrl_notify();
+};
+
 
 int mapctrl::handle(int event) 
 {
@@ -134,7 +150,7 @@ int mapctrl::handle(int event)
             // Save the current mouse position
             m_mousepos.set_x(Fl::event_x()-x());
             m_mousepos.set_y(Fl::event_y()-y());
-            refresh();
+            notifyobservers();
             return 1;
         case FL_ENTER:
             fl_cursor(FL_CURSOR_HAND);
@@ -156,6 +172,7 @@ int mapctrl::handle(int event)
                 // current mouse position
                 int dx = m_mousepos.get_x() - (Fl::event_x()-x());
                 int dy = m_mousepos.get_y() - (Fl::event_y()-y());
+                
                 m_mousepos.set_x(Fl::event_x()-x());
                 m_mousepos.set_y(Fl::event_y()-y());
 
@@ -190,42 +207,49 @@ int mapctrl::handle(int event)
             // Zoom the viewport with (px,py) as origin
             m_viewport.z(m_viewport.z()-Fl::event_dy(), px, py);
             refresh();
+
+            notifyobservers();
             return 1;
     }
 
-    return Fl_Widget::handle(event);
+    // Event unhandled
+    return 0;
 }
 
 void mapctrl::draw() 
 {
-    // Resize the viewport before drawing
-    m_viewport.w((long)w());
-    m_viewport.h((long)h());
-
+    // Make sure redraw() has been called previously
     if ((damage() & FL_DAMAGE_ALL) == 0) 
         return;
 
-    // Fill the area which the viewport does not cover
+    // Resize the viewport to the current widget size before drawing
+    m_viewport.w((unsigned long)w());
+    m_viewport.h((unsigned long)h());
+
+    // Fill the canvas in case it is not entirely covered by the viewport image
+    // to be generated.
     fl_rectf(x(), y(), w(), h(), 80, 80, 80);
 
     // Create ancanvas drawing buffer and send all subsequent commands there
     m_offscreen.resize(m_viewport.w(), m_viewport.h());
     fl_begin_offscreen(m_offscreen.buf());
 
-    // Background-fill thecanvas buffer (tiles might be missing)
+    // Background-fill the canvas (there might be no basemap selected)
     fl_rectf(0, 0, m_viewport.w(), m_viewport.h(), 80, 80, 80);
 
     // Draw the basemap
     if (m_basemap)
-    {
         m_basemap->draw(m_viewport, m_offscreen);
-    }
 
-    // Draw all the layers
-    for (std::vector<layer*>::iterator iter=m_layers.begin();iter!=m_layers.end();++iter)
-        (*iter)->draw(m_viewport, m_offscreen);
+    // Draw the gpx layer
+    if (m_gpxlayer)
+        m_gpxlayer->draw(m_viewport, m_offscreen);
 
-    // Blit the generated viewport bitmap onto the widget (centered)
+    // Draw the gpsd layer
+    if (m_gpsdlayer)
+        m_gpsdlayer->draw(m_viewport, m_offscreen);
+
+    // Blit the generated viewport canvas onto the widget (centered)
     int dpx = 0, dpy = 0;
     if (w() > (int)m_viewport.w())
         dpx = (w() - (int)m_viewport.w())/2;
@@ -235,9 +259,3 @@ void mapctrl::draw()
     fl_end_offscreen();
     fl_copy_offscreen(x()+dpx, y()+dpy, m_viewport.w(), m_viewport.h(), m_offscreen.buf(), 0, 0);
 }
-
-void mapctrl::resize(int x, int y, int w, int h)
-{
-    Fl_Widget::resize(x, y, w, h);
-}
-

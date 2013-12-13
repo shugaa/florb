@@ -1,6 +1,7 @@
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 #include "settings.hpp"
+#include "gfx.hpp"
 
 namespace YAML {
    template<>
@@ -12,11 +13,18 @@ namespace YAML {
          node["zmin"] = rhs.zmin;
          node["zmax"] = rhs.zmax;
          node["parallel"] = rhs.parallel;
+
+         node["type"] = "PNG";
+         if      (rhs.type == image::PNG)
+            node["type"] = "PNG";
+         else if (rhs.type == image::JPG)
+            node["type"] = "JPG";
+
          return node;
       }
 
       static bool decode(const Node& node, cfg_tileserver& rhs) {
-         if(!node.IsMap() || node.size() != 5)
+         if(!node.IsMap() || node.size() != 6)
             return false;
 
          rhs.name = node["name"].as<std::string>();
@@ -24,6 +32,14 @@ namespace YAML {
          rhs.zmin = node["zmin"].as<int>();
          rhs.zmax = node["zmax"].as<int>();
          rhs.parallel= node["parallel"].as<int>();
+         
+         rhs.type = image::PNG;
+         std::string imgtype = node["type"].as<std::string>();
+         if      (imgtype.compare("PNG") == 0)
+            rhs.type = image::PNG;
+         else if (imgtype.compare("JPG") == 0)
+            rhs.type = image::JPG;
+         
          return true;
       }
    };
@@ -54,7 +70,6 @@ class yaml_iterator
     private:
         YAML::iterator m_iter;  
 };
-
 
 node::iterator::iterator(const node& n, int be) 
 {

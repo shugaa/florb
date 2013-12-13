@@ -17,7 +17,7 @@ decl {\#include <curl/curl.h>} {private global
 decl {\#include "dlg_ui.hpp"} {private global
 } 
 
-decl {\#include "orb_dlg_settings.hpp"} {selected public global
+decl {\#include "orb_dlg_settings.hpp"} {public global
 } 
 
 decl {\#include "orb_dlg_layers.hpp"} {public global
@@ -35,7 +35,7 @@ decl {\#include "dlg_servers.hpp"} {public global
 decl {\#include "mapctrl.hpp"} {public global
 } 
 
-class dlg_ui {open
+class dlg_ui {open : {public mapctrl_observer}
 } {
   decl {void create_ex(void);} {private local
   }
@@ -51,6 +51,8 @@ class dlg_ui {open
   }
   decl {void cb_close_ex(Fl_Widget *widget);} {private local
   }
+  decl {void mapctrl_notify();} {public local
+  }
   decl {orb_dlg_layers *m_dlg_layers;} {private local
   }
   decl {orb_dlg_about *m_dlg_about;} {private local
@@ -65,10 +67,10 @@ class dlg_ui {open
   } {
     Fl_Window m_window {
       label florb open
-      private xywh {551 109 805 540} type Double align 80 resizable visible
+      private xywh {550 143 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
-        private xywh {0 0 805 540} resizable
+        private xywh {-5 0 825 565} resizable
       } {
         Fl_Menu_Bar m_menubar {
           private xywh {0 0 805 25}
@@ -118,31 +120,66 @@ class dlg_ui {open
             }
           }
         }
-        Fl_Choice m_choice_basemap {
-          user_data this
-          callback cb_choice_basemap
-          private xywh {0 25 805 25} down_box BORDER_BOX
-        } {}
+        Fl_Box {} {
+          private xywh {0 25 805 4}
+        }
         Fl_Pack {} {open
-          xywh {0 50 805 490} type HORIZONTAL resizable
+          private xywh {0 29 805 26} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 29 8 25} box FLAT_BOX
+          }
+          Fl_Choice m_choice_basemap {
+            user_data this
+            callback cb_choice_basemap
+            private xywh {4 29 397 25} down_box BORDER_BOX
+          } {}
+          Fl_Box {} {
+            private xywh {401 29 4 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_loadtrack {
+            label {Load Track}
+            user_data this
+            callback cb_btn_loadtrack
+            private xywh {405 29 140 25}
+          }
+          Fl_Box {} {
+            private xywh {545 29 260 25} box FLAT_BOX
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 54 805 4}
+        }
+        Fl_Pack {} {open
+          private xywh {0 58 805 482} type HORIZONTAL resizable
         } {
           Fl_Box m_mapctrl {
-            label {Slippy Map}
-            private xywh {0 50 600 490} resizable
+            label {Slippy Map} selected
+            private xywh {0 58 600 482} resizable
             class mapctrl
           }
           Fl_Pack {} {open
-            xywh {600 50 205 490}
+            xywh {600 58 205 482}
           } {
-            Fl_Button m_btn_loadtrack {
-              label {Load Track}
-              user_data this
-              callback cb_btn_loadtrack
-              private xywh {600 50 205 25}
-            }
             Fl_Box {} {
-              xywh {600 75 205 465} resizable
+              private xywh {600 58 205 482} box FLAT_BOX color 55 resizable
             }
+          }
+        }
+        Fl_Pack {} {
+          private xywh {0 540 805 25} type HORIZONTAL
+        } {
+          Fl_Output m_txtout_zoom {
+            private xywh {0 540 160 25} color 49
+          }
+          Fl_Output m_txtout_lon {
+            private xywh {160 540 160 25} color 49
+          }
+          Fl_Output m_txtout_lat {
+            private xywh {320 540 160 25} color 49
+          }
+          Fl_Box {} {
+            private xywh {480 540 325 25} box DOWN_BOX resizable
           }
         }
       }
@@ -171,7 +208,7 @@ ui->cb_menu_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_loadtrack_ex(widget);} {}
   }
-  Function {cb_choice_basemap(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  Function {cb_choice_basemap(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}

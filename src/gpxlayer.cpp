@@ -7,6 +7,12 @@
 #include "point.hpp"
 #include "gpxlayer.hpp"
 
+gpxlayer::gpxlayer() :
+    layer()
+{
+    name(std::string("Unnamed GPX layer"));
+}
+
 gpxlayer::gpxlayer(const std::string &path) :
     layer()
 {

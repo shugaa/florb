@@ -35,12 +35,12 @@ class viewport
 
         unsigned long m_x;
         unsigned long m_y;
-        unsigned int m_z;
+        unsigned int  m_z;
         unsigned long m_w;
         unsigned long m_h;
         unsigned long m_dim;
-        unsigned int m_zmax;
-        unsigned int m_zmin;
+        unsigned int  m_zmin;
+        unsigned int  m_zmax;
 };
 
 #endif // VIEWPORT_HPP

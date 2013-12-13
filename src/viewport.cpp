@@ -4,26 +4,27 @@
 #include "utils.hpp"
 #include <iostream>
 #include <vector>
-viewport::viewport(unsigned long w, unsigned long h)
+viewport::viewport(unsigned long w, unsigned long h):
+    // unsigned long range for map dimensions: at least 0 to 4294967295. So the
+    // maximum zoomlevel can be floor(log2(4294967295/256)) = 23. Zoomlevel 0
+    // just results in a 256x256 pixels size map. See utils::dim() for details.
+    m_zmin(0),
+    m_zmax(23)
 {
-   m_zmin = 0;
-   m_zmax = 18;
-
     // See which zoomlevel fits best for the size request
     m_dim = 0;
     for (m_z=m_zmin;m_z<m_zmax;m_z++)
     {
         m_dim = utils::dim(m_z);
 
-        // At this zoomlevel the map fills the viewport in at least one
-        // direction
+        // At this zoomlevel the map fills the viewport in both directions
         if ((m_dim >= (unsigned long)w) && (m_dim >= (unsigned long)h))
            break;
     }
 
     // Center the viewport over the map
-    m_w = (m_dim <= (unsigned long)w) ? m_dim : (unsigned long)w;
-    m_h = (m_dim <= (unsigned long)h) ? m_dim : (unsigned long)h;
+    m_w = (m_dim <= w) ? m_dim : w;
+    m_h = (m_dim <= h) ? m_dim : h;
     m_x = (m_dim <= m_w) ? 0 : (m_dim-m_w)/2;
     m_y = (m_dim <= m_h) ? 0 : (m_dim-m_h)/2;
 };

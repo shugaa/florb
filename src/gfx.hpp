@@ -5,14 +5,26 @@
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
 #include <FL/Fl_PNG_Image.H>
+#include <FL/Fl_JPEG_Image.H>
 
 typedef Fl_Offscreen canvas_storage;
-typedef Fl_PNG_Image* image_storage;
+typedef Fl_Image* image_storage;
 
 class image;
 class color;
 
-class canvas
+// Represents any kind of surface that can be drawn on
+class drawable
+{
+    public:
+        virtual unsigned int w() = 0;
+        virtual unsigned int h() = 0;
+        virtual void fillrect(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b) = 0;
+    private: 
+};
+
+// An in-memory drawing buffer 
+class canvas : public drawable
 {
     public:
         canvas(unsigned int w, unsigned int h);
@@ -45,13 +57,16 @@ class image
         ~image();
 
         image_storage buf(void) { return m_buf; };
+        int type() { return m_type; };
         void buf(image_storage bufs) { m_buf = bufs; };
 
         enum {
             PNG,
+            JPG
         };
 
     private:
+        int m_type;
         bool m_init;
         image_storage m_buf;
 };

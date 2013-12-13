@@ -1,8 +1,29 @@
+#include <sstream>
 #include <Fl/Fl_File_Chooser.H>
 #include "gpxlayer.hpp"
 #include "mapctrl.hpp"
 #include "settings.hpp"
 #include "fluid/dlg_ui.hpp"
+
+void dlg_ui::mapctrl_notify()
+{
+    std::ostringstream ss; 
+
+    ss << "Zoom: " << m_mapctrl->zoom();
+    m_txtout_zoom->value(ss.str().c_str());
+
+    point<double> pos = m_mapctrl->mousegps();
+    ss.precision(5);
+    ss.setf(std::ios::fixed, std::ios::floatfield);
+
+    ss.str("");
+    ss << "Lon: " << pos.get_x() << "°";
+    m_txtout_lon->value(ss.str().c_str());
+
+    ss.str("");
+    ss << "Lat: " << pos.get_y() << "°";
+    m_txtout_lat->value(ss.str().c_str());
+}
 
 void dlg_ui::create_ex(void)
 {
@@ -28,6 +49,8 @@ void dlg_ui::create_ex(void)
         m_choice_basemap->add((*it).as<cfg_tileserver>().name.c_str(), 0, NULL, NULL, 0);
     }
     m_choice_basemap->value(0);
+
+    m_mapctrl->addobserver(*this);
 }
 
 void dlg_ui::destroy_ex(void)
@@ -83,7 +106,8 @@ void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
             tileservers[idx].url, 
             tileservers[idx].zmin, 
             tileservers[idx].zmax, 
-            tileservers[idx].parallel);
+            tileservers[idx].parallel,
+            tileservers[idx].type);
 }
 
 void dlg_ui::cb_menu_ex(Fl_Widget *widget)

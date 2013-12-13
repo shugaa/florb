@@ -13,6 +13,8 @@
 
 #include "download.hpp"
 
+class mapctrl_observer;
+
 class mapctrl : public Fl_Widget, public layer_observer
 {
     public:
@@ -23,34 +25,45 @@ class mapctrl : public Fl_Widget, public layer_observer
         void basemap(
                 const std::string& name, 
                 const std::string& url, 
-                int zmin, 
-                int zmax, 
-                int parallel);
+                unsigned int zmin, 
+                unsigned int zmax, 
+                unsigned int parallel,
+                int imgtype);
 
-        // TODO: review
-        virtual int handle(int event);
-        virtual void resize(int x, int y, int w, int h);
+        int handle(int event);
         void layer_notify();
-        point<double> mousegps();
-        int zoom();
-        void zoom(unsigned int z);
-        void layers(std::vector<layer*> &layers);
         void refresh();
 
+        point<double> mousegps();
+        unsigned int zoom();
+        void zoom(unsigned int z);
+
+        void addobserver(mapctrl_observer &o);
+        void removeobserver(mapctrl_observer &o);
+
     private:
-        static const int MSG_WAKEUP = 0;
-        static const int MSG_EXIT   = 1;
+        //static const int MSG_WAKEUP = 0;
+        //static const int MSG_EXIT   = 1;
+
         layer *m_basemap;
+        layer *m_gpxlayer;
+        layer *m_gpsdlayer;
 
         point<int> m_mousepos;
         viewport m_viewport;
-       canvas m_offscreen;
+        canvas m_offscreen;
 
-
-        std::vector<layer*> m_layers;
+        std::set<mapctrl_observer*> m_observers;
+        void notifyobservers();
 
     protected:
         void draw();
+};
+
+class mapctrl_observer
+{
+    public:
+        virtual void mapctrl_notify() = 0;
 };
 
 #endif // MAPCTRL_HPP

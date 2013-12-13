@@ -60,6 +60,14 @@ int utils::px2gps(unsigned int z, const point<unsigned int> &px, point<double> &
     return 0;
 }
 
+point2d<double> utils::px2merc(unsigned int z, point2d<unsigned long> px)
+{
+    unsigned long dimxy = dim(z);
+    double mlon = (360.0/((double)dimxy/(double)px.get_x()));
+    double mlat = (360.0/((double)dimxy/(double)(dimxy-px.get_y())));
+    return point2d(mlon, mlat);
+}
+
 unsigned long utils::dim(unsigned int z)
 {
     return pow(2.0, z) * 256;
