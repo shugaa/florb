@@ -21,12 +21,20 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_viewport((unsigned long)w, (unsigned long)h),
     m_offscreen(500,500)
 {
+    m_gpxlayer = new gpxlayer();
+    m_gpxlayer->addobserver(*this);
 }
 
 mapctrl::~mapctrl()
 {
-    for (std::vector<layer*>::iterator iter=m_layers.begin();iter!=m_layers.end();++iter)
-        delete (*iter);
+    if (m_basemap)
+        delete m_basemap;
+
+    if (m_gpxlayer)
+        delete m_gpxlayer;
+
+    if (m_gpsdlayer)
+        delete m_gpsdlayer;
 }
 
 void mapctrl::layer_notify()
@@ -79,7 +87,7 @@ void mapctrl::basemap(
     refresh();
 }
 
-point<double> mapctrl::mousegps()
+point2d<double> mapctrl::mousegps()
 {
     // The currently active viewport might be smaller than the current widget
     // size. Calculate the delta first
@@ -90,8 +98,8 @@ point<double> mapctrl::mousegps()
         dpy = ((unsigned long)h() - m_viewport.h())/2;
 
     // Get the current mouse position over the widget
-    unsigned long px = m_mousepos.get_x();
-    unsigned long py = m_mousepos.get_y();
+    unsigned long px = m_mousepos.x();
+    unsigned long py = m_mousepos.y();
 
     if (dpx > px)
         px = 0;
@@ -108,10 +116,10 @@ point<double> mapctrl::mousegps()
         py = m_viewport.h()-1;
 
     // Get the GPS coordinates for the current mouse position
-    point<double> gps;
+    point2d<double> gps;
     utils::px2gps(
             m_viewport.z(), 
-            point<unsigned int>(m_viewport.x()+px, m_viewport.y()+py), 
+            point2d<unsigned int>(m_viewport.x()+px, m_viewport.y()+py), 
             gps);
 
     return gps;
@@ -135,7 +143,7 @@ void mapctrl::removeobserver(mapctrl_observer &o)
     m_observers.erase(&o);
 };
 
-void mapctrl::notifyobservers()
+void mapctrl::notify_observers()
 {
     std::set<mapctrl_observer*>::iterator it;
     for (it = m_observers.begin(); it != m_observers.end(); it++)
@@ -148,9 +156,9 @@ int mapctrl::handle(int event)
     switch (event) {
         case FL_MOVE:
             // Save the current mouse position
-            m_mousepos.set_x(Fl::event_x()-x());
-            m_mousepos.set_y(Fl::event_y()-y());
-            notifyobservers();
+            m_mousepos.x(Fl::event_x()-x());
+            m_mousepos.y(Fl::event_y()-y());
+            notify_observers();
             return 1;
         case FL_ENTER:
             fl_cursor(FL_CURSOR_HAND);
@@ -159,57 +167,141 @@ int mapctrl::handle(int event)
             fl_cursor(FL_CURSOR_DEFAULT);
             return 1;
         case FL_PUSH:
-            if (Fl::event_button() == FL_LEFT_MOUSE);
-            return 1;
-        case FL_RELEASE: 
-            return 1;
+            {
+                layer_mouseevent me(m_viewport, 1,2, point2d<unsigned long>(3,4));
+                layer_keyevent ke(layer_keyevent::ACTION_RELEASE, layer_keyevent::KEY_DEL);
+                m_gpxlayer->handle(&me);
+                m_gpxlayer->handle(&ke);
+
+                unsigned long px = (Fl::event_x() - x());
+                unsigned long py = (Fl::event_y() - y());
+
+                unsigned long dpx = 0, dpy = 0;
+                if (w() > (int)m_viewport.w())
+                    dpx = (w() - (int)m_viewport.w())/2;
+                if (h() > (int)m_viewport.h())
+                    dpy = (h() - (int)m_viewport.h())/2;
+
+                if (Fl::event_button() == FL_LEFT_MOUSE)
+                {
+                    if ((px < dpx) || (py < dpy))
+                        break;
+                    if ((px >= (dpx + m_viewport.w())) || (py >= (dpy + m_viewport.h())))
+                        break;
+
+                    dynamic_cast<gpxlayer*>(m_gpxlayer)->push(m_viewport, point2d<unsigned long>(px, py));
+                }
+
+                if (Fl::event_button() == FL_LEFT_MOUSE);
+                take_focus();
+                return 1;
+            }
+        case FL_RELEASE:
+            {
+                if (Fl::event_button() != FL_LEFT_MOUSE)
+                    break;
+
+                unsigned long px = (Fl::event_x() - x());
+                unsigned long py = (Fl::event_y() - y());
+
+                unsigned long dpx = 0, dpy = 0;
+                if (w() > (int)m_viewport.w())
+                    dpx = (w() - (int)m_viewport.w())/2;
+                if (h() > (int)m_viewport.h())
+                    dpy = (h() - (int)m_viewport.h())/2;
+
+                if ((px < dpx) || (py < dpy))
+                    return 1;
+                if ((px >= (dpx + m_viewport.w())) || (py >= (dpy + m_viewport.h())))
+                    return 1;
+
+                px -= dpx;
+                py -= dpy;
+
+                dynamic_cast<gpxlayer*>(m_gpxlayer)->click(m_viewport, point2d<unsigned long>(px, py));
+                return 1;
+            }
         case FL_DRAG: 
             {
                 if (!Fl::event_inside(this))
                     break;
 
+                unsigned long px = (Fl::event_x() - x());
+                unsigned long py = (Fl::event_y() - y());
+
+                unsigned long dpx = 0, dpy = 0;
+                if (w() > (int)m_viewport.w())
+                    dpx = (w() - (int)m_viewport.w())/2;
+                if (h() > (int)m_viewport.h())
+                    dpy = (h() - (int)m_viewport.h())/2;
+
                 // Calculate the delta with the last mouse position and save the
                 // current mouse position
-                int dx = m_mousepos.get_x() - (Fl::event_x()-x());
-                int dy = m_mousepos.get_y() - (Fl::event_y()-y());
+                int dx = m_mousepos.x() - (Fl::event_x()-x());
+                int dy = m_mousepos.y() - (Fl::event_y()-y());
                 
-                m_mousepos.set_x(Fl::event_x()-x());
-                m_mousepos.set_y(Fl::event_y()-y());
+                m_mousepos.x(Fl::event_x()-x());
+                m_mousepos.y(Fl::event_y()-y());
 
-                // Move the viewport accordingly and redraw
-                m_viewport.move((long)dx, (long)dy); 
-                refresh();
+                if (Fl::event_state(FL_BUTTON1) != 0)
+                {
+                    if ((px < dpx) || (py < dpy))
+                        break;
+                    if ((px >= (dpx + m_viewport.w())) || (py >= (dpy + m_viewport.h())))
+                        break;
+
+                    dynamic_cast<gpxlayer*>(m_gpxlayer)->drag(m_viewport, point2d<unsigned long>(px, py));
+                }else if (Fl::event_state(FL_BUTTON3) != 0)
+                {
+
+                    // Move the viewport accordingly and redraw
+                    m_viewport.move((long)dx, (long)dy); 
+                    refresh();
+                }
 
                 return 1;
             }
         case FL_MOUSEWHEEL:
-            if (!Fl::event_inside(this))
-                break;
+            {
+                if (!Fl::event_inside(this))
+                    break;
 
-            // Prevent integer underflow
-            if ((Fl::event_dy() > 0) && (m_viewport.z() == 0))
+                // Prevent integer underflow
+                if ((Fl::event_dy() > 0) && (m_viewport.z() == 0))
+                    return 1;
+
+                // The image of the viewport might be smaller then our current
+                // client area. We need to take this delta into account.
+                int dpx = 0, dpy = 0;
+                if (w() > (int)m_viewport.w())
+                    dpx = (w() - (int)m_viewport.w())/2;
+                if (h() > (int)m_viewport.h())
+                    dpy = (h() - (int)m_viewport.h())/2;
+
+                int px = 0, py = 0;
+                if ((Fl::event_x() - x()) > dpx)
+                    px = Fl::event_x() - x() - dpx;
+                if ((Fl::event_y() - y()) > dpy)
+                    py = Fl::event_y() - y() - dpy;
+
+                // Zoom the viewport with (px,py) as origin
+                m_viewport.z(m_viewport.z()-Fl::event_dy(), px, py);
+                refresh();
+
+                notify_observers();
                 return 1;
-
-            // The image of the viewport might be smaller then our current
-            // client area. We need to take this delta into account.
-            int dpx = 0, dpy = 0;
-            if (w() > (int)m_viewport.w())
-                dpx = (w() - (int)m_viewport.w())/2;
-            if (h() > (int)m_viewport.h())
-                dpy = (h() - (int)m_viewport.h())/2;
-
-            int px = 0, py = 0;
-            if ((Fl::event_x() - x()) > dpx)
-                px = Fl::event_x() - x() - dpx;
-            if ((Fl::event_y() - y()) > dpy)
-                py = Fl::event_y() - y() - dpy;
-
-            // Zoom the viewport with (px,py) as origin
-            m_viewport.z(m_viewport.z()-Fl::event_dy(), px, py);
-            refresh();
-
-            notifyobservers();
+            }
+        case FL_FOCUS:
             return 1;
+        case FL_KEYBOARD:
+            {
+                if (!Fl::event_key(FL_Delete))
+                    break;
+
+                dynamic_cast<gpxlayer*>(m_gpxlayer)->key();
+
+                return 1;
+            }
     }
 
     // Event unhandled

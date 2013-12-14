@@ -12,16 +12,16 @@ void dlg_ui::mapctrl_notify()
     ss << "Zoom: " << m_mapctrl->zoom();
     m_txtout_zoom->value(ss.str().c_str());
 
-    point<double> pos = m_mapctrl->mousegps();
+    point2d<double> pos = m_mapctrl->mousegps();
     ss.precision(5);
     ss.setf(std::ios::fixed, std::ios::floatfield);
 
     ss.str("");
-    ss << "Lon: " << pos.get_x() << "°";
+    ss << "Lon: " << pos.x() << "°";
     m_txtout_lon->value(ss.str().c_str());
 
     ss.str("");
-    ss << "Lat: " << pos.get_y() << "°";
+    ss << "Lat: " << pos.y() << "°";
     m_txtout_lat->value(ss.str().c_str());
 }
 
@@ -90,10 +90,10 @@ void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
         return;
 
     // Try to create a new GPX layer from the file
-    layer *l = new gpxlayer(std::string(fc.value()));
+    //layer *l = new gpxlayer(std::string(fc.value()));
 
     // Display the new layer
-    m_mapctrl->push_layer(l);
+    //m_mapctrl->push_layer(l);
 }
 
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
@@ -108,6 +108,8 @@ void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
             tileservers[idx].zmax, 
             tileservers[idx].parallel,
             tileservers[idx].type);
+
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_menu_ex(Fl_Widget *widget)

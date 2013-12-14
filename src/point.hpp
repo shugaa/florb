@@ -7,11 +7,11 @@ template <class T>
 class point2d
 {
     public:
-        point() :
+        point2d() :
             m_x(0), m_y(0) {;};
-        point(T x, T y) :
+        point2d(T x, T y) :
             m_x(x), m_y(y) {;};
-        point(const point& p) : 
+        point2d(const point2d& p) : 
             m_x(p.m_x), m_y(p.m_y) {;};
 
         T& operator[] (int idx) 
@@ -38,6 +38,11 @@ class point2d
             m_y = p.m_y;
             return *this;
         }
+
+        T x() const { return m_x; };
+        T y() const { return m_y; };
+        void x(const T& sx) { m_x = sx; };
+        void y(const T& sy) { m_y = sy; };
 
     private:
         T m_x;

@@ -21,7 +21,6 @@ class mapctrl : public Fl_Widget, public layer_observer
         mapctrl(int x, int y, int w, int h, const char *label);
         ~mapctrl();
 
-        void push_layer(layer* l);
         void basemap(
                 const std::string& name, 
                 const std::string& url, 
@@ -34,7 +33,7 @@ class mapctrl : public Fl_Widget, public layer_observer
         void layer_notify();
         void refresh();
 
-        point<double> mousegps();
+        point2d<double> mousegps();
         unsigned int zoom();
         void zoom(unsigned int z);
 
@@ -49,12 +48,12 @@ class mapctrl : public Fl_Widget, public layer_observer
         layer *m_gpxlayer;
         layer *m_gpsdlayer;
 
-        point<int> m_mousepos;
+        point2d<int> m_mousepos;
         viewport m_viewport;
         canvas m_offscreen;
 
         std::set<mapctrl_observer*> m_observers;
-        void notifyobservers();
+        void notify_observers();
 
     protected:
         void draw();

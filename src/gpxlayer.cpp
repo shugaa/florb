@@ -8,13 +8,172 @@
 #include "gpxlayer.hpp"
 
 gpxlayer::gpxlayer() :
-    layer()
+    layer(),
+    m_highlight(0),
+    m_dragmode(false),
+    m_pushidx(0)
 {
     name(std::string("Unnamed GPX layer"));
+    register_event_handler<gpxlayer, layer_mouseevent>(this, &gpxlayer::handle_evt_mouse);
+    register_event_handler<gpxlayer, layer_keyevent>(this, &gpxlayer::handle_evt_key);
+}
+
+void gpxlayer::key()
+{
+    if (m_highlight < m_trkpts.size())
+    {
+        m_trkpts.erase(m_trkpts.begin()+m_highlight);
+        m_highlight = m_trkpts.size();
+        notify_observers();
+    }
+}
+
+void gpxlayer::push(const viewport& vp, point2d<unsigned long> px)
+{
+    // Viewport-relative to absolute coordinate
+    px.x(px.x()+vp.x());
+    px.y(px.y()+vp.y());
+
+    m_pushpos = px;
+   
+    // find an item index for pushpos
+    size_t idx = 0;
+    point2d<unsigned long> pushposc;
+    std::vector<gpx_trkpt>::iterator it;
+    for (it=m_trkpts.begin();it!=m_trkpts.end();++it, idx++)
+    {
+        pushposc = utils::merc2px(vp.z(), point2d<double>((*it).lon, (*it).lat)); 
+
+        // Check whether the click might refer to this point
+        if (m_pushpos.x() >= (pushposc.x()+6))
+            continue;
+        if (m_pushpos.x() < ((pushposc.x()>=6) ? pushposc.x()-6 : 0))
+            continue;
+        if (m_pushpos.y() >= (pushposc.y()+6))
+            continue;
+        if (m_pushpos.y() < ((pushposc.y()>=6) ? pushposc.y()-6 : 0))
+            continue;
+
+        break;
+    }
+
+    m_pushidx = idx;
+    if (idx < m_trkpts.size())
+        m_dragging = m_trkpts[idx];
+}
+
+void gpxlayer::drag(const viewport& vp, point2d<unsigned long> px)
+{
+    // Viewport-relative to absolute coordinate
+    px.x(px.x()+vp.x());
+    px.y(px.y()+vp.y());
+
+    // No item found
+    if (m_pushidx >= m_trkpts.size()) 
+    {
+        return;
+    }
+
+    m_dragmode = true;
+
+    int dx = 0, dy = 0;
+    if (px.x() >= m_pushpos.x())
+        dx = (px.x() - m_pushpos.x());
+    else
+        dx = -(m_pushpos.x() - px.x());
+   
+    if (px.y() >= m_pushpos.y())
+        dy = (px.y() - m_pushpos.y());
+    else
+        dy = -(m_pushpos.y() - px.y());
+
+    point2d<unsigned long> pixels = utils::merc2px(vp.z(), point2d<double>(m_dragging.lon, m_dragging.lat)); 
+    point2d<double> merc = utils::px2merc(vp.z(), point2d<unsigned long>(pixels.x()+dx, pixels.y()+dy));
+    m_trkpts[m_pushidx].lon = merc.x();
+    m_trkpts[m_pushidx].lat = merc.y();
+
+    notify_observers();
+}
+
+void gpxlayer::click(const viewport& vp, point2d<unsigned long> px)
+{
+    if (m_dragmode)
+    {
+        m_dragmode = false;
+        return;
+    }
+
+    // Viewport-relative to absolute coordinate
+    px.x(px.x()+vp.x());
+    px.y(px.y()+vp.y());
+
+    // Go through all existing points and check whether this click referred to
+    // one of them
+    size_t idx = 0;
+    std::vector<gpx_trkpt>::iterator it;
+    for (it=m_trkpts.begin();it!=m_trkpts.end();++it, idx++)
+    {
+        point2d<unsigned long> pxc = utils::merc2px(vp.z(), point2d<double>((*it).lon, (*it).lat)); 
+
+        // Check whether the click might refer to this point
+        if (px.x() >= (pxc.x()+6))
+            continue;
+        if (px.x() < ((pxc.x()>=6) ? pxc.x()-6 : 0))
+            continue;
+        if (px.y() >= (pxc.y()+6))
+            continue;
+        if (px.y() < ((pxc.y()>=6) ? pxc.y()-6 : 0))
+            continue;
+
+        // Item is already highlighted, unhighlight
+        if (idx == m_highlight) {
+            m_highlight = m_trkpts.size();
+            break;
+        }
+
+        // Item is not yet highlighted, highlight
+        m_highlight = idx;
+        break;
+    }
+
+    // This click referred to an existing point which is to be highlighted or
+    // unhighlighted respectively
+    if (idx < m_trkpts.size()) 
+    {
+        notify_observers();
+        return;
+    }
+
+    // A new point is to be added
+    // Try to convert the pixel position to mercator coordinate
+    point2d<double> merc;
+    try {
+        merc = utils::px2merc(vp.z(), px);
+    } catch (...) {
+        return;
+    }
+
+    // Add the position to the list
+    gpx_trkpt p;
+    p.lon = merc.x();
+    p.lat = merc.y();
+    p.time = 0;
+    p.ele = 0; 
+
+    m_trkpts.push_back(p);
+
+    // Highlight the last added point
+    m_highlight = m_trkpts.size() - 1;
+
+    // Indicate that this layer has changed
+    notify_observers();
 }
 
 gpxlayer::gpxlayer(const std::string &path) :
-    layer()
+    layer(),
+    m_highlight(0),
+    m_dragmode(false),
+    m_pushidx(0)
 {
     name(std::string("Unnamed GPX layer"));
     TiXmlDocument doc(path);
@@ -29,72 +188,55 @@ gpxlayer::~gpxlayer()
     ;
 };
 
-void gpxlayer::draw(const viewport &viewport, canvas &os)
+bool gpxlayer::handle_evt_mouse(const layer_mouseevent* evt)
 {
-    unsigned int lastx = 0, lasty = 0, lastday = 0;
-    settings &settings = settings::get_instance();
+    std::cout << "SUPERDUPER mouse handler" << std::endl; 
+    return true;
+}
 
-    // Get track colors and pixel width from the settings
-    int trk_color0, trk_color1, trk_width;
-    //settings.getopt(std::string("gpx::linecolor0"), trk_color0);
-    //settings.getopt(std::string("gpx::linecolor1"), trk_color1);
-    //settings.getopt(std::string("gpx::linewidth"), trk_width);
+bool gpxlayer::handle_evt_key(const layer_keyevent* evt)
+{
+    std::cout << "SUPERDUPER key handler" << std::endl;
+    return true;
+}
 
-    trk_color0 = 0xff0000;
-    trk_color1 = 0x00ff00;
-    trk_width = 2;
+void gpxlayer::draw(const viewport &vp, canvas &os)
+{
+    color color_track(0xff0000);
+    color color_point(0x0000ff);
+    color color_point_hl(0x00ff00);
 
-    // Set track color and width
-    Fl_Color old_color = fl_color();
-    fl_color(((trk_color0>>16) & 0xff), ((trk_color0>>8) & 0xff), trk_color0 & 0xff);
-    fl_line_style(FL_SOLID, trk_width, NULL);
+    point2d<unsigned long> px_last;
+    size_t idx = 0;
 
-    int colorswitch = 0;
-    std::vector<gpx_trkpt>::iterator iter;
-    for (iter=m_trkpts.begin();iter!=m_trkpts.end();++iter) {
+    std::vector<gpx_trkpt>::iterator it;
+    for (it=m_trkpts.begin();it!=m_trkpts.end();++it, idx++) 
+    {
+        // Convert mercator to pixel coordinates
+        point2d<unsigned long> px = utils::merc2px(vp.z(), point2d<double>((*it).lon, (*it).lat)); 
+        px.x(px.x() - vp.x());
+        px.y(px.y() - vp.y());
 
-        point<unsigned int> px;
-        utils::merc2px(viewport.z(), point<double>((*iter).lon, (*iter).lat), px);
+        // Draw crosshair for this point
+        if (m_highlight == idx)
+            os.fgcolor(color_point_hl);
+        else
+            os.fgcolor(color_point);
 
-        if (iter == m_trkpts.begin()) {
-            lastx = px.get_x();
-            lasty = px.get_y();
-            lastday = (*iter).time / (60*60*24);
+        os.line(px.x()-6, px.y(), px.x()+6, px.y(), 1);
+        os.line(px.x(), px.y()-6, px.x(), px.y()+6, 1);
+
+        // No connecting line possible if this is the first point
+        if (it == m_trkpts.begin()) {
+            px_last = px;
+            continue;
         }
 
-        // Track highlighting on a per day basis (should probably be made
-        // configurable). Track color0 and track color1 are simply toggled.
-        if (((*iter).time / (60*60*24)) != lastday) {
-            if ((colorswitch % 2) == 0)
-                fl_color(((trk_color0>>16) & 0xff), ((trk_color0>>8) & 0xff), trk_color0 & 0xff);
-            else
-                fl_color(((trk_color1>>16) & 0xff), ((trk_color1>>8) & 0xff), trk_color1 & 0xff);
-
-            colorswitch++;
-        }
-
-        // If either the last point or the current point are inside the viewport
-        // area then draw. However, this doesn' work for lines which just cross
-        // the viewport area without any points inside. A better aproach is needed
-        if (((lastx >= viewport.x()) && (lastx < (viewport.x()+viewport.w())) && 
-             (lasty >= viewport.y()) && (lasty < (viewport.y()+viewport.h()))) ||
-             ((px.get_x() >= viewport.x()) && (px.get_x() < (viewport.x()+viewport.w())) && 
-              (px.get_y() >= viewport.y()) && (px.get_y() < (viewport.y()+viewport.h())))) {
-            fl_line(
-                    (int)(lastx-viewport.x()), 
-                    (int)(lasty-viewport.y()), 
-                    (int)(px.get_x()-viewport.x()), 
-                    (int)(px.get_y()-viewport.y()));
-        }
-
-        lastx = px.get_x();
-        lasty = px.get_y();
-        lastday = (*iter).time / (60*60*24);
+        // Draw a connection between points
+        os.fgcolor(color_track);
+        os.line(px_last.x(), px_last.y(), px.x(), px.y(), 2);
+        px_last = px;
     }
-
-    // Reset line style and color
-    fl_line_style(0);
-    fl_color(old_color);
 }
 
 int gpxlayer::parsetree(TiXmlNode *parent)
@@ -115,11 +257,11 @@ int gpxlayer::parsetree(TiXmlNode *parent)
         parent->ToElement()->Attribute("lon", &lon);
 
         // Convert latitude and longitude to mercator coordinates
-        point<double> merc;
-        utils::gps2merc(point<double>(lon, lat), merc);
+        point2d<double> merc;
+        utils::gps2merc(point2d<double>(lon, lat), merc);
 
-        p.lon = merc.get_x();
-        p.lat = merc.get_y();
+        p.lon = merc.x();
+        p.lat = merc.y();
         p.time = 0;
         p.ele = 0;
 

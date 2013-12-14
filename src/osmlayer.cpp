@@ -87,7 +87,7 @@ void osmlayer::download_process(void)
 
                 // Cache the tile and ask for redraw
                 m_cache->put((*it).t.z, (*it).t.x, (*it).t.y, expires, (*it).dl->buf());
-                notifyobservers();   
+                notify_observers();   
             }
             // Fall through
             case download::ERROR:
@@ -170,7 +170,8 @@ void osmlayer::draw(const viewport &vp, canvas &os)
         // Simple white background. We might need to do something a little more
         // sophisticated in the future.
         m_canvas_0.resize(vp.w(), vp.h());
-        m_canvas_0.fillrect(0, 0, (int)vp.w(), (int)vp.h(), 255, 255, 255);
+        m_canvas_0.fgcolor(color(255,255,255));
+        m_canvas_0.fillrect(0, 0, (int)vp.w(), (int)vp.h());
         os.draw(m_canvas_0, 0, 0, (int)vp.w(), (int)vp.h(), 0, 0);
 
         // Make sure the map is redrawn on zoomlevel change by invalidating the
@@ -359,7 +360,8 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
           // ...otherwise draw placeholder image
           else
           {
-              c.fillrect(px, py, TILE_W, TILE_H, 177, 113, 113);
+              c.fgcolor(color(200, 113, 113));
+              c.fillrect(px, py, TILE_W, TILE_H);
           }
 
           // Tile not in cache or expired

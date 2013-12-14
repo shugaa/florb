@@ -1,7 +1,11 @@
 #include "gfx.hpp"
 
 canvas::canvas(unsigned int w, unsigned int h) :
-    m_init(false), m_w(w), m_h(h)
+    m_init(false), 
+    m_w(w), 
+    m_h(h),
+    m_fgcolor(0xffffff),
+    m_bgcolor(0x000000)
 {
 };
 
@@ -12,6 +16,26 @@ canvas::~canvas()
         fl_delete_offscreen(m_buf);
     }
 };
+
+void canvas::fgcolor(color c)
+{
+    m_fgcolor = c;
+};
+
+void canvas::bgcolor(color c)
+{
+    m_bgcolor = c;
+};
+
+color canvas::bgcolor()
+{
+    return m_bgcolor;
+};
+
+color canvas::fgcolor()
+{
+    return m_fgcolor;
+}
 
 void canvas::resize(unsigned int w, unsigned int h)
 {
@@ -45,10 +69,20 @@ void canvas::draw(image &src, int dstx, int dsty)
     fl_end_offscreen();
 };
 
-void canvas::fillrect(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b)
+void canvas::fillrect(int x, int y, int w, int h)
 {
+    fl_color(m_fgcolor.r(), m_fgcolor.g(), m_fgcolor.b());
     fl_begin_offscreen(m_buf);
-    fl_rectf(x, y, w, h, r, g, b);
+    fl_rectf(x, y, w, h, m_fgcolor.r(), m_fgcolor.g(), m_fgcolor.b());
+    fl_end_offscreen();
+};
+
+void canvas::line(int x1, int y1, int x2, int y2, int linewidth)
+{
+    fl_color(m_fgcolor.r(), m_fgcolor.g(), m_fgcolor.b());
+    fl_line_style(FL_SOLID, linewidth, NULL);
+    fl_begin_offscreen(m_buf);
+    fl_line(x1, y1, x2, y2);
     fl_end_offscreen();
 };
 

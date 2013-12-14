@@ -37,7 +37,7 @@ void gpsdlayer::gpsdclient_callback(void *data)
 void gpsdlayer::gpsdclient_process(void)
 {
     std::cout << "gpsd notify" << std::endl;
-    notifyobservers();
+    notify_observers();
 };
 
 void gpsdlayer::draw(const viewport &viewport, canvas &os)
@@ -47,10 +47,11 @@ void gpsdlayer::draw(const viewport &viewport, canvas &os)
     //if (m_gpsdclient->mode() == gpsdclient::FIX_NONE)
     //    return;
 
-    point<double> gpspos(m_gpsdclient->longitude(), m_gpsdclient->latitude());
-    point<unsigned int> pxpos;
+    point2d<double> gpspos(m_gpsdclient->longitude(), m_gpsdclient->latitude());
+    point2d<unsigned long> pxpos;
 
     utils::gps2px(viewport.z(), gpspos, pxpos);
-    os.fillrect((pxpos.get_x()-viewport.x())-5, (pxpos.get_y()-viewport.y())-5, 10, 10, 0, 0, 255);
+    os.fgcolor(color(0,0,255));
+    os.fillrect((pxpos.x()-viewport.x())-5, (pxpos.y()-viewport.y())-5, 10, 10);
 };
 

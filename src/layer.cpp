@@ -33,7 +33,7 @@ void layer::removeobserver(layer_observer &o)
     m_observers.erase(&o);
 };
 
-void layer::notifyobservers()
+void layer::notify_observers()
 {
     std::set<layer_observer*>::iterator it;
     for (it = m_observers.begin(); it != m_observers.end(); it++)
