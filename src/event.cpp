@@ -5,7 +5,6 @@ event_listener::~event_listener()
     evthandlers::iterator it;
     for (it=m_evthandlers.begin();it!=m_evthandlers.end();++it)
     {
-        std::cout << "destroy handler" << std::endl;
         delete (*it).second;
     }
 }

@@ -23,7 +23,7 @@ class point2d
                 case 1:
                     return m_y;
                 default:
-                    throw std::out_of_range(idx);
+                    throw std::out_of_range(0);
             }
         };
 

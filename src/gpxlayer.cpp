@@ -8,149 +8,143 @@
 #include "gpxlayer.hpp"
 
 gpxlayer::gpxlayer() :
-    layer(),
-    m_highlight(0),
-    m_dragmode(false),
-    m_pushidx(0)
+    layer()
 {
     name(std::string("Unnamed GPX layer"));
     register_event_handler<gpxlayer, layer_mouseevent>(this, &gpxlayer::handle_evt_mouse);
     register_event_handler<gpxlayer, layer_keyevent>(this, &gpxlayer::handle_evt_key);
 }
 
-void gpxlayer::key()
+bool gpxlayer::key(const layer_keyevent* evt)
 {
-    if (m_highlight < m_trkpts.size())
+    if (evt->key() != layer_keyevent::KEY_DEL)
+        return false;
+
+    if ((m_selection.it != m_trkpts.end()) && m_selection.highlight)
     {
-        m_trkpts.erase(m_trkpts.begin()+m_highlight);
-        m_highlight = m_trkpts.size();
+        m_trkpts.erase(m_selection.it);
+        m_selection.it = m_trkpts.end();
         notify_observers();
+
+        return true;
     }
+
+    return false;
 }
 
-void gpxlayer::push(const viewport& vp, point2d<unsigned long> px)
+bool gpxlayer::press(const layer_mouseevent* evt)
 {
-    // Viewport-relative to absolute coordinate
-    px.x(px.x()+vp.x());
-    px.y(px.y()+vp.y());
+    // Mouse push outside viewport
+    if ((evt->pos().x() < 0) || (evt->pos().y() < 0))
+        return false;
+    if ((evt->pos().x() >= (int)evt->vp().w()) || (evt->pos().y() >= (int)evt->vp().h()))
+        return false;
 
-    m_pushpos = px;
-   
-    // find an item index for pushpos
-    size_t idx = 0;
-    point2d<unsigned long> pushposc;
+    // Convert absolute map coordinate
+    point2d<unsigned long> pxabs;
+    pxabs.x(evt->pos().x() + evt->vp().x());
+    pxabs.y(evt->pos().y() + evt->vp().y());
+
+    // Find an existing item for this mouse position
     std::vector<gpx_trkpt>::iterator it;
-    for (it=m_trkpts.begin();it!=m_trkpts.end();++it, idx++)
+    for (it=m_trkpts.begin();it!=m_trkpts.end();++it)
     {
-        pushposc = utils::merc2px(vp.z(), point2d<double>((*it).lon, (*it).lat)); 
+        point2d<unsigned long> cmp = utils::merc2px(evt->vp().z(), point2d<double>((*it).lon, (*it).lat)); 
 
         // Check whether the click might refer to this point
-        if (m_pushpos.x() >= (pushposc.x()+6))
+        if (pxabs.x() >= (cmp.x()+6))
             continue;
-        if (m_pushpos.x() < ((pushposc.x()>=6) ? pushposc.x()-6 : 0))
+        if (pxabs.x() < ((cmp.x()>=6) ? cmp.x()-6 : 0))
             continue;
-        if (m_pushpos.y() >= (pushposc.y()+6))
+        if (pxabs.y() >= (cmp.y()+6))
             continue;
-        if (m_pushpos.y() < ((pushposc.y()>=6) ? pushposc.y()-6 : 0))
+        if (pxabs.y() < ((cmp.y()>=6) ? cmp.y()-6 : 0))
             continue;
 
         break;
     }
 
-    m_pushidx = idx;
-    if (idx < m_trkpts.size())
-        m_dragging = m_trkpts[idx];
-}
+    // New selection, highlight
+    if ((m_selection.it != it))
+        m_selection.highlight = true;
+    // Same item as last time, toggle highlighting
+    else
+        m_selection.highlight = !m_selection.highlight;
+    
+    // Either we have a valid iterator position or end() which is later on used
+    // to tell whether we are actually dragging something around or not
+    m_selection.it = it;
 
-void gpxlayer::drag(const viewport& vp, point2d<unsigned long> px)
-{
-    // Viewport-relative to absolute coordinate
-    px.x(px.x()+vp.x());
-    px.y(px.y()+vp.y());
-
-    // No item found
-    if (m_pushidx >= m_trkpts.size()) 
+    // Found an existing item. Save as it might be used in a dragging operation
+    if (it != m_trkpts.end())
     {
-        return;
+        m_selection.trkpt = *it;
+
+        // Trigger repaint (for highlighting / unhighlighting)
+        notify_observers();
     }
 
-    m_dragmode = true;
+    return true;
+}
+
+bool gpxlayer::drag(const layer_mouseevent* evt)
+{
+    // Viewport-relative to absolute coordinate
+    point2d<unsigned long> px(
+        evt->pos().x() + evt->vp().x(),
+        evt->pos().y() + evt->vp().y());
+
+    // Nothing to drag around
+    if (m_selection.it == m_trkpts.end())
+        return false;
+
+    // Calculate the delta between the original and the current item position 
+    point2d<unsigned long> cmp = utils::merc2px(
+            evt->vp().z(), 
+            point2d<double>(m_selection.trkpt.lon, m_selection.trkpt.lat)); 
 
     int dx = 0, dy = 0;
-    if (px.x() >= m_pushpos.x())
-        dx = (px.x() - m_pushpos.x());
+    if (px.x() >= cmp.x())
+        dx = (px.x() - cmp.x());
     else
-        dx = -(m_pushpos.x() - px.x());
+        dx = -(cmp.x() - px.x());
    
-    if (px.y() >= m_pushpos.y())
-        dy = (px.y() - m_pushpos.y());
+    if (px.y() >= cmp.y())
+        dy = (px.y() - cmp.y());
     else
-        dy = -(m_pushpos.y() - px.y());
+        dy = -(cmp.y() - px.y());
 
-    point2d<unsigned long> pixels = utils::merc2px(vp.z(), point2d<double>(m_dragging.lon, m_dragging.lat)); 
-    point2d<double> merc = utils::px2merc(vp.z(), point2d<unsigned long>(pixels.x()+dx, pixels.y()+dy));
-    m_trkpts[m_pushidx].lon = merc.x();
-    m_trkpts[m_pushidx].lat = merc.y();
+    // Add the delta and convert back to mercator
+    point2d<double> merc = utils::px2merc(evt->vp().z(), point2d<unsigned long>(cmp.x()+dx, cmp.y()+dy));
+    (*(m_selection.it)).lon = merc.x();
+    (*(m_selection.it)).lat = merc.y();
 
+    // Trigger redraw
     notify_observers();
+
+    return true;
 }
 
-void gpxlayer::click(const viewport& vp, point2d<unsigned long> px)
+bool gpxlayer::release(const layer_mouseevent* evt)
 {
-    if (m_dragmode)
-    {
-        m_dragmode = false;
-        return;
-    }
+    // Button release on an existing item
+    if (m_selection.it != m_trkpts.end()) 
+        return false;
 
-    // Viewport-relative to absolute coordinate
-    px.x(px.x()+vp.x());
-    px.y(px.y()+vp.y());
+    // Add a new item
 
-    // Go through all existing points and check whether this click referred to
-    // one of them
-    size_t idx = 0;
-    std::vector<gpx_trkpt>::iterator it;
-    for (it=m_trkpts.begin();it!=m_trkpts.end();++it, idx++)
-    {
-        point2d<unsigned long> pxc = utils::merc2px(vp.z(), point2d<double>((*it).lon, (*it).lat)); 
-
-        // Check whether the click might refer to this point
-        if (px.x() >= (pxc.x()+6))
-            continue;
-        if (px.x() < ((pxc.x()>=6) ? pxc.x()-6 : 0))
-            continue;
-        if (px.y() >= (pxc.y()+6))
-            continue;
-        if (px.y() < ((pxc.y()>=6) ? pxc.y()-6 : 0))
-            continue;
-
-        // Item is already highlighted, unhighlight
-        if (idx == m_highlight) {
-            m_highlight = m_trkpts.size();
-            break;
-        }
-
-        // Item is not yet highlighted, highlight
-        m_highlight = idx;
-        break;
-    }
-
-    // This click referred to an existing point which is to be highlighted or
-    // unhighlighted respectively
-    if (idx < m_trkpts.size()) 
-    {
-        notify_observers();
-        return;
-    }
+    // Viewport-relative to absolute map coordinate
+    point2d<unsigned long> px(
+            evt->pos().x() + evt->vp().x(),
+            evt->pos().y() + evt->vp().y());
 
     // A new point is to be added
     // Try to convert the pixel position to mercator coordinate
     point2d<double> merc;
     try {
-        merc = utils::px2merc(vp.z(), px);
+        merc = utils::px2merc(evt->vp().z(), px);
     } catch (...) {
-        return;
+        return false;
     }
 
     // Add the position to the list
@@ -162,18 +156,19 @@ void gpxlayer::click(const viewport& vp, point2d<unsigned long> px)
 
     m_trkpts.push_back(p);
 
-    // Highlight the last added point
-    m_highlight = m_trkpts.size() - 1;
+    // Select the newly added item
+    m_selection.trkpt = *(m_trkpts.end()-1);
+    m_selection.it = m_trkpts.end()-1;
+    m_selection.highlight = true;
 
     // Indicate that this layer has changed
     notify_observers();
+
+    return true;
 }
 
 gpxlayer::gpxlayer(const std::string &path) :
-    layer(),
-    m_highlight(0),
-    m_dragmode(false),
-    m_pushidx(0)
+    layer()
 {
     name(std::string("Unnamed GPX layer"));
     TiXmlDocument doc(path);
@@ -190,14 +185,56 @@ gpxlayer::~gpxlayer()
 
 bool gpxlayer::handle_evt_mouse(const layer_mouseevent* evt)
 {
-    std::cout << "SUPERDUPER mouse handler" << std::endl; 
-    return true;
+    // Only the left mouse button is of interest
+    if (evt->button() != layer_mouseevent::BUTTON_LEFT)
+        return false;
+
+    int ret = false;
+    switch (evt->action())
+    {
+        case layer_mouseevent::ACTION_PRESS:
+        {
+            ret = press(evt); 
+            break;
+        }
+        case layer_mouseevent::ACTION_RELEASE:
+        {
+            ret = release(evt); 
+            break;
+        }
+        case layer_mouseevent::ACTION_DRAG:
+        {
+            ret = drag(evt); 
+            break;
+        }
+        default:
+            ;
+    }
+
+    return ret;
 }
 
 bool gpxlayer::handle_evt_key(const layer_keyevent* evt)
 {
-    std::cout << "SUPERDUPER key handler" << std::endl;
-    return true;
+    int ret = false;
+
+    switch (evt->action())
+    {
+        case layer_keyevent::ACTION_PRESS:
+        {
+            ret = false; 
+            break;
+        }
+        case layer_keyevent::ACTION_RELEASE:
+        {
+            ret = key(evt); 
+            break;
+        }
+        default:
+            ;
+    }
+
+    return ret;
 }
 
 void gpxlayer::draw(const viewport &vp, canvas &os)
@@ -207,34 +244,45 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
     color color_point_hl(0x00ff00);
 
     point2d<unsigned long> px_last;
-    size_t idx = 0;
-
     std::vector<gpx_trkpt>::iterator it;
-    for (it=m_trkpts.begin();it!=m_trkpts.end();++it, idx++) 
+    for (it=m_trkpts.begin();it!=m_trkpts.end();++it) 
     {
         // Convert mercator to pixel coordinates
         point2d<unsigned long> px = utils::merc2px(vp.z(), point2d<double>((*it).lon, (*it).lat)); 
         px.x(px.x() - vp.x());
         px.y(px.y() - vp.y());
 
-        // Draw crosshair for this point
-        if (m_highlight == idx)
-            os.fgcolor(color_point_hl);
-        else
-            os.fgcolor(color_point);
-
-        os.line(px.x()-6, px.y(), px.x()+6, px.y(), 1);
-        os.line(px.x(), px.y()-6, px.x(), px.y()+6, 1);
-
         // No connecting line possible if this is the first point
-        if (it == m_trkpts.begin()) {
-            px_last = px;
-            continue;
+        if (it != m_trkpts.begin()) 
+        {
+            // Draw a connection between points
+            os.fgcolor(color_track);
+            os.line(px_last.x(), px_last.y(), px.x(), px.y(), 2);
         }
 
-        // Draw a connection between points
-        os.fgcolor(color_track);
-        os.line(px_last.x(), px_last.y(), px.x(), px.y(), 2);
+        // Draw crosshairs _above_ the connecting lines
+        if ((m_trkpts.size() == 1) || (it == (m_trkpts.end()-1)))
+        {
+            if ((m_selection.it == it) && m_selection.highlight)
+                os.fgcolor(color_point_hl);
+            else
+                os.fgcolor(color_point);
+
+            os.line(px.x()-6, px.y(), px.x()+6, px.y(), 1);
+            os.line(px.x(), px.y()-6, px.x(), px.y()+6, 1);
+        }
+
+        if (it != m_trkpts.begin())
+        {
+            if ((m_selection.it == (it-1)) && m_selection.highlight)
+                os.fgcolor(color_point_hl);
+            else
+                os.fgcolor(color_point);
+
+            os.line(px_last.x()-6, px_last.y(), px_last.x()+6, px_last.y(), 1);
+            os.line(px_last.x(), px_last.y()-6, px_last.x(), px_last.y()+6, 1);
+        }
+
         px_last = px;
     }
 }

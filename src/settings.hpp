@@ -57,6 +57,7 @@ class node
         node operator[] (const std::string &name);
         template<typename T> node& operator= (const T& rhs);
 
+        size_t size();
         template<typename T> T as() const;
         template<typename T> void push_back(const T& rhs);
         void push_back(const node& rhs);

@@ -132,69 +132,74 @@ node node::iterator::operator* () const
 settings::settings() :
     m_rootnode(std::string("/home/bjoern/florb2.cfg"))
 {
-};
+}
 
 settings::~settings()
 {
     m_rootnode.serialize(std::string("/home/bjoern/florb2.cfg"));
-};
+}
 
 settings& settings::get_instance()
 {
     static settings instance;
     return instance;
-};
+}
 
 node::node(const std::string& path)
 {
     m_ref = new yaml_node(path);
-};
+}
 
 node::node(const node& n)
 {
     m_ref = new yaml_node(n.m_ref->get());
-};
+}
 
 node::~node()
 {
     delete m_ref;
-};
+}
 
 node node::operator[] (const int idx)
 {
     return node(new yaml_node(m_ref->get()[idx]));
-};
+}
 
 node node::operator[] (const std::string &name)
 {
     return node(new yaml_node(m_ref->get()[name]));
-};
+}
 
 template<typename T> node& node::operator= (const T& rhs)
 {
     m_ref->get() = rhs;
     return *this;
-};
+}
 
 template<typename T> T node::as() const
 {
     return m_ref->get().as<T>();
-};
+}
 
 template<typename T> void node::push_back(const T& rhs)
 {
     m_ref->get().push_back<T>(rhs);
-};
+}
 
 void node::push_back(const node& rhs)
 {
     m_ref->get().push_back(rhs.m_ref->get());
-};
+}
 
 void node::serialize(const std::string& path)
 {
     std::ofstream fout(path.c_str());
     fout << m_ref->get();
+}
+
+size_t node::size()
+{
+    return m_ref->get().size();
 }
 
 // This is necessary so YAML::Node template internals remain hidden from the

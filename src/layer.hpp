@@ -3,9 +3,6 @@
 
 #include <set>
 #include <string>
-#include <map>
-#include <iostream>
-#include <typeinfo>
 #include "gfx.hpp"
 #include "viewport.hpp"
 #include "point.hpp"
@@ -44,7 +41,7 @@ class layer_observer
 class layer_mouseevent : public event_base
 {
     public:
-        layer_mouseevent(const viewport& vp, int action, int button, point2d<unsigned long> pos) :
+        layer_mouseevent(const viewport& vp, int action, int button, point2d<int> pos) :
             event_base(),
             m_viewport(vp),
             m_action(action),
@@ -56,7 +53,7 @@ class layer_mouseevent : public event_base
         const viewport& vp() const { return m_viewport; }; 
         int action() const { return m_action; };
         int button() const { return m_button; };
-        point2d<unsigned long> pos() const { return m_pos; };
+        point2d<int> pos() const { return m_pos; };
 
         enum {
             BUTTON_LEFT,
@@ -73,7 +70,7 @@ class layer_mouseevent : public event_base
         viewport m_viewport;
         int m_action;
         int m_button;
-        point2d<unsigned long> m_pos;
+        point2d<int> m_pos;
 };
 
 class layer_keyevent : public event_base

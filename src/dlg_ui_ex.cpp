@@ -48,7 +48,19 @@ void dlg_ui::create_ex(void)
     for(node::iterator it=section.begin(); it!=section.end(); ++it) {
         m_choice_basemap->add((*it).as<cfg_tileserver>().name.c_str(), 0, NULL, NULL, 0);
     }
-    m_choice_basemap->value(0);
+    if (section.size() > 0)
+    {
+        cfg_tileserver ts0((*section.begin()).as<cfg_tileserver>()); 
+        m_mapctrl->basemap(
+            ts0.name, 
+            ts0.url, 
+            ts0.zmin, 
+            ts0.zmax, 
+            ts0.parallel,
+            ts0.type); 
+        m_choice_basemap->value(0);
+        m_mapctrl->take_focus();
+    }
 
     m_mapctrl->addobserver(*this);
 }

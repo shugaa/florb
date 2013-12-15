@@ -136,20 +136,50 @@ void mapctrl::refresh()
 void mapctrl::addobserver(mapctrl_observer &o)
 {
     m_observers.insert(&o);
-};
+}
 
 void mapctrl::removeobserver(mapctrl_observer &o)
 {
     m_observers.erase(&o);
-};
+}
 
 void mapctrl::notify_observers()
 {
     std::set<mapctrl_observer*>::iterator it;
     for (it = m_observers.begin(); it != m_observers.end(); it++)
         (*it)->mapctrl_notify();
-};
+}
 
+point2d<int> mapctrl::vp_relative(const point2d<int>& pos)
+{
+    // Convert to widget-relative coordinates first
+    point2d<int> ret(pos.x()-x(), pos.y()-y());
+
+    // Calculate the widget<->viewport delta and get the viewport-relative
+    // return coordinates
+    if (w() > (int)m_viewport.w())
+        ret[0] -= (w() - (int)m_viewport.w())/2;
+    if (h() > (int)m_viewport.h())
+        ret[1] -= (h() - (int)m_viewport.h())/2;
+
+    return ret;
+}
+
+bool mapctrl::vp_inside(const point2d<int>& pos)
+{
+    point2d<int> vprel(vp_relative(pos));
+
+    if (vprel.x() < 0)
+        return false;
+    if (vprel.x() >= (int)m_viewport.w())
+        return false;
+    if (vprel.y() < 0)
+        return false;
+    if (vprel.y() >= (int)m_viewport.h())
+        return false;
+
+    return true;
+}
 
 int mapctrl::handle(int event) 
 {
@@ -168,98 +198,82 @@ int mapctrl::handle(int event)
             return 1;
         case FL_PUSH:
             {
-                layer_mouseevent me(m_viewport, 1,2, point2d<unsigned long>(3,4));
-                layer_keyevent ke(layer_keyevent::ACTION_RELEASE, layer_keyevent::KEY_DEL);
-                m_gpxlayer->handle(&me);
-                m_gpxlayer->handle(&ke);
-
-                unsigned long px = (Fl::event_x() - x());
-                unsigned long py = (Fl::event_y() - y());
-
-                unsigned long dpx = 0, dpy = 0;
-                if (w() > (int)m_viewport.w())
-                    dpx = (w() - (int)m_viewport.w())/2;
-                if (h() > (int)m_viewport.h())
-                    dpy = (h() - (int)m_viewport.h())/2;
-
-                if (Fl::event_button() == FL_LEFT_MOUSE)
-                {
-                    if ((px < dpx) || (py < dpy))
-                        break;
-                    if ((px >= (dpx + m_viewport.w())) || (py >= (dpy + m_viewport.h())))
-                        break;
-
-                    dynamic_cast<gpxlayer*>(m_gpxlayer)->push(m_viewport, point2d<unsigned long>(px, py));
-                }
-
-                if (Fl::event_button() == FL_LEFT_MOUSE);
                 take_focus();
+
+                // Mouse event for the layers
+                int button = layer_mouseevent::BUTTON_MIDDLE;
+                if (Fl::event_button() == FL_LEFT_MOUSE)
+                    button = layer_mouseevent::BUTTON_LEFT;
+                else if (Fl::event_button() == FL_RIGHT_MOUSE)
+                    button = layer_mouseevent::BUTTON_RIGHT;
+
+                layer_mouseevent me(
+                        m_viewport, 
+                        layer_mouseevent::ACTION_PRESS,
+                        button, 
+                        vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
+                
+                m_gpxlayer->handle(&me);
+
+                // The push event always needs to return 1, otherwise dragging
+                // will not work
                 return 1;
             }
         case FL_RELEASE:
             {
-                if (Fl::event_button() != FL_LEFT_MOUSE)
-                    break;
+                // Mouse event for the layers
+                int button = layer_mouseevent::BUTTON_MIDDLE;
+                if (Fl::event_button() == FL_LEFT_MOUSE)
+                    button = layer_mouseevent::BUTTON_LEFT;
+                else if (Fl::event_button() == FL_RIGHT_MOUSE)
+                    button = layer_mouseevent::BUTTON_RIGHT;
 
-                unsigned long px = (Fl::event_x() - x());
-                unsigned long py = (Fl::event_y() - y());
-
-                unsigned long dpx = 0, dpy = 0;
-                if (w() > (int)m_viewport.w())
-                    dpx = (w() - (int)m_viewport.w())/2;
-                if (h() > (int)m_viewport.h())
-                    dpy = (h() - (int)m_viewport.h())/2;
-
-                if ((px < dpx) || (py < dpy))
-                    return 1;
-                if ((px >= (dpx + m_viewport.w())) || (py >= (dpy + m_viewport.h())))
-                    return 1;
-
-                px -= dpx;
-                py -= dpy;
-
-                dynamic_cast<gpxlayer*>(m_gpxlayer)->click(m_viewport, point2d<unsigned long>(px, py));
-                return 1;
+                layer_mouseevent me(
+                        m_viewport, 
+                        layer_mouseevent::ACTION_RELEASE,
+                        button, 
+                        vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
+                
+                return (m_gpxlayer->handle(&me) ? 1 : 0);
             }
         case FL_DRAG: 
             {
                 if (!Fl::event_inside(this))
                     break;
 
-                unsigned long px = (Fl::event_x() - x());
-                unsigned long py = (Fl::event_y() - y());
+                // Mouse event for the layers
+                int button = layer_mouseevent::BUTTON_MIDDLE;
+                if (Fl::event_button() == FL_LEFT_MOUSE)
+                    button = layer_mouseevent::BUTTON_LEFT;
+                else if (Fl::event_button() == FL_RIGHT_MOUSE)
+                    button = layer_mouseevent::BUTTON_RIGHT;
 
-                unsigned long dpx = 0, dpy = 0;
-                if (w() > (int)m_viewport.w())
-                    dpx = (w() - (int)m_viewport.w())/2;
-                if (h() > (int)m_viewport.h())
-                    dpy = (h() - (int)m_viewport.h())/2;
-
-                // Calculate the delta with the last mouse position and save the
-                // current mouse position
-                int dx = m_mousepos.x() - (Fl::event_x()-x());
-                int dy = m_mousepos.y() - (Fl::event_y()-y());
+                layer_mouseevent me(
+                        m_viewport, 
+                        layer_mouseevent::ACTION_DRAG,
+                        button, 
+                        vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
                 
-                m_mousepos.x(Fl::event_x()-x());
-                m_mousepos.y(Fl::event_y()-y());
-
-                if (Fl::event_state(FL_BUTTON1) != 0)
+                int ret = (m_gpxlayer->handle(&me) ? 1 : 0);
+ 
+                if (Fl::event_state(FL_BUTTON3) != 0)
                 {
-                    if ((px < dpx) || (py < dpy))
-                        break;
-                    if ((px >= (dpx + m_viewport.w())) || (py >= (dpy + m_viewport.h())))
-                        break;
-
-                    dynamic_cast<gpxlayer*>(m_gpxlayer)->drag(m_viewport, point2d<unsigned long>(px, py));
-                }else if (Fl::event_state(FL_BUTTON3) != 0)
-                {
+                    // Calculate the delta with the last mouse position and save the
+                    // current mouse position
+                    int dx = m_mousepos.x() - (Fl::event_x()-x());
+                    int dy = m_mousepos.y() - (Fl::event_y()-y());
+                
+                    m_mousepos.x(Fl::event_x()-x());
+                    m_mousepos.y(Fl::event_y()-y());
 
                     // Move the viewport accordingly and redraw
                     m_viewport.move((long)dx, (long)dy); 
                     refresh();
+
+                    ret = 1;
                 }
 
-                return 1;
+                return ret;
             }
         case FL_MOUSEWHEEL:
             {
@@ -296,11 +310,13 @@ int mapctrl::handle(int event)
         case FL_KEYBOARD:
             {
                 if (!Fl::event_key(FL_Delete))
-                    break;
+                    return 0;      
 
-                dynamic_cast<gpxlayer*>(m_gpxlayer)->key();
-
-                return 1;
+                layer_keyevent ke(
+                        layer_keyevent::ACTION_RELEASE, 
+                        layer_keyevent::KEY_DEL);
+                
+                return (m_gpxlayer->handle(&ke) ? 1 : 0);
             }
     }
 

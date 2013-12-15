@@ -37,13 +37,13 @@ class mapctrl : public Fl_Widget, public layer_observer
         unsigned int zoom();
         void zoom(unsigned int z);
 
+        point2d<int> vp_relative(const point2d<int>& pos);
+        bool vp_inside(const point2d<int>& pos);
+        
         void addobserver(mapctrl_observer &o);
         void removeobserver(mapctrl_observer &o);
 
     private:
-        //static const int MSG_WAKEUP = 0;
-        //static const int MSG_EXIT   = 1;
-
         layer *m_basemap;
         layer *m_gpxlayer;
         layer *m_gpsdlayer;

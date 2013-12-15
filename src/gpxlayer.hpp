@@ -17,10 +17,9 @@ class gpxlayer : public layer
         gpxlayer();
         ~gpxlayer();
 
-        void click(const viewport& vp, point2d<unsigned long> px);
+        
         void key();
-        void drag(const viewport& vp, point2d<unsigned long> px);
-        void push(const viewport& vp, point2d<unsigned long> px);
+        
         
         bool handle_evt_mouse(const layer_mouseevent* evt);
         bool handle_evt_key(const layer_keyevent* evt);
@@ -34,16 +33,24 @@ class gpxlayer : public layer
             double ele;
             time_t time;
         };
+        struct selection {
+            bool highlight;
+            gpx_trkpt trkpt;
+            std::vector<gpx_trkpt>::iterator it;
+        };
+
+        bool press(const layer_mouseevent* evt);
+        bool release(const layer_mouseevent* evt);
+        bool drag(const layer_mouseevent* evt);
+        bool key(const layer_keyevent* evt);
 
         int parsetree(TiXmlNode *parent);
         time_t iso8601_2timet(const std::string iso);
 
         std::vector<gpx_trkpt> m_trkpts;
         size_t m_highlight;
-        bool m_dragmode;
-        point2d<unsigned long> m_pushpos;
-        size_t m_pushidx;
-        gpx_trkpt m_dragging;
+
+        selection m_selection;
 };
 
 #endif // GPXLAYER_HPP
