@@ -238,8 +238,8 @@ int mapctrl::handle(int event)
             }
         case FL_DRAG: 
             {
-                if (!Fl::event_inside(this))
-                    break;
+                //if (!Fl::event_inside(this))
+                //    break;
 
                 // Mouse event for the layers
                 int button = layer_mouseevent::BUTTON_MIDDLE;

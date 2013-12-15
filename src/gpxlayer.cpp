@@ -89,14 +89,24 @@ bool gpxlayer::press(const layer_mouseevent* evt)
 
 bool gpxlayer::drag(const layer_mouseevent* evt)
 {
-    // Viewport-relative to absolute coordinate
-    point2d<unsigned long> px(
-        evt->pos().x() + evt->vp().x(),
-        evt->pos().y() + evt->vp().y());
-
     // Nothing to drag around
     if (m_selection.it == m_trkpts.end())
         return false;
+
+    // Viewport-relative to absolute coordinate
+    point2d<unsigned long> px(evt->pos().x(), evt->pos().y());
+
+    if (evt->pos().x() < 0)
+        px[0] = 0;
+    else if (evt->pos().x() >= (int)evt->vp().w())
+        px[0] = evt->vp().w()-1;
+    if (evt->pos().y() < 0)
+        px[1] = 0;
+    else if (evt->pos().y() >= (int)evt->vp().h())
+        px[1] = evt->vp().h()-1;
+
+    px[0] += evt->vp().x();
+    px[1] += evt->vp().y();
 
     // Calculate the delta between the original and the current item position 
     point2d<unsigned long> cmp = utils::merc2px(
