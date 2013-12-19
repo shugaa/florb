@@ -6,56 +6,52 @@
 #include <boost/thread.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <gps.h>
-
-// Forward declare observer class
-class gpsdclient_observer;
+#include "event.hpp"
 
 class gpsdclient
 {
     public:
         gpsdclient(const std::string host, const std::string port);
         ~gpsdclient();
-        void addobserver(gpsdclient_observer &o);
+        void add_event_listener(event_listener* l);
 
-        int mode(void);
-        double latitude(void);
-        double longitude(void);
+        bool connected(void);
 
         enum {
             FIX_NONE, 
             FIX_2D,
             FIX_3D,
         };
-        enum {
-            UPDATE_POS,
-            UPDATE_MODE,
-        };
 
     private:
         void worker(void);
-        void notify_observers(void);
+        bool handle_set(void);
 
-        bool handle_latlon(void);
-        bool handle_mode(void);
+        void event_update(void);
 
         struct gps_data_t m_gpsdata;
-        std::set<gpsdclient_observer*> m_observers;
+        std::set<event_listener*> m_listeners;
         boost::interprocess::interprocess_mutex m_mutex; 
 
         std::string m_host;
         std::string m_port;
         boost::thread *m_thread;
         bool m_exit;
+        bool m_connected;
 
         int    m_mode;
         double m_latitude;
         double m_longitude;
+        double m_track;
 };
 
-class gpsdclient_observer
+class gpsdclient_update_event : public event_base
 {
     public:
-        virtual void gpsdclient_notify(void) = 0;
+        int mode;
+        double latitude;
+        double longitude;
+        double track;
 };
 
 #endif // GPSDCLIENT_HPP

@@ -3,12 +3,13 @@
 
 int utils::gps2merc(const point2d<double> &gps, point2d<double> &merc)
 {
+    // Todo check for input latitude > 85°?
     if ((gps.x() > 180.0) || (gps.x() < -180.0))
         return 1;
     if ((gps.y() > 90.0) || (gps.y() < -90.0))
         return 1;
 
-    // Transform GPS to mercator
+    // Transform GPS to mercator (square 360 x 360, almost anyway)
     merc.x(180.0 + gps.x());
     merc.y(180.0 + (180.0/M_PI * log(tan(M_PI/4.0+gps.y()*(M_PI/180.0)/2.0))));
 
@@ -58,6 +59,15 @@ int utils::px2gps(unsigned int z, const point2d<unsigned int> &px, point2d<doubl
     return 0;
 }
 
+point2d<double> utils::merc2gps(const point2d<double>& gps)
+{
+    
+    double lon = gps.x() - 180.0;
+    double lat = 180.0/M_PI * (2.0 * atan(exp((gps.y()-180.0)*M_PI/180.0)) - M_PI/2.0);
+
+    return point2d<double>(lon, lat);
+}
+
 point2d<double> utils::px2merc(unsigned int z, point2d<unsigned long> px)
 {
     unsigned long dimxy = dim(z);
@@ -76,6 +86,22 @@ unsigned long utils::dim(unsigned int z)
     return pow(2.0, z) * 256;
 }
 
+double utils::dist(point2d<double> p1, point2d<double> p2)
+{
+    double lon1 = p1.x()*(M_PI/180.0);
+    double lat1 = p1.y()*(M_PI/180.0);
+    double lon2 = p2.x()*(M_PI/180.0);
+    double lat2 = p2.y()*(M_PI/180.0);
+
+    return (6378.388 * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)));
+}
+
+double utils::dist_merc(point2d<double> p1, point2d<double> p2)
+{
+    double circ = 2*M_PI*6372.7982;
+    double dstmerc = sqrt( pow(std::abs(p1.x()-p2.x()), 2.0) + pow(std::abs(p1.y()-p2.y()), 2.0)*0.9444444 );
+    return (dstmerc * (circ/360.0));
+}
 
 bool utils::on_segment(point2d<double> pi, point2d<double> pj, point2d<double> pk) 
 {

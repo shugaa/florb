@@ -32,9 +32,37 @@ bool gpxlayer::key(const layer_keyevent* evt)
     return false;
 }
 
+double gpxlayer::trip()
+{
+    double sum = 0.0;
+    double sum_merc = 0.0;
+
+    if (m_trkpts.size() <= 1)
+        return sum;
+
+    std::vector<gpx_trkpt>::iterator it;
+    for (it=m_trkpts.begin()+1;it!=m_trkpts.end();++it)
+    {
+        point2d<double> p1((*it).lon, (*it).lat);
+        point2d<double> p2((*(it-1)).lon, (*(it-1)).lat);
+        
+        point2d<double> g1(utils::merc2gps(p1));
+        point2d<double> g2(utils::merc2gps(p2));
+         
+        sum += utils::dist(g1, g2);
+        sum_merc += utils::dist_merc(p1, p2);
+    }
+
+    std::cout << "sum gps  " << sum << std::endl;
+    std::cout << "sum merc " << sum_merc << std::endl;
+
+
+    return sum;
+}
+
 bool gpxlayer::press(const layer_mouseevent* evt)
 {
-    // Mouse push outside viewport
+    // Mouse push outside viewport area
     if ((evt->pos().x() < 0) || (evt->pos().y() < 0))
         return false;
     if ((evt->pos().x() >= (int)evt->vp().w()) || (evt->pos().y() >= (int)evt->vp().h()))
@@ -64,25 +92,14 @@ bool gpxlayer::press(const layer_mouseevent* evt)
         break;
     }
 
-    // New selection, highlight
+    // New selection, turn highlighting off, it will be toggled on mouse button
+    // release
     if ((m_selection.it != it))
-        m_selection.highlight = true;
-    // Same item as last time, toggle highlighting
-    else
-        m_selection.highlight = !m_selection.highlight;
+        m_selection.highlight = false;
     
     // Either we have a valid iterator position or end() which is later on used
     // to tell whether we are actually dragging something around or not
     m_selection.it = it;
-
-    // Found an existing item. Save as it might be used in a dragging operation
-    if (it != m_trkpts.end())
-    {
-        m_selection.trkpt = *it;
-
-        // Trigger repaint (for highlighting / unhighlighting)
-        notify_observers();
-    }
 
     return true;
 }
@@ -108,26 +125,13 @@ bool gpxlayer::drag(const layer_mouseevent* evt)
     px[0] += evt->vp().x();
     px[1] += evt->vp().y();
 
-    // Calculate the delta between the original and the current item position 
-    point2d<unsigned long> cmp = utils::merc2px(
-            evt->vp().z(), 
-            point2d<double>(m_selection.trkpt.lon, m_selection.trkpt.lat)); 
-
-    int dx = 0, dy = 0;
-    if (px.x() >= cmp.x())
-        dx = (px.x() - cmp.x());
-    else
-        dx = -(cmp.x() - px.x());
-   
-    if (px.y() >= cmp.y())
-        dy = (px.y() - cmp.y());
-    else
-        dy = -(cmp.y() - px.y());
-
-    // Add the delta and convert back to mercator
-    point2d<double> merc = utils::px2merc(evt->vp().z(), point2d<unsigned long>(cmp.x()+dx, cmp.y()+dy));
+    // Convert position to mercator
+    point2d<double> merc = utils::px2merc(evt->vp().z(), px);
     (*(m_selection.it)).lon = merc.x();
     (*(m_selection.it)).lat = merc.y();
+
+    // Make sure item remains highlighted when mouse is released
+    m_selection.highlight = false;
 
     // Trigger redraw
     notify_observers();
@@ -139,7 +143,12 @@ bool gpxlayer::release(const layer_mouseevent* evt)
 {
     // Button release on an existing item
     if (m_selection.it != m_trkpts.end()) 
-        return false;
+    {
+        // Toggle highlight status
+        m_selection.highlight = !m_selection.highlight;
+        notify_observers();
+        return true;
+    };
 
     // Add a new item
 
@@ -167,7 +176,6 @@ bool gpxlayer::release(const layer_mouseevent* evt)
     m_trkpts.push_back(p);
 
     // Select the newly added item
-    m_selection.trkpt = *(m_trkpts.end()-1);
     m_selection.it = m_trkpts.end()-1;
     m_selection.highlight = true;
 
@@ -295,6 +303,8 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
 
         px_last = px;
     }
+
+    trip();
 }
 
 int gpxlayer::parsetree(TiXmlNode *parent)

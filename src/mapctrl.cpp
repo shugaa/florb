@@ -23,6 +23,9 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
 {
     m_gpxlayer = new gpxlayer();
     m_gpxlayer->addobserver(*this);
+
+    m_gpsdlayer = new gpsdlayer();
+    m_gpsdlayer->addobserver(*this);
 }
 
 mapctrl::~mapctrl()

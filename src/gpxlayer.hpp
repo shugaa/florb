@@ -17,9 +17,10 @@ class gpxlayer : public layer
         gpxlayer();
         ~gpxlayer();
 
-        
+        double trip(); 
+
         void key();
-        
+         
         
         bool handle_evt_mouse(const layer_mouseevent* evt);
         bool handle_evt_key(const layer_keyevent* evt);
@@ -35,7 +36,6 @@ class gpxlayer : public layer
         };
         struct selection {
             bool highlight;
-            gpx_trkpt trkpt;
             std::vector<gpx_trkpt>::iterator it;
         };
 

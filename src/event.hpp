@@ -4,6 +4,7 @@
 #include <map>
 #include <iostream>
 #include <typeinfo>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
 
 // Event base class
 class event_base
@@ -79,8 +80,12 @@ class event_listener
         event_listener() {};
         virtual ~event_listener(); 
         bool handle(const event_base* evt);
+        bool handle_safe(const event_base* evt);
 
     private:
+        class exec_info; 
+
+        static void mt_callback(void *data);
         typedef std::map<tinfo, event_handler*> evthandlers;
         evthandlers m_evthandlers;
 
