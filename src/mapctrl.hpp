@@ -8,7 +8,9 @@
 #include <FL/fl_draw.H>
 #include "viewport.hpp"
 #include "point.hpp"
-#include "layer.hpp"
+#include "osmlayer.hpp"
+#include "gpxlayer.hpp"
+#include "gpsdlayer.hpp"
 #include "gfx.hpp"
 
 #include "download.hpp"
@@ -43,10 +45,12 @@ class mapctrl : public Fl_Widget, public layer_observer
         void addobserver(mapctrl_observer &o);
         void removeobserver(mapctrl_observer &o);
 
+        void load_track(const std::string& path);
+        void clear_track();
     private:
-        layer *m_basemap;
-        layer *m_gpxlayer;
-        layer *m_gpsdlayer;
+        osmlayer *m_basemap;
+        gpxlayer *m_gpxlayer;
+        gpsdlayer *m_gpsdlayer;
 
         point2d<int> m_mousepos;
         viewport m_viewport;

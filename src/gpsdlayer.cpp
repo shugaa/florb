@@ -76,8 +76,7 @@ void gpsdlayer::draw(const viewport &viewport, canvas &os)
     point2d<int> p3((int)((cos((310.0+m_gpsinfo.track)*(M_PI/180.0))*15.0)), (int)(sin((310.0+m_gpsinfo.track)*(M_PI/180))*15.0));
 
     // Calculate current pixel position on the map
-    point2d<unsigned long> pxpos;
-    utils::gps2px(viewport.z(), m_gpsinfo.pos, pxpos);
+    point2d<unsigned long> pxpos(utils::wsg842px(viewport.z(), m_gpsinfo.pos));
     pxpos[0] -= viewport.x();
     pxpos[1] -= viewport.y();
 

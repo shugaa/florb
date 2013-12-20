@@ -7,8 +7,14 @@
 #include "point.hpp"
 #include "gpxlayer.hpp"
 
+#define CLIPLEFT   (1)  // 0001
+#define CLIPRIGHT  (2)  // 0010
+#define CLIPBOTTOM (4)  // 0100
+#define CLIPTOP    (8)  // 1000
+
 gpxlayer::gpxlayer() :
-    layer()
+    layer(),
+    m_trip(0.0)
 {
     name(std::string("Unnamed GPX layer"));
     register_event_handler<gpxlayer, layer_mouseevent>(this, &gpxlayer::handle_evt_mouse);
@@ -20,44 +26,61 @@ bool gpxlayer::key(const layer_keyevent* evt)
     if (evt->key() != layer_keyevent::KEY_DEL)
         return false;
 
+    int ret = false;
     if ((m_selection.it != m_trkpts.end()) && m_selection.highlight)
     {
         m_trkpts.erase(m_selection.it);
         m_selection.it = m_trkpts.end();
         notify_observers();
-
-        return true;
+        ret = true;
     }
 
-    return false;
+    // Recalculate trip for the entire track
+    if (ret == true)
+        trip();
+
+    return ret;
 }
 
-double gpxlayer::trip()
+void gpxlayer::trip_update()
 {
+    if (m_trkpts.size() < 2) 
+    {
+        m_trip = 0.0;
+        return;
+    }
+
+    point2d<double> p1((*(m_trkpts.end()-2)).lon, (*(m_trkpts.end()-2)).lat);
+    point2d<double> p2((*(m_trkpts.end()-1)).lon, (*(m_trkpts.end()-1)).lat);
+    point2d<double> g1(utils::merc2wsg84(p1));
+    point2d<double> g2(utils::merc2wsg84(p2));
+         
+    m_trip += utils::dist(g1, g2);
+    std::cout << "trip: " << m_trip << std::endl;
+}
+
+void gpxlayer::trip()
+{
+    if (m_trkpts.size() < 2)
+    {
+        m_trip = 0.0;
+        return;
+    }
+
     double sum = 0.0;
-    double sum_merc = 0.0;
-
-    if (m_trkpts.size() <= 1)
-        return sum;
-
     std::vector<gpx_trkpt>::iterator it;
     for (it=m_trkpts.begin()+1;it!=m_trkpts.end();++it)
     {
         point2d<double> p1((*it).lon, (*it).lat);
         point2d<double> p2((*(it-1)).lon, (*(it-1)).lat);
-        
-        point2d<double> g1(utils::merc2gps(p1));
-        point2d<double> g2(utils::merc2gps(p2));
+        point2d<double> g1(utils::merc2wsg84(p1));
+        point2d<double> g2(utils::merc2wsg84(p2));
          
         sum += utils::dist(g1, g2);
-        sum_merc += utils::dist_merc(p1, p2);
     }
 
-    std::cout << "sum gps  " << sum << std::endl;
-    std::cout << "sum merc " << sum_merc << std::endl;
-
-
-    return sum;
+    m_trip = sum;
+    std::cout << "trip: " << m_trip << std::endl;
 }
 
 bool gpxlayer::press(const layer_mouseevent* evt)
@@ -92,6 +115,8 @@ bool gpxlayer::press(const layer_mouseevent* evt)
         break;
     }
 
+    m_selection.dragging = false;
+
     // New selection, turn highlighting off, it will be toggled on mouse button
     // release
     if ((m_selection.it != it))
@@ -109,6 +134,8 @@ bool gpxlayer::drag(const layer_mouseevent* evt)
     // Nothing to drag around
     if (m_selection.it == m_trkpts.end())
         return false;
+
+    m_selection.dragging = true;
 
     // Viewport-relative to absolute coordinate
     point2d<unsigned long> px(evt->pos().x(), evt->pos().y());
@@ -146,6 +173,11 @@ bool gpxlayer::release(const layer_mouseevent* evt)
     {
         // Toggle highlight status
         m_selection.highlight = !m_selection.highlight;
+
+        // Item has been dragged, recalculate trip
+        if (m_selection.dragging)
+            trip();
+
         notify_observers();
         return true;
     };
@@ -172,8 +204,10 @@ bool gpxlayer::release(const layer_mouseevent* evt)
     p.lat = merc.y();
     p.time = 0;
     p.ele = 0; 
-
     m_trkpts.push_back(p);
+    
+    // Update current trip
+    trip_update();
 
     // Select the newly added item
     m_selection.it = m_trkpts.end()-1;
@@ -185,16 +219,24 @@ bool gpxlayer::release(const layer_mouseevent* evt)
     return true;
 }
 
-gpxlayer::gpxlayer(const std::string &path) :
-    layer()
+void gpxlayer::load_track(const std::string &path)
 {
-    name(std::string("Unnamed GPX layer"));
+    name(path);
     TiXmlDocument doc(path);
     if (!doc.LoadFile())
-        return;
+        throw 0;
 
+    m_trkpts.clear();
     parsetree(doc.RootElement());
+    notify_observers();
 };
+
+void gpxlayer::clear_track()
+{
+   m_trkpts.clear();
+   trip();
+   notify_observers();
+}
 
 gpxlayer::~gpxlayer()
 {
@@ -255,56 +297,204 @@ bool gpxlayer::handle_evt_key(const layer_keyevent* evt)
     return ret;
 }
 
+// Cohen–Sutherland clipping algorithm
+bool gpxlayer::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r1, point2d<double> r2, bool &p1clip, bool &p2clip)
+{
+    bool ret = false;
+    double xmin, xmax, ymin, ymax;
+
+    if (r1.x() > r2.x())
+    {
+        xmin = r2.x();
+        xmax = r1.x();
+    }
+    else
+    {
+        xmin = r1.x();
+        xmax = r2.x();
+    }
+
+    if (r1.y() > r2.y())
+    {
+        ymin = r2.y();
+        ymax = r1.y();
+    }
+    else
+    {
+        ymin = r1.y();
+        ymax = r2.y();
+    } 
+
+    // Calculate m and n for this line
+    double m = (p2.y() - p1.y()) / (p2.x() - p1.x());
+    double n = p1.y() - m * p1.x();
+
+    // Max 2 clipping operations per point and one last check operation. The
+    // number of iterations is limited because for very large m and n the
+    // datatype might overflow and create an endless loop. In this case the
+    // loop exits and the line is simply not drawn.
+    for (int i=0;i<5;i++)
+    {
+        // Compute code for both points
+        int code1 = 0, code2 = 0;
+        
+        if (p1.x() < xmin)
+            code1 |= CLIPLEFT;
+        if (p1.x() > xmax)
+            code1 |= CLIPRIGHT;
+        if (p1.y() < ymin)
+            code1 |= CLIPTOP;
+        if (p1.y() > ymax)
+            code1 |= CLIPBOTTOM;
+
+        if (p2.x() < xmin)
+            code2 |= CLIPLEFT;
+        if (p2.x() > xmax)
+            code2 |= CLIPRIGHT;
+        if (p2.y() < ymin)
+            code2 |= CLIPTOP;
+        if (p2.y() > ymax)
+            code2 |= CLIPBOTTOM;
+
+        // Both inside, draw line
+        if ((code1 | code2) == 0)
+        {
+            ret = true;
+            break;
+        }
+
+        // Both top, bottom, left or right outside, line need not be drawn
+        if ((code1 & code2) != 0)
+        {
+            ret = false;
+            break;
+        }
+
+        // Pick an endpoint for clipping
+        point2d<double> &ptmp = (code1 != 0) ? p1 : p2;
+        int codetmp;
+        if (code1 != 0)
+        {
+            codetmp = code1;
+            p1clip = true;
+        }
+        else
+        {
+            codetmp = code2;
+            p2clip = true;
+        }
+
+        // Clip top
+        if (codetmp & CLIPTOP)
+        {
+            ptmp[0] = (ymin - n) / m; 
+            ptmp[1] = ymin;
+        }
+        // Clip Bottom
+        else if (codetmp & CLIPBOTTOM)
+        {
+            ptmp[0] = (ymax - n) / m; 
+            ptmp[1] = ymax;
+        }
+        // Clip Left
+        else if (codetmp & CLIPLEFT)
+        {
+            ptmp[0] = xmin; 
+            ptmp[1] = m * xmin + n;
+        }
+        // Clip Right
+        else if (codetmp & CLIPRIGHT)
+        {
+            ptmp[0] = xmax; 
+            ptmp[1] = m * xmax + n;
+        }
+    }
+
+    return ret;
+}
+
 void gpxlayer::draw(const viewport &vp, canvas &os)
 {
     color color_track(0xff0000);
     color color_point(0x0000ff);
     color color_point_hl(0x00ff00);
 
-    point2d<unsigned long> px_last;
+    point2d<double> pmerc_last;
+    point2d<double> pmerc_r1(utils::px2merc(vp.z(), point2d<unsigned long>(vp.x(), vp.y())));
+    point2d<double> pmerc_r2(utils::px2merc(vp.z(), point2d<unsigned long>(vp.x()+vp.w()-1, vp.y()+vp.h()-1)));
+
     std::vector<gpx_trkpt>::iterator it;
     for (it=m_trkpts.begin();it!=m_trkpts.end();++it) 
     {
-        // Convert mercator to pixel coordinates
-        point2d<unsigned long> px = utils::merc2px(vp.z(), point2d<double>((*it).lon, (*it).lat)); 
-        px.x(px.x() - vp.x());
-        px.y(px.y() - vp.y());
+        point2d<double> pmerc((*it).lon, (*it).lat);
+        point2d<unsigned long> ppx;
+        point2d<unsigned long> ppx_last;
+
+        bool curclip = false;
+        bool lastclip = false;
 
         // No connecting line possible if this is the first point
         if (it != m_trkpts.begin()) 
         {
+            if (pmerc == pmerc_last)
+                continue;
+
+            bool dodraw = clipline(pmerc_last, pmerc, pmerc_r1, pmerc_r2, lastclip, curclip);
+
+            ppx = utils::merc2px(vp.z(), pmerc);
+            ppx_last = utils::merc2px(vp.z(), pmerc_last);
+
             // Draw a connection between points
-            os.fgcolor(color_track);
-            os.line(px_last.x(), px_last.y(), px.x(), px.y(), 2);
+            if (dodraw)
+            {
+                ppx[0] -= vp.x();
+                ppx[1] -= vp.y();
+                ppx_last[0] -= vp.x();
+                ppx_last[1] -= vp.y();
+
+                os.fgcolor(color_track);
+                os.line(ppx_last.x(), ppx_last.y(), ppx.x(), ppx.y(), 2);
+            }
+            else
+            {
+                // Both points outside, nothing to do
+                pmerc_last = point2d<double>((*it).lon, (*it).lat);
+                continue;
+            }
+        } else
+        {
+            ppx = utils::merc2px(vp.z(), pmerc);
+            ppx[0] -= vp.x();
+            ppx[1] -= vp.y();
         }
 
         // Draw crosshairs _above_ the connecting lines
-        if ((m_trkpts.size() == 1) || (it == (m_trkpts.end()-1)))
+#if 1
+        if (((m_trkpts.size() == 1) || (it == (m_trkpts.end()-1))) && (!curclip))
         {
             if ((m_selection.it == it) && m_selection.highlight)
                 os.fgcolor(color_point_hl);
             else
                 os.fgcolor(color_point);
 
-            os.line(px.x()-6, px.y(), px.x()+6, px.y(), 1);
-            os.line(px.x(), px.y()-6, px.x(), px.y()+6, 1);
+            os.line(ppx.x()-6, ppx.y(), ppx.x()+6, ppx.y(), 1);
+            os.line(ppx.x(), ppx.y()-6, ppx.x(), ppx.y()+6, 1);
         }
 
-        if (it != m_trkpts.begin())
+        if ((it != m_trkpts.begin()) && (!lastclip))
         {
             if ((m_selection.it == (it-1)) && m_selection.highlight)
                 os.fgcolor(color_point_hl);
             else
                 os.fgcolor(color_point);
 
-            os.line(px_last.x()-6, px_last.y(), px_last.x()+6, px_last.y(), 1);
-            os.line(px_last.x(), px_last.y()-6, px_last.x(), px_last.y()+6, 1);
+            os.line(ppx_last.x()-6, ppx_last.y(), ppx_last.x()+6, ppx_last.y(), 1);
+            os.line(ppx_last.x(), ppx_last.y()-6, ppx_last.x(), ppx_last.y()+6, 1);
         }
+#endif
 
-        px_last = px;
+        pmerc_last = point2d<double>((*it).lon, (*it).lat);
     }
-
-    trip();
 }
 
 int gpxlayer::parsetree(TiXmlNode *parent)
@@ -325,8 +515,7 @@ int gpxlayer::parsetree(TiXmlNode *parent)
         parent->ToElement()->Attribute("lon", &lon);
 
         // Convert latitude and longitude to mercator coordinates
-        point2d<double> merc;
-        utils::gps2merc(point2d<double>(lon, lat), merc);
+        point2d<double> merc(utils::wsg842merc(point2d<double>(lon, lat)));
 
         p.lon = merc.x();
         p.lat = merc.y();
@@ -337,7 +526,7 @@ int gpxlayer::parsetree(TiXmlNode *parent)
         TiXmlNode *child;
         for (child = parent->FirstChild(); child != NULL; child = child->NextSibling()) {
             if (std::string(child->Value()).compare("time") == 0) {
-                p.time = iso8601_2timet(std::string(child->ToElement()->GetText()));
+                p.time = utils::iso8601_2timet(std::string(child->ToElement()->GetText()));
             }
             else if (std::string(child->Value()).compare("ele") == 0) {
                 std::istringstream iss(child->ToElement()->GetText());
@@ -347,6 +536,7 @@ int gpxlayer::parsetree(TiXmlNode *parent)
 
         /* Add the point to the list */
         m_trkpts.push_back(p);
+        trip_update();
     } 
     // Handle trackname
     else if (val.compare("name") == 0) {
@@ -360,13 +550,5 @@ int gpxlayer::parsetree(TiXmlNode *parent)
     }
 
     return 0;
-}
-
-time_t gpxlayer::iso8601_2timet(const std::string iso)
-{
-    struct tm stm;
-    strptime(iso.c_str(), "%FT%T%z", &stm);
-
-    return mktime(&stm);
 }
 

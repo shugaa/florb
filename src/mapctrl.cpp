@@ -5,9 +5,6 @@
 #include <FL/x.H>
 
 #include "settings.hpp"
-#include "osmlayer.hpp"
-#include "gpxlayer.hpp"
-#include "gpsdlayer.hpp"
 #include "mapctrl.hpp"
 #include "utils.hpp"
 
@@ -38,6 +35,19 @@ mapctrl::~mapctrl()
 
     if (m_gpsdlayer)
         delete m_gpsdlayer;
+}
+
+void mapctrl::load_track(const std::string& path)
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    m_gpxlayer->load_track(path);
+}
+
+void mapctrl::clear_track()
+{
+    m_gpxlayer->clear_track();
 }
 
 void mapctrl::layer_notify()
@@ -119,13 +129,8 @@ point2d<double> mapctrl::mousegps()
         py = m_viewport.h()-1;
 
     // Get the GPS coordinates for the current mouse position
-    point2d<double> gps;
-    utils::px2gps(
-            m_viewport.z(), 
-            point2d<unsigned int>(m_viewport.x()+px, m_viewport.y()+py), 
-            gps);
-
-    return gps;
+    return point2d<double> (
+            utils::px2wsg84(m_viewport.z(), point2d<unsigned long>(m_viewport.x()+px, m_viewport.y()+py)));
 }
 
 void mapctrl::refresh()
@@ -346,7 +351,9 @@ void mapctrl::draw()
     fl_begin_offscreen(m_offscreen.buf());
 
     // Background-fill the canvas (there might be no basemap selected)
-    fl_rectf(0, 0, m_viewport.w(), m_viewport.h(), 80, 80, 80);
+    //fl_rectf(0, 0, m_viewport.w(), m_viewport.h(), 80, 80, 80);
+    
+    fl_rectf(0, 0, m_viewport.w(), m_viewport.h(), 0, 0, 200);
 
     // Draw the basemap
     if (m_basemap)

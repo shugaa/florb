@@ -101,11 +101,14 @@ void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
     if (fc.value() == NULL)
         return;
 
-    // Try to create a new GPX layer from the file
-    //layer *l = new gpxlayer(std::string(fc.value()));
+    // Load the track
+    m_mapctrl->load_track(std::string(fc.value()));
+}
 
-    // Display the new layer
-    //m_mapctrl->push_layer(l);
+void dlg_ui::cb_btn_cleartrack_ex(Fl_Widget *widget)
+{
+    // Clear the current track
+    m_mapctrl->clear_track();
 }
 
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)

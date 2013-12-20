@@ -37,7 +37,12 @@ class point2d
             m_x = p.m_x;
             m_y = p.m_y;
             return *this;
-        }
+        };
+
+        bool operator==(const point2d<T>& p) const
+        {
+            return ((m_x == p.m_x) && (m_y == p.m_y));
+        };
 
         T x() const { return m_x; };
         T y() const { return m_y; };

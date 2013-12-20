@@ -45,6 +45,8 @@ class dlg_ui {open : {public mapctrl_observer}
   }
   decl {void cb_btn_loadtrack_ex(Fl_Widget *widget);} {private local
   }
+  decl {void cb_btn_cleartrack_ex(Fl_Widget *widget);} {private local
+  }
   decl {void cb_choice_basemap_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_menu_ex(Fl_Widget *widget);} {private local
@@ -67,10 +69,10 @@ class dlg_ui {open : {public mapctrl_observer}
   } {
     Fl_Window m_window {
       label florb open
-      private xywh {550 143 805 565} type Double align 80 resizable visible
+      private xywh {550 157 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
-        private xywh {-5 0 825 565} resizable
+        private xywh {0 0 805 565} resizable
       } {
         Fl_Menu_Bar m_menubar {
           private xywh {0 0 805 25}
@@ -123,28 +125,43 @@ class dlg_ui {open : {public mapctrl_observer}
         Fl_Box {} {
           private xywh {0 25 805 4}
         }
-        Fl_Pack {} {open
+        Fl_Pack {} {
           private xywh {0 29 805 26} type HORIZONTAL
         } {
           Fl_Box {} {
-            private xywh {0 29 8 25} box FLAT_BOX
+            private xywh {0 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_loadtrack {
+            user_data this
+            callback cb_btn_loadtrack
+            private tooltip {Load GPX file} image {../res/document-open.png} xywh {5 29 25 25} box NO_BOX down_box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {30 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_savetrack {
+            user_data this
+            callback cb_btn_loadtrack
+            private tooltip {Save current track} image {../res/document-save.png} xywh {35 29 25 25} box NO_BOX down_box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {60 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_cleartrack {
+            user_data this
+            callback cb_btn_cleartrack
+            private tooltip {Clear current track} image {../res/edit-clear.png} xywh {65 29 25 25} box NO_BOX down_box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {60 29 5 25} box FLAT_BOX
           }
           Fl_Choice m_choice_basemap {
             user_data this
-            callback cb_choice_basemap
-            private xywh {4 29 397 25} down_box BORDER_BOX
+            callback cb_choice_basemap open
+            private xywh {95 29 345 25}
           } {}
           Fl_Box {} {
-            private xywh {401 29 4 25} box FLAT_BOX
-          }
-          Fl_Button m_btn_loadtrack {
-            label {Load Track}
-            user_data this
-            callback cb_btn_loadtrack
-            private xywh {405 29 140 25}
-          }
-          Fl_Box {} {
-            private xywh {545 29 260 25} box FLAT_BOX
+            private xywh {440 29 365 25} resizable
           }
         }
         Fl_Box {} {
@@ -153,33 +170,55 @@ class dlg_ui {open : {public mapctrl_observer}
         Fl_Pack {} {open
           private xywh {0 58 805 482} type HORIZONTAL resizable
         } {
+          Fl_Box {} {
+            private xywh {0 58 5 482} box FLAT_BOX
+          }
           Fl_Box m_mapctrl {
             label {Slippy Map} selected
-            private xywh {0 58 600 482} resizable
+            private xywh {5 58 595 482} box FLAT_BOX resizable
             class mapctrl
           }
           Fl_Pack {} {open
-            xywh {600 58 205 482}
+            xywh {600 58 205 482} color 67
           } {
-            Fl_Box {} {
-              private xywh {600 58 205 482} box FLAT_BOX color 55 resizable
+            Fl_Group {} {open
+              xywh {600 58 205 482} color 55 selection_color 52 labelcolor 3
+            } {
+              Fl_Input {} {
+                label Lon
+                xywh {625 65 145 25} labelsize 10 align 5
+              }
+              Fl_Input {} {
+                label Lat
+                xywh {625 105 145 25} labelsize 10 align 5
+              }
+              Fl_Input {} {
+                label Elevation
+                xywh {625 145 145 25} labelsize 10 align 5
+              }
             }
           }
         }
-        Fl_Pack {} {
+        Fl_Pack {} {open
           private xywh {0 540 805 25} type HORIZONTAL
         } {
+          Fl_Box {} {
+            private xywh {0 540 5 25}
+          }
           Fl_Output m_txtout_zoom {
-            private xywh {0 540 160 25} color 49
+            private xywh {5 540 160 25} color 49
           }
           Fl_Output m_txtout_lon {
-            private xywh {160 540 160 25} color 49
+            private xywh {165 540 160 25} color 49
           }
           Fl_Output m_txtout_lat {
-            private xywh {320 540 160 25} color 49
+            private xywh {325 540 160 25} color 49
           }
           Fl_Box {} {
-            private xywh {480 540 325 25} box DOWN_BOX resizable
+            private xywh {485 540 315 25} box DOWN_BOX resizable
+          }
+          Fl_Box {} {
+            private xywh {800 540 5 25}
           }
         }
       }
@@ -207,6 +246,11 @@ ui->cb_menu_ex(widget);} {}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_loadtrack_ex(widget);} {}
+  }
+  Function {cb_btn_cleartrack(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_btn_cleartrack_ex(widget);} {}
   }
   Function {cb_choice_basemap(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {

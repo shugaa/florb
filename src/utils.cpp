@@ -1,19 +1,27 @@
 #include <cmath>
+#include <stdexcept>
+#include <iostream>
 #include "utils.hpp"
 
-int utils::gps2merc(const point2d<double> &gps, point2d<double> &merc)
+point2d<double> utils::wsg842merc(const point2d<double> &wsg84)
 {
     // Todo check for input latitude > 85°?
-    if ((gps.x() > 180.0) || (gps.x() < -180.0))
-        return 1;
-    if ((gps.y() > 90.0) || (gps.y() < -90.0))
-        return 1;
+    if ((wsg84.x() > 180.0) || (wsg84.x() < -180.0))
+        throw std::out_of_range("Invalid longitude");
+    if ((wsg84.y() > 90.0) || (wsg84.y() < -90.0))
+        throw std::out_of_range("Invalid latitude");
 
-    // Transform GPS to mercator (square 360 x 360, almost anyway)
-    merc.x(180.0 + gps.x());
-    merc.y(180.0 + (180.0/M_PI * log(tan(M_PI/4.0+gps.y()*(M_PI/180.0)/2.0))));
+    // Anything above 85 degrees N or S is infinity in the mercator projection
+    double lat = wsg84.y();
+    if (lat > 85.0)
+        lat = 85.0;
+    else if (lat < -85)
+        lat = -85.0;
 
-    return 0;
+    // Project to Mercator (360 by 360 square)
+    return point2d<double>(
+            180.0 + wsg84.x(),
+            180.0 - ((180.0/M_PI) * log(tan(M_PI/4.0+lat*(M_PI/180.0)/2.0))));
 }
 
 point2d<unsigned long> utils::merc2px(unsigned int z, const point2d<double> &merc)
@@ -21,64 +29,58 @@ point2d<unsigned long> utils::merc2px(unsigned int z, const point2d<double> &mer
     unsigned long dimxy = dim(z);
 
     return point2d<unsigned long>(
-        (unsigned long)(((double)dimxy/360.0) * merc.x()),
-        (unsigned long)(dimxy-(((double)dimxy/360.0) * merc.y())));
+        (unsigned long)(((double)(dimxy-1)/360.0) * merc.x()),
+        (unsigned long)(((double)(dimxy-1)/360.0) * merc.y()));
 }
 
-int utils::gps2px(unsigned int z, const point2d<double> &gps, point2d<unsigned long> &px)
+point2d<unsigned long> utils::wsg842px(unsigned int z, const point2d<double> &wsg84)
 {
-    // Transform GPS to mercator
-    point2d<double> merc;
-    int rc = gps2merc(gps, merc);
-    if (rc != 0)
-        return 1;
+    // Mercator projection
+    point2d<double> merc(wsg842merc(wsg84));
 
-    // Tranxform mercator to pixel position
-    px = merc2px(z, merc);
-
-    return 0;
+    // Unit conversion
+    return merc2px(z, merc);
 }
 
-int utils::px2gps(unsigned int z, const point2d<unsigned int> &px, point2d<double> &gps)
+point2d<double> utils::px2wsg84(unsigned int z, const point2d<unsigned long> &px)
 {
     // Get map dimensions
     unsigned long dimxy = dim(z);
 
     // Make sure the coordinate is on the map
     if ((px.x() > dimxy) || (px.y() > dimxy))
-        return 1;
+        throw std::out_of_range("Invalid pixel position");
 
-    // Convert pixel position to mercator coordinate
-    double mlon = (360.0/((double)dimxy/(double)px.x()));
-    double mlat = (360.0/((double)dimxy/(double)(dimxy-px.y())));
+    // Unit conversion
+    point2d<double> mdeg(
+            (360.0/((double)dimxy/(double)px.x())),
+            (360.0/((double)dimxy/(double)(dimxy-px.y()))));
 
     // Convert mercator to GPS coordinate
-    gps.x(mlon - 180.0);
-    gps.y(180.0/M_PI * (2.0 * atan(exp((mlat-180.0)*M_PI/180.0)) - M_PI/2.0));
-
-    return 0;
+    return merc2wsg84(mdeg);
 }
 
-point2d<double> utils::merc2gps(const point2d<double>& gps)
+point2d<double> utils::merc2wsg84(const point2d<double>& wsg84)
 {
-    
-    double lon = gps.x() - 180.0;
-    double lat = 180.0/M_PI * (2.0 * atan(exp((gps.y()-180.0)*M_PI/180.0)) - M_PI/2.0);
-
-    return point2d<double>(lon, lat);
+    return point2d<double>( 
+            wsg84.x() - 180.0,
+            -((180.0/M_PI) * (2.0 * atan(exp((wsg84.y()-180.0)*M_PI/180.0)) - M_PI/2.0)));
 }
 
-point2d<double> utils::px2merc(unsigned int z, point2d<unsigned long> px)
+point2d<double> utils::px2merc(unsigned int z, const point2d<unsigned long> &px)
 {
     unsigned long dimxy = dim(z);
 
     // Make sure the coordinate is on the map
-    if ((px.x() > dimxy) || (px.y() > dimxy))
-        throw 1;
+    if ((px.x() >= dimxy) || (px.y() >= dimxy))
+    {
+        std::cout << px.x() << " " << px.y() << std::endl;
+        throw std::out_of_range("Invalid pixel position");
+    }
 
-    double mlon = (360.0/((double)dimxy/(double)px.x()));
-    double mlat = (360.0/((double)dimxy/(double)(dimxy-px.y())));
-    return point2d<double>(mlon, mlat);
+    double x = (px.x() == 0) ? 0.0 : (360.0/((double)(dimxy-1)/(double)px.x()));
+    double y = (px.x() == 0) ? 0.0 : (360.0/((double)(dimxy-1)/(double)px.y()));
+    return point2d<double>(x,y);
 }
 
 unsigned long utils::dim(unsigned int z)
@@ -86,8 +88,11 @@ unsigned long utils::dim(unsigned int z)
     return pow(2.0, z) * 256;
 }
 
-double utils::dist(point2d<double> p1, point2d<double> p2)
+double utils::dist(const point2d<double> &p1, const point2d<double> &p2)
 {
+    if (p1 == p2)
+        return 0.0;
+
     double lon1 = p1.x()*(M_PI/180.0);
     double lat1 = p1.y()*(M_PI/180.0);
     double lon2 = p2.x()*(M_PI/180.0);
@@ -96,13 +101,28 @@ double utils::dist(point2d<double> p1, point2d<double> p2)
     return (6378.388 * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)));
 }
 
-double utils::dist_merc(point2d<double> p1, point2d<double> p2)
+double utils::dist_merc(const point2d<double> &p1, const point2d<double> &p2)
 {
+    if (p1 == p2)
+        return 0.0;
+
     double circ = 2*M_PI*6372.7982;
     double dstmerc = sqrt( pow(std::abs(p1.x()-p2.x()), 2.0) + pow(std::abs(p1.y()-p2.y()), 2.0)*0.9444444 );
     return (dstmerc * (circ/360.0));
 }
 
+time_t utils::iso8601_2timet(const std::string& iso)
+{
+    struct tm stm;
+    strptime(iso.c_str(), "%FT%T%z", &stm);
+
+    return mktime(&stm);
+}
+
+
+
+// Not needed right now, might come in handy some time.
+#if 0
 bool utils::on_segment(point2d<double> pi, point2d<double> pj, point2d<double> pk) 
 {
     return (pi.x() <= pk.x() || pj.x() <= pk.x()) && (pk.x() <= pi.x() || pk.x() <= pj.x()) &&
@@ -116,7 +136,6 @@ char utils::orientation(point2d<double> pi, point2d<double> pj, point2d<double> 
     return a < b ? -1 : a > b ? 1 : 0;
 }
 
-/** Do line segments (x1, y1)--(x2, y2) and (x3, y3)--(x4, y4) intersect? */
 bool utils::intersect(point2d<double> p1, point2d<double> p2, point2d<double> p3, point2d<double> p4) 
 {
     char d1 = orientation(p3, p4, p1);
@@ -144,3 +163,4 @@ bool utils::is_inside(point2d<unsigned long> p1, point2d<unsigned long> p2, poin
 
     return true;
 }
+#endif
