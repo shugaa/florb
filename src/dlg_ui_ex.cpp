@@ -23,6 +23,12 @@ void dlg_ui::mapctrl_notify()
     ss.str("");
     ss << "Lat: " << pos.y() << "°";
     m_txtout_lat->value(ss.str().c_str());
+
+    ss.precision(2);
+    ss.setf(std::ios::fixed, std::ios::floatfield);
+    ss.str("");
+    ss << "Trip: " << m_mapctrl->trip() << "km";
+    m_txtout_trip->value(ss.str().c_str());
 }
 
 void dlg_ui::create_ex(void)
@@ -41,7 +47,6 @@ void dlg_ui::create_ex(void)
     m_menu_edit_layers->callback(cb_menu, this);
     m_menu_edit_servers->callback(cb_menu, this);
     m_menu_edit_settings->callback(cb_menu, this);
-    m_menu_view_elevationprofile->callback(cb_menu, this);
 
     // Populate the Basemap selector
     node section = settings::get_instance()["tileservers"];

@@ -50,6 +50,11 @@ void mapctrl::clear_track()
     m_gpxlayer->clear_track();
 }
 
+double mapctrl::trip()
+{
+    return m_gpxlayer->trip();
+}
+
 void mapctrl::layer_notify()
 {
     // Quote from the doc The public method Fl_Widget::redraw() simply does
@@ -199,7 +204,7 @@ int mapctrl::handle(int event)
             notify_observers();
             return 1;
         case FL_ENTER:
-            fl_cursor(FL_CURSOR_HAND);
+            fl_cursor(FL_CURSOR_CROSS);
             return 1;
         case FL_LEAVE:
             fl_cursor(FL_CURSOR_DEFAULT);
@@ -207,6 +212,11 @@ int mapctrl::handle(int event)
         case FL_PUSH:
             {
                 take_focus();
+
+                if (Fl::event_state(FL_BUTTON3) != 0)
+                {
+                    fl_cursor(FL_CURSOR_MOVE);
+                }
 
                 // Mouse event for the layers
                 int button = layer_mouseevent::BUTTON_MIDDLE;
@@ -229,6 +239,8 @@ int mapctrl::handle(int event)
             }
         case FL_RELEASE:
             {
+                fl_cursor(FL_CURSOR_CROSS);
+
                 // Mouse event for the layers
                 int button = layer_mouseevent::BUTTON_MIDDLE;
                 if (Fl::event_button() == FL_LEFT_MOUSE)

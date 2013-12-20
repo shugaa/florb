@@ -37,7 +37,7 @@ bool gpxlayer::key(const layer_keyevent* evt)
 
     // Recalculate trip for the entire track
     if (ret == true)
-        trip();
+        trip_calcall();
 
     return ret;
 }
@@ -56,10 +56,9 @@ void gpxlayer::trip_update()
     point2d<double> g2(utils::merc2wsg84(p2));
          
     m_trip += utils::dist(g1, g2);
-    std::cout << "trip: " << m_trip << std::endl;
 }
 
-void gpxlayer::trip()
+void gpxlayer::trip_calcall()
 {
     if (m_trkpts.size() < 2)
     {
@@ -80,7 +79,6 @@ void gpxlayer::trip()
     }
 
     m_trip = sum;
-    std::cout << "trip: " << m_trip << std::endl;
 }
 
 bool gpxlayer::press(const layer_mouseevent* evt)
@@ -176,7 +174,7 @@ bool gpxlayer::release(const layer_mouseevent* evt)
 
         // Item has been dragged, recalculate trip
         if (m_selection.dragging)
-            trip();
+            trip_calcall();
 
         notify_observers();
         return true;
@@ -234,8 +232,13 @@ void gpxlayer::load_track(const std::string &path)
 void gpxlayer::clear_track()
 {
    m_trkpts.clear();
-   trip();
+   trip_calcall();
    notify_observers();
+}
+
+double gpxlayer::trip()
+{
+    return m_trip;
 }
 
 gpxlayer::~gpxlayer()

@@ -24,6 +24,7 @@ class gpxlayer : public layer
         void load_track(const std::string &path);
         void clear_track();
     
+        double trip();
     private:
         struct gpx_trkpt {
             double lat;
@@ -42,7 +43,7 @@ class gpxlayer : public layer
         bool drag(const layer_mouseevent* evt);
         bool key(const layer_keyevent* evt);
         void trip_update();
-        void trip();
+        void trip_calcall();
 
         bool clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r1, point2d<double> r2, bool &p1clip, bool &p2clip);
 

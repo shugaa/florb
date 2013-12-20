@@ -47,6 +47,7 @@ class mapctrl : public Fl_Widget, public layer_observer
 
         void load_track(const std::string& path);
         void clear_track();
+        double trip();
     private:
         osmlayer *m_basemap;
         gpxlayer *m_gpxlayer;

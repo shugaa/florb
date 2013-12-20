@@ -104,15 +104,6 @@ class dlg_ui {open : {public mapctrl_observer}
             }
           }
           Submenu {} {
-            label View
-            private xywh {5 5 100 20}
-          } {
-            MenuItem m_menu_view_elevationprofile {
-              label {Elevation profile}
-              private xywh {5 5 100 20}
-            }
-          }
-          Submenu {} {
             label Help
             private xywh {0 0 100 20}
           } {
@@ -134,7 +125,7 @@ class dlg_ui {open : {public mapctrl_observer}
           Fl_Button m_btn_loadtrack {
             user_data this
             callback cb_btn_loadtrack
-            private tooltip {Load GPX file} image {../res/document-open.png} xywh {5 29 25 25} box NO_BOX down_box FLAT_BOX
+            private tooltip {Load GPX file} image {../res/document-open.png} xywh {5 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {30 29 5 25} box FLAT_BOX
@@ -142,7 +133,7 @@ class dlg_ui {open : {public mapctrl_observer}
           Fl_Button m_btn_savetrack {
             user_data this
             callback cb_btn_loadtrack
-            private tooltip {Save current track} image {../res/document-save.png} xywh {35 29 25 25} box NO_BOX down_box FLAT_BOX
+            private tooltip {Save current track} image {../res/document-save.png} xywh {35 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {60 29 5 25} box FLAT_BOX
@@ -150,75 +141,114 @@ class dlg_ui {open : {public mapctrl_observer}
           Fl_Button m_btn_cleartrack {
             user_data this
             callback cb_btn_cleartrack
-            private tooltip {Clear current track} image {../res/edit-clear.png} xywh {65 29 25 25} box NO_BOX down_box FLAT_BOX
+            private tooltip {Clear current track} image {../res/edit-clear.png} xywh {65 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
-            private xywh {60 29 5 25} box FLAT_BOX
+            private xywh {90 29 5 25} box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {95 29 2 25} box ENGRAVED_BOX
+          }
+          Fl_Box {} {
+            private xywh {97 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_editwaypoint {
+            user_data this
+            callback cb_btn_cleartrack
+            private tooltip {Edit Waypoint} image {../res/preferences-system.png} xywh {102 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {127 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_deletewaypoint {
+            user_data this
+            callback cb_btn_cleartrack
+            private tooltip {Delete Waypoint} image {../res/edit-delete.png} xywh {132 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {157 29 5 25} box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {162 29 2 25} box ENGRAVED_BOX
+          }
+          Fl_Box {} {
+            private xywh {164 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_gpsd {
+            user_data this
+            callback cb_btn_cleartrack
+            private tooltip GPSD image {../res/network-wired.png} xywh {169 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {194 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_gotocursor {
+            user_data this
+            callback cb_btn_cleartrack
+            private tooltip {Go to cursor} image {../res/go-home.png} xywh {199 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {224 29 5 25} box FLAT_BOX
+          }
+          Fl_Light_Button {} {
+            image {../res/audio-input-microphone.png} xywh {229 29 43 25} box FLAT_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {272 29 5 25} box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {277 29 2 25} box ENGRAVED_BOX
+          }
+          Fl_Box {} {
+            private xywh {279 29 5 25} box FLAT_BOX
           }
           Fl_Choice m_choice_basemap {
             user_data this
             callback cb_choice_basemap open
-            private xywh {95 29 345 25}
+            private xywh {284 29 516 26} down_box BORDER_BOX resizable
           } {}
           Fl_Box {} {
-            private xywh {440 29 365 25} resizable
+            private xywh {800 29 5 25}
           }
         }
         Fl_Box {} {
           private xywh {0 54 805 4}
         }
         Fl_Pack {} {open
-          private xywh {0 58 805 482} type HORIZONTAL resizable
+          private xywh {0 58 805 480} type HORIZONTAL resizable
         } {
           Fl_Box {} {
-            private xywh {0 58 5 482} box FLAT_BOX
+            private xywh {0 58 5 480} box FLAT_BOX
           }
           Fl_Box m_mapctrl {
             label {Slippy Map} selected
-            private xywh {5 58 595 482} box FLAT_BOX resizable
+            private xywh {5 58 795 480} box FLAT_BOX resizable
             class mapctrl
           }
-          Fl_Pack {} {open
-            xywh {600 58 205 482} color 67
-          } {
-            Fl_Group {} {open
-              xywh {600 58 205 482} color 55 selection_color 52 labelcolor 3
-            } {
-              Fl_Input {} {
-                label Lon
-                xywh {625 65 145 25} labelsize 10 align 5
-              }
-              Fl_Input {} {
-                label Lat
-                xywh {625 105 145 25} labelsize 10 align 5
-              }
-              Fl_Input {} {
-                label Elevation
-                xywh {625 145 145 25} labelsize 10 align 5
-              }
-            }
+          Fl_Box {} {
+            private xywh {800 58 5 480} box FLAT_BOX
           }
         }
+        Fl_Box {} {
+          private xywh {0 538 805 5}
+        }
         Fl_Pack {} {open
-          private xywh {0 540 805 25} type HORIZONTAL
+          private xywh {0 543 805 22} type HORIZONTAL
         } {
-          Fl_Box {} {
-            private xywh {0 540 5 25}
-          }
           Fl_Output m_txtout_zoom {
-            private xywh {5 540 160 25} color 49
+            private xywh {0 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
           }
           Fl_Output m_txtout_lon {
-            private xywh {165 540 160 25} color 49
+            private xywh {140 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
           }
           Fl_Output m_txtout_lat {
-            private xywh {325 540 160 25} color 49
+            private xywh {280 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
+          }
+          Fl_Output m_txtout_trip {
+            private xywh {420 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
           }
           Fl_Box {} {
-            private xywh {485 540 315 25} box DOWN_BOX resizable
-          }
-          Fl_Box {} {
-            private xywh {800 540 5 25}
+            private xywh {560 543 245 22} box THIN_DOWN_BOX resizable
           }
         }
       }
