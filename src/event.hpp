@@ -2,6 +2,7 @@
 #define EVENT_HPP
 
 #include <map>
+#include <set>
 #include <iostream>
 #include <typeinfo>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
@@ -95,6 +96,23 @@ class event_listener
         {
             m_evthandlers[tinfo(&typeid(E))] = new event_handler_memberfct<T, E>(obj, f);
         };
+};
+
+class event_generator
+{
+    public:
+        event_generator() {};
+        virtual ~event_generator() {};
+
+        void add_event_listener(event_listener *l);
+        void remove_event_listener(event_listener *l);
+
+    private:
+        std::set<event_listener*> m_listeners;
+
+    protected:
+        void fire(event_base* evt);
+        void fire_safe(event_base* evt);
 };
 
 #endif // EVENT_HPP

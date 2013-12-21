@@ -24,11 +24,6 @@ gpsdclient::~gpsdclient()
     }
 }
 
-void gpsdclient::add_event_listener(event_listener *l)
-{
-    m_listeners.insert(l);
-}
-
 bool gpsdclient::connected(void)
 {
     bool ret;
@@ -48,11 +43,7 @@ void gpsdclient::event_update(void)
     ue.latitude = m_latitude;
     ue.track = m_track;
 
-    std::set<event_listener*>::iterator it;
-    for (it = m_listeners.begin(); it != m_listeners.end(); it++)
-    {
-        (*it)->handle_safe(&ue);
-    }
+    fire_safe(&ue);
 }
 
 void gpsdclient::worker(void)

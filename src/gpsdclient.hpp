@@ -8,12 +8,11 @@
 #include <gps.h>
 #include "event.hpp"
 
-class gpsdclient
+class gpsdclient : public event_generator
 {
     public:
         gpsdclient(const std::string host, const std::string port);
         ~gpsdclient();
-        void add_event_listener(event_listener* l);
 
         bool connected(void);
 
@@ -30,7 +29,6 @@ class gpsdclient
         void event_update(void);
 
         struct gps_data_t m_gpsdata;
-        std::set<event_listener*> m_listeners;
         boost::interprocess::interprocess_mutex m_mutex; 
 
         std::string m_host;

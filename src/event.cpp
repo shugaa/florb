@@ -56,5 +56,35 @@ void event_listener::mt_callback(void *data)
     exec_info *execinfo = static_cast<exec_info*>(data);
     execinfo->ret((execinfo->handler())->exec(execinfo->event()));
     execinfo->unlock();
-};
+}
+
+void event_generator::add_event_listener(event_listener *l)
+{
+    m_listeners.insert(l);
+}
+
+void event_generator::remove_event_listener(event_listener *l)
+{
+    std::set<event_listener*>::iterator it = m_listeners.find(l);
+    if (it != m_listeners.end())
+        m_listeners.erase(it);
+}
+
+void event_generator::fire(event_base* evt)
+{
+    std::set<event_listener*>::iterator it;
+    for (it = m_listeners.begin(); it != m_listeners.end();++it)
+    {
+        (*it)->handle(evt);
+    }
+}
+
+void event_generator::fire_safe(event_base* evt)
+{
+    std::set<event_listener*>::iterator it;
+    for (it = m_listeners.begin(); it != m_listeners.end();++it)
+    {
+        (*it)->handle_safe(evt);
+    }
+}
 
