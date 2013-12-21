@@ -1,7 +1,8 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <point.hpp>
+#include <ctime>
+#include "point.hpp"
 
 class utils
 {
@@ -19,6 +20,7 @@ class utils
         static double dist_merc(const point2d<double> &p1, const point2d<double> &p2);
 
         static time_t iso8601_2timet(const std::string& iso);
+        static std::string timet2iso8601(time_t t);
 
 #if 0
         static bool on_segment(point2d<double> pi, point2d<double> pj, point2d<double> pk);

@@ -45,6 +45,8 @@ class dlg_ui {open : {public mapctrl_observer}
   }
   decl {void cb_btn_loadtrack_ex(Fl_Widget *widget);} {private local
   }
+  decl {void cb_btn_savetrack_ex(Fl_Widget *widget);} {selected private local
+  }
   decl {void cb_btn_cleartrack_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_choice_basemap_ex(Fl_Widget *widget);} {private local
@@ -65,10 +67,9 @@ class dlg_ui {open : {public mapctrl_observer}
   }
   decl {dlg_servers *m_dlg_servers;} {private local
   }
-  Function {dlg_ui()} {open
-  } {
+  Function {dlg_ui()} {} {
     Fl_Window m_window {
-      label florb open
+      label florb
       private xywh {550 157 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
@@ -116,7 +117,7 @@ class dlg_ui {open : {public mapctrl_observer}
         Fl_Box {} {
           private xywh {0 25 805 4}
         }
-        Fl_Pack {} {
+        Fl_Pack {} {open
           private xywh {0 29 805 26} type HORIZONTAL
         } {
           Fl_Box {} {
@@ -132,7 +133,7 @@ class dlg_ui {open : {public mapctrl_observer}
           }
           Fl_Button m_btn_savetrack {
             user_data this
-            callback cb_btn_loadtrack
+            callback cb_btn_savetrack
             private tooltip {Save current track} image {../res/document-save.png} xywh {35 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
@@ -221,7 +222,7 @@ class dlg_ui {open : {public mapctrl_observer}
             private xywh {0 58 5 480} box FLAT_BOX
           }
           Fl_Box m_mapctrl {
-            label {Slippy Map} selected
+            label {Slippy Map}
             private xywh {5 58 795 480} box FLAT_BOX resizable
             class mapctrl
           }
@@ -276,6 +277,11 @@ ui->cb_menu_ex(widget);} {}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_loadtrack_ex(widget);} {}
+  }
+  Function {cb_btn_savetrack(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_btn_savetrack_ex(widget);} {}
   }
   Function {cb_btn_cleartrack(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
   } {

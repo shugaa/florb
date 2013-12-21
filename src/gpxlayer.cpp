@@ -200,8 +200,8 @@ bool gpxlayer::release(const layer_mouseevent* evt)
     gpx_trkpt p;
     p.lon = merc.x();
     p.lat = merc.y();
-    p.time = 0;
-    p.ele = 0; 
+    p.time = time(NULL);
+    p.ele = 0.0; 
     m_trkpts.push_back(p);
     
     // Update current trip
@@ -220,14 +220,84 @@ bool gpxlayer::release(const layer_mouseevent* evt)
 void gpxlayer::load_track(const std::string &path)
 {
     name(path);
-    TiXmlDocument doc(path);
-    if (!doc.LoadFile())
+    tinyxml2::XMLDocument doc;
+    if (doc.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR)
         throw 0;
 
     m_trkpts.clear();
     parsetree(doc.RootElement());
     notify_observers();
 };
+
+void gpxlayer::save_track(const std::string &path)
+{
+    tinyxml2::XMLDocument doc;
+    
+    // XML standard declaration
+    doc.NewDeclaration();
+    
+    tinyxml2::XMLElement *e1, *e2, *e3;
+    tinyxml2::XMLText *t1;
+
+    // Add a gpx element
+    e1 = doc.NewElement("gpx");
+    e1->SetAttribute("version",            "1.1");
+    e1->SetAttribute("creator",            "florb");
+    e1->SetAttribute("xmlns:xsi",          "http://www.w3.org/2001/XMLSchema-instance");
+    e1->SetAttribute("xmlns",              "http://www.topografix.com/GPX/1/1");
+    e1->SetAttribute("xsi:schemaLocation", "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd");
+    doc.InsertEndChild(e1);
+
+    // Add track
+    e1 = e1->InsertEndChild(doc.NewElement("trk"))->ToElement();
+
+    // Track name child
+    e2 = doc.NewElement("name");
+    t1 = doc.NewText(name().c_str());
+    e2->InsertEndChild(t1);
+    e1->InsertEndChild(e2);
+
+    // Track number child
+    e2 = doc.NewElement("number");
+    t1 = doc.NewText("1");
+    e2->InsertEndChild(t1);
+    e1->InsertEndChild(e2);
+
+    // Add a track segment child
+    e1 = e1->InsertEndChild(doc.NewElement("trkseg"))->ToElement();
+
+    // Add trackpoints to the segment
+    std::vector<gpx_trkpt>::iterator it;
+    for (it=m_trkpts.begin();it!=m_trkpts.end();++it) 
+    {
+        // Trackpoint element
+        point2d<double> wsg84(utils::merc2wsg84(point2d<double>((*it).lon, (*it).lat)));
+
+        e2 = doc.NewElement("trkpt");
+        e2->SetAttribute("lat", wsg84.y());
+        e2->SetAttribute("lon", wsg84.x());
+        e1->InsertEndChild(e2);
+
+        // Elevation child
+        std::ostringstream ss;
+        ss.precision(6);
+        ss.setf(std::ios::fixed, std::ios::floatfield);
+        ss << (*it).ele;
+
+        e3 = doc.NewElement("ele");
+        t1 = doc.NewText(ss.str().c_str());
+        e3->InsertEndChild(t1);
+        e2->InsertEndChild(e3);
+
+        // Time child
+        e3 = doc.NewElement("time");
+        t1 = doc.NewText(utils::timet2iso8601((*it).time).c_str());
+        e3->InsertEndChild(t1);
+        e2->InsertEndChild(e3);
+    }
+
+    doc.SaveFile(path.c_str()); 
+}
 
 void gpxlayer::clear_track()
 {
@@ -500,58 +570,79 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
     }
 }
 
-int gpxlayer::parsetree(TiXmlNode *parent)
+void gpxlayer::parsetree(tinyxml2::XMLNode *parent)
 {
-    int t = parent->Type();
-    gpx_trkpt p;
+    bool ret = true;
+    tinyxml2::XMLElement *etmp = parent->ToElement();
 
-    if (t != TiXmlNode::TINYXML_ELEMENT) {
-        return 0;
-    }
-
-    std::string val(parent->Value());
-
-    // Handle trackpoint
-    if (val.compare("trkpt") == 0) {
-        double lat, lon;
-        parent->ToElement()->Attribute("lat", &lat);
-        parent->ToElement()->Attribute("lon", &lon);
-
-        // Convert latitude and longitude to mercator coordinates
-        point2d<double> merc(utils::wsg842merc(point2d<double>(lon, lat)));
-
-        p.lon = merc.x();
-        p.lat = merc.y();
-        p.time = 0;
-        p.ele = 0;
-
-        // Look for "time" and "ele" childnodes
-        TiXmlNode *child;
-        for (child = parent->FirstChild(); child != NULL; child = child->NextSibling()) {
-            if (std::string(child->Value()).compare("time") == 0) {
-                p.time = utils::iso8601_2timet(std::string(child->ToElement()->GetText()));
-            }
-            else if (std::string(child->Value()).compare("ele") == 0) {
-                std::istringstream iss(child->ToElement()->GetText());
-                iss >> p.ele;
-            }
+    for (;;)
+    {
+        // Not an XML element by something else
+        if (etmp == NULL) 
+        {
+            break;
         }
 
-        /* Add the point to the list */
-        m_trkpts.push_back(p);
-        trip_update();
-    } 
-    // Handle trackname
-    else if (val.compare("name") == 0) {
-        name(std::string(parent->ToElement()->GetText()));
+        gpx_trkpt p;
+        std::string val(parent->Value());
+
+        // Handle trackpoint
+        if (val.compare("trkpt") == 0) {
+            double lat = 1234.5, lon = 1234.5;
+            etmp->QueryDoubleAttribute("lat", &lat);
+            etmp->QueryDoubleAttribute("lon", &lon);
+
+            // Check for error
+            if ((lat == 1234.5) || (lon == 1234.5))
+            {
+                ret = false;
+                break;
+            }
+
+            // Convert to mercator coordinates
+            point2d<double> merc(utils::wsg842merc(point2d<double>(lon, lat)));
+            p.lon = merc.x();
+            p.lat = merc.y();
+            p.time = 0;
+            p.ele = 0;
+
+            // Look for "time" and "ele" childnodes
+            tinyxml2::XMLNode *child;
+            for (child = parent->FirstChild(); child != NULL; child = child->NextSibling()) {
+                if (std::string(child->Value()).compare("time") == 0) {
+                    p.time = utils::iso8601_2timet(std::string(child->ToElement()->GetText()));
+                }
+                else if (std::string(child->Value()).compare("ele") == 0) {
+                    std::istringstream iss(child->ToElement()->GetText());
+                    iss >> p.ele;
+                }
+            }
+
+            // Add the point to the list and update the trip counter
+            m_trkpts.push_back(p);
+            trip_update();
+        }
+        // Handle trackname element
+        else if (val.compare("name") == 0) 
+        {
+            name(std::string(etmp->GetText()));
+        }
+        // TODO: Track number anyone?
+        else if (val.compare("number") == 0) 
+        {
+            ;
+        }
+
+        break;
     }
 
+    if (ret == false)
+        throw("XML parser error");
+
     // Recurse the rest of the subtree
-    TiXmlNode *child;
+    tinyxml2::XMLNode *child;
     for (child = parent->FirstChild(); child != NULL; child = child->NextSibling()) {
         parsetree(child);
     }
-
-    return 0;
 }
 

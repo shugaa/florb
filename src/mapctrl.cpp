@@ -45,6 +45,14 @@ void mapctrl::load_track(const std::string& path)
     m_gpxlayer->load_track(path);
 }
 
+void mapctrl::save_track(const std::string& path)
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    m_gpxlayer->save_track(path);
+}
+
 void mapctrl::clear_track()
 {
     m_gpxlayer->clear_track();

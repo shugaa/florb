@@ -46,6 +46,7 @@ class mapctrl : public Fl_Widget, public layer_observer
         void removeobserver(mapctrl_observer &o);
 
         void load_track(const std::string& path);
+        void save_track(const std::string& path);
         void clear_track();
         double trip();
     private:

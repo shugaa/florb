@@ -1,5 +1,6 @@
 #include <sstream>
 #include <Fl/Fl_File_Chooser.H>
+#include <curl/curl.h>
 #include "gpxlayer.hpp"
 #include "mapctrl.hpp"
 #include "settings.hpp"
@@ -82,6 +83,9 @@ void dlg_ui::destroy_ex(void)
     // Delete toplevel window
     delete(m_window);
 
+    // Curl cleanup
+    curl_global_cleanup();
+
     // Aaaand we're out
     std::cout << "Goodbye" << std::endl;
 }
@@ -108,6 +112,25 @@ void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
 
     // Load the track
     m_mapctrl->load_track(std::string(fc.value()));
+}
+
+void dlg_ui::cb_btn_savetrack_ex(Fl_Widget *widget)
+{
+    // Create a file chooser instance
+    Fl_File_Chooser fc("/", "*.gpx", Fl_File_Chooser::CREATE, "Save GPX file");
+    fc.preview(0);
+    fc.show();
+
+    // Wait for user action
+    while(fc.shown())
+        Fl::wait();
+
+    // Do nothing on cancel
+    if (fc.value() == NULL)
+        return;
+
+    // Load the track
+    m_mapctrl->save_track(std::string(fc.value()));
 }
 
 void dlg_ui::cb_btn_cleartrack_ex(Fl_Widget *widget)

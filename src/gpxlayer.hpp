@@ -3,7 +3,7 @@
 
 #include <string>
 #include <iostream>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include <vector>
 #include <ctime>
 #include <layer.hpp>
@@ -22,6 +22,7 @@ class gpxlayer : public layer
 
         void draw(const viewport& vp, canvas& os);
         void load_track(const std::string &path);
+        void save_track(const std::string &path);
         void clear_track();
     
         double trip();
@@ -47,7 +48,7 @@ class gpxlayer : public layer
 
         bool clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r1, point2d<double> r2, bool &p1clip, bool &p2clip);
 
-        int parsetree(TiXmlNode *parent);
+        void parsetree(tinyxml2::XMLNode *parent);
 
         std::vector<gpx_trkpt> m_trkpts;
         selection m_selection;

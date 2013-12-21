@@ -119,6 +119,14 @@ time_t utils::iso8601_2timet(const std::string& iso)
     return mktime(&stm);
 }
 
+std::string utils::timet2iso8601(time_t t)
+{
+    char buf[sizeof "2011-10-08T07:07:09Z"];
+    strftime(buf, sizeof buf, "%FT%TZ", gmtime(&t));
+
+    return std::string(buf);
+}
+
 
 
 // Not needed right now, might come in handy some time.

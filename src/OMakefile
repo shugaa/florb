@@ -7,6 +7,9 @@ CXXFLAGS = -g -Wall -O2 -funroll-loops \
     $(shell fltk-config --use-images --cxxflags) \
 	$(shell curl-config --cflags) \
 	$(shell pkg-config --cflags sqlite3) \
+	$(shell pkg-config --cflags tinyxml2) \
+	$(shell pkg-config --cflags libgps) \
+	$(shell pkg-config --cflags x11) \
 	$(shell PKG_CONFIG_PATH=/opt/yaml-cpp/lib/pkgconfig/ pkg-config --cflags yaml-cpp)
 	
 # $(shell pkg-config --cflags tinyxml)
@@ -14,14 +17,14 @@ LDFLAGS = \
 	$(shell fltk-config --use-images --ldflags) \
 	$(shell curl-config --libs) \
 	$(shell pkg-config --libs sqlite3) \
-	$(shell pkg-config --cflags --libs x11) \
+	$(shell pkg-config --libs tinyxml2) \
+	$(shell pkg-config --libs libgps) \
+	$(shell pkg-config --libs x11) \
 	$(shell PKG_CONFIG_PATH=/opt/yaml-cpp/lib/pkgconfig/ pkg-config --libs yaml-cpp) \
-	-ltinyxml \
 	-lpthread \
 	-lboost_system \
     -lboost_filesystem \
     -lboost_thread-mt \
-	-lgps
 
 # Phony targets
 .PHONY: clean install
