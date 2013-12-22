@@ -1,20 +1,21 @@
 #include <FL/Fl.H>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 #include "event.hpp"
 
 class event_listener::exec_info 
 {
     public:
         exec_info(event_handler* h, const event_base* e) :
-            m_h(h), m_e(e) { m_mutex.lock(); };
-        ~exec_info() { m_mutex.unlock(); };
+            m_mutex(0), m_h(h), m_e(e) { };
+        ~exec_info() { };
         event_handler* handler() { return m_h; };
         const event_base* event() { return m_e; };
-        void wait() { m_mutex.lock(); };
-        void unlock() { m_mutex.unlock(); };
+        void wait() { m_mutex.wait(); };
+        void unlock() { m_mutex.post(); };
         bool ret() { return m_ret; };
         void ret (bool rc) { m_ret = rc; };
     private:
-        boost::interprocess::interprocess_mutex m_mutex;
+        boost::interprocess::interprocess_semaphore m_mutex;
         event_handler* m_h;
         const event_base* m_e;
         bool m_ret;
@@ -41,11 +42,14 @@ bool event_listener::handle(const event_base* evt)
 bool event_listener::handle_safe(const event_base* evt)
 {
     evthandlers::iterator it = m_evthandlers.find(tinfo(&typeid(*evt)));
-    if(it == m_evthandlers.end())
+    if(it == m_evthandlers.end()) {
+        std::cout << "no handler found" << std::endl;
         return false;
+    }
 
     exec_info execinfo(it->second, evt);
     Fl::awake(event_listener::mt_callback, (void*)&execinfo);
+    std::cout << "awake is under way" << std::cout;
     execinfo.wait();
 
     return execinfo.ret();

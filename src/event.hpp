@@ -5,7 +5,6 @@
 #include <set>
 #include <iostream>
 #include <typeinfo>
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
 
 // Event base class
 class event_base

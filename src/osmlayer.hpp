@@ -2,15 +2,14 @@
 #define OSMLAYER_HPP
 
 #include <vector>
-//#include <ostream>
 #include "layer.hpp"
 #include "viewport.hpp"
-#include "download.hpp"
+#include "downloader.hpp"
 #include "sqlitecache.hpp"
 #include "gfx.hpp"
 #include "settings.hpp"
 
-class osmlayer : public layer, public download_observer
+class osmlayer : public layer
 {
     public:
         osmlayer(
@@ -27,15 +26,13 @@ class osmlayer : public layer, public download_observer
         int zoom_max() { return m_zmax; };
 
     private:
-        typedef struct {
-            int x;
-            int y;
-            int z;
-        } tile_t;
-        typedef struct {
-            tile_t t;
-            download *dl;
-        } dlref_t;
+        class tileinfo 
+        {
+            public:
+                int x;
+                int y;
+                int z;
+        };
        
         canvas m_canvas_0;
         canvas m_canvas_1;
@@ -54,17 +51,20 @@ class osmlayer : public layer, public download_observer
         viewport m_vp;
         std::vector<char> m_imgbuf;
 
-        std::vector<dlref_t> m_downloads;
-        std::vector<tile_t> m_downloadq;
+        std::vector<downloader*> m_downloaders;
+        std::vector<tileinfo> m_downloadq;
 
         bool drawvp(const viewport &viewport, canvas &c);
         void update_map(const viewport &vp);
 
-        static void download_callback(void *data);
-        void download_notify(void);
         void download_process(void);
         void download_startnext(void);
-        void download_qtile(const tile_t &tile);
+        void download_qtile(const tileinfo& tile);
+
+        bool evt_downloadcomplete(const downloader::event_complete *e);
+
+        bool m_test;
+        static void testcb(void *ud);
 };
 
 #endif // OSMLAYER_HPP

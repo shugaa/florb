@@ -13,8 +13,6 @@
 #include "gpsdlayer.hpp"
 #include "gfx.hpp"
 
-#include "download.hpp"
-
 class mapctrl_observer;
 
 class mapctrl : public Fl_Widget, public layer_observer

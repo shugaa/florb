@@ -35,11 +35,22 @@ osmlayer::osmlayer(
 
     // Create a cache session for the given URL
     m_cache->sessionid(url);
+
+    // Create the requested number of download threads
+    for (unsigned int i = 0; i<parallel; i++)
+    {
+        downloader *d = new downloader(new tileinfo());
+        d->add_event_listener(this);
+        m_downloaders.push_back(d);
+    }
+
+    // Register event handlers
+    register_event_handler<osmlayer, downloader::event_complete>(this, &osmlayer::evt_downloadcomplete);
 };
 
 osmlayer::~osmlayer()
 {
-    // No new downloads will be started by asynchronous callbacks
+    // No new downloads will be started
     m_shutdown = true;
 
     // Clear the download queue, only active downloads may finish now
@@ -49,81 +60,106 @@ osmlayer::~osmlayer()
     // usually only be called from the UI thread through FL::awake.
     // Unfortunately the UI thread is now stuck right here, waiting for our
     // destruction. So we need to poll the status of each remaining download.
+#if 0
+    bool all_idle;
     do {
-        // Wait for something to happen, specifically the callback routine
-        // issued by the pending download
+        all_idle = true;
+
+        std::vector<downloader*>::iterator it;
+        for (it = m_downloaders.begin(); it != m_downloaders.end();++it)
+        {
+            if ((*it)->idle() == false)
+            {
+                all_idle = false;
+                Fl::wait();
+                break;
+            }
+        }
+    } while (all_idle == false);
+#endif
+
+    m_test = true;
+    Fl::awake(testcb, this);
+    do 
+    {
         Fl::wait();
-    } while (m_downloads.size() > 0);
+    } while (m_test == true);
+
+    std::cout << "all downloaders exited" << std::endl;
+
+    // Destroy all downloaders
+    std::vector<downloader*>::iterator it;
+    for (it = m_downloaders.begin(); it != m_downloaders.end();++it)
+    {
+        delete static_cast<tileinfo*>((*it)->userdata());
+        delete (*it);
+    }
 
     // Destroy the cache
     delete m_cache;
 };
 
-void osmlayer::download_notify(void)
+void osmlayer::testcb(void *ud)
 {
-    Fl::awake(osmlayer::download_callback, (void*)this);
+    std::cout << "testcb" << std::endl;
+    static_cast<osmlayer*>(ud)->m_test = false;
 }
 
-void osmlayer::download_callback(void *data)
+bool osmlayer::evt_downloadcomplete(const downloader::event_complete *e)
 {
-    osmlayer *m = reinterpret_cast<osmlayer*>(data);
-    m->download_process();
-}
+    time_t expires = e->expires();
+    time_t now = time(NULL);
 
-void osmlayer::download_process(void)
-{
-    // There was a download status change, check what has happened
-    for(std::vector<dlref_t>::iterator it=m_downloads.begin(); it!=m_downloads.end(); ) 
+    tileinfo *ti = static_cast<tileinfo*>(e->userdata());
+
+    if (expires <= now)
+        expires = now + ONE_WEEK;
+
+    if (e->buf().size() != 0)
     {
-        switch ((*it).dl->status()) 
-        {
-            case download::FINISHED:
-            {
-                // Check the expires header
-                time_t expires = (*it).dl->expires();
-                time_t now = time(NULL);
-                if (expires <= now)
-                    expires = now + ONE_WEEK;
-
-                // Cache the tile and ask for redraw
-                m_cache->put((*it).t.z, (*it).t.x, (*it).t.y, expires, (*it).dl->buf());
-                notify_observers();   
-            }
-            // Fall through
-            case download::ERROR:
-                // Remove the download
-                delete (*it).dl;
-                it = m_downloads.erase(it);
-                break;
-            default:
-                // In Progress
-                ++it;
-        }
+        m_cache->put(ti->z, ti->x, ti->y, expires, e->buf());
+        notify_observers();
     }
-       
+
+    std::cout << "download complete event" << std::endl;
+
     // Maybe we can start another download
-    if (!m_shutdown) 
-        download_startnext();
+    //download_startnext();
+
+    return true;
 }
 
 void osmlayer::download_startnext(void)
 {
-    // No more free download slots
-    if (m_downloads.size() >= m_parallel)
+    if (m_shutdown)
         return;
 
     // See whether there are more requests in the queue
     if (m_downloadq.size() == 0)
         return;
 
-    // Get the request from the queue and start it...
-    tile_t next = m_downloadq.back();
-    m_downloadq.pop_back();
+    // Find an idle dowloader
+    std::vector<downloader*>::iterator it;
+    for (it = m_downloaders.begin(); it != m_downloaders.end();++it)
+    {
+        if  ((*it)->idle())
+            break;
+    }
 
+    // No idle downloader available right now
+    if (it == m_downloaders.end())
+        return;
+
+    // Get the request from the queue and start it...
+    tileinfo next = m_downloadq.back();
+    m_downloadq.pop_back();
 
     //...if it is not already in the cache
     if (m_cache->exists(next.z, next.x, next.y) == sqlitecache::FOUND)
         return;
+
+
+    std::cout << "downloading using " << (*it) << std::endl;
 
     // Consruct the url
     std::ostringstream sz, sx, sy;
@@ -137,19 +173,11 @@ void osmlayer::download_startnext(void)
     url.replace (url.find("$FLORBY$"), std::string("$FLORBY$").length(), sy.str());
 
     // Create and start the download
-    download *dl = new download(url, this);
-
-    // Put the download into the queue
-    dlref_t ndl;
-    ndl.dl = dl;
-    ndl.t = next;
-    m_downloads.push_back(ndl);
-
-    // Start the download
-    dl->start();
+    *(static_cast<tileinfo*>((*it)->userdata())) = next;
+    (*it)->fetch(url);
 }
 
-void osmlayer::download_qtile(const tile_t &tile)
+void osmlayer::download_qtile(const tileinfo& tile)
 {
     // Queue is full, erase oldest entry
     if (m_downloadq.size() >= MAX_TILE_BACKLOG)
@@ -368,7 +396,7 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {
-              tile_t t;
+              tileinfo t;
               t.z = vp.z();
               t.x = tx; 
               t.y = ty;
