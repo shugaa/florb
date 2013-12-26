@@ -15,7 +15,7 @@
 
 class mapctrl_observer;
 
-class mapctrl : public Fl_Widget, public layer_observer
+class mapctrl : public Fl_Widget, public layer_observer, public event_listener, public event_generator
 {
     public:
         mapctrl(int x, int y, int w, int h, const char *label);
@@ -30,6 +30,7 @@ class mapctrl : public Fl_Widget, public layer_observer
                 int imgtype);
 
         int handle(int event);
+        bool handle_evt_motion(const gpsdlayer::event_motion *e);
         void layer_notify();
         void refresh();
 
@@ -46,6 +47,7 @@ class mapctrl : public Fl_Widget, public layer_observer
         void load_track(const std::string& path);
         void save_track(const std::string& path);
         void clear_track();
+        void goto_cursor();
         double trip();
 
         void teardown();

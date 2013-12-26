@@ -11,7 +11,7 @@
 // Forward declare observer class
 class layer_observer;
 
-class layer : public event_listener
+class layer : public event_listener, public event_generator
 {
     public:
         layer();
@@ -24,7 +24,10 @@ class layer : public event_listener
         void removeobserver(layer_observer &o);
 
         void notify_observers();
+
+        static bool is_instance(layer* l);
     private:
+        static std::set<layer*> m_instances;
         std::string m_name;
         std::set<layer_observer*> m_observers;
         

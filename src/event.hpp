@@ -79,7 +79,7 @@ class event_listener
     public:
         event_listener() {};
         virtual ~event_listener(); 
-        bool handle(const event_base* evt);
+        bool evthandle(const event_base* evt);
         bool handle_safe(const event_base* evt);
 
     private:
@@ -110,8 +110,8 @@ class event_generator
         std::set<event_listener*> m_listeners;
 
     protected:
-        void fire(event_base* evt);
-        void fire_safe(event_base* evt);
+        bool fire(event_base* evt);
+        bool fire_safe(event_base* evt);
 };
 
 #endif // EVENT_HPP

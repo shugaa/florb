@@ -217,6 +217,29 @@ bool gpxlayer::release(const layer_mouseevent* evt)
     return true;
 }
 
+void gpxlayer::add_trackpoint(const point2d<double>& p)
+{
+    // Add the position to the list
+    point2d<double> merc(utils::wsg842merc(p));
+
+    gpx_trkpt ptrk;
+    ptrk.lon = merc.x();
+    ptrk.lat = merc.y();
+    ptrk.time = time(NULL);
+    ptrk.ele = 0.0; 
+    m_trkpts.push_back(ptrk);
+    
+    // Update current trip
+    trip_update();
+
+    // Select the newly added item
+    m_selection.it = m_trkpts.end()-1;
+    m_selection.highlight = true;
+
+    // Indicate that this layer has changed
+    notify_observers(); 
+}
+
 void gpxlayer::load_track(const std::string &path)
 {
     name(path);

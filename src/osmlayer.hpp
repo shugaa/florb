@@ -26,8 +26,6 @@ class osmlayer : public layer
         int zoom_max() { return m_zmax; };
 
     private:
-        static std::set<osmlayer*> m_instances;
-
         class tileinfo;
 
         canvas m_canvas_0;

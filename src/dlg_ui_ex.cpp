@@ -140,6 +140,12 @@ void dlg_ui::cb_btn_cleartrack_ex(Fl_Widget *widget)
     m_mapctrl->clear_track();
 }
 
+void dlg_ui::cb_btn_gotocursor_ex(Fl_Widget *widget)
+{
+    // Clear the current track
+    m_mapctrl->goto_cursor();
+}
+
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
 {
     int idx = m_choice_basemap->value();

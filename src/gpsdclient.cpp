@@ -18,10 +18,25 @@ gpsdclient::~gpsdclient()
 {
     if (m_thread) 
     {
-        m_exit = true;
+        exit(true);
         m_thread->join();
         delete m_thread;
     }
+}
+
+bool gpsdclient::exit()
+{
+    m_mutex.lock();
+    bool ret = m_exit;
+    m_mutex.unlock();
+
+    return ret;
+}
+void gpsdclient::exit(bool e)
+{
+    m_mutex.lock();
+    m_exit = e;
+    m_mutex.unlock();
 }
 
 bool gpsdclient::connected(void)
@@ -35,15 +50,14 @@ bool gpsdclient::connected(void)
     return ret;   
 }
 
-void gpsdclient::event_update(void)
+void gpsdclient::fire_event_update(void)
 {
-    gpsdclient_update_event ue;
-    ue.mode = m_mode;
-    ue.longitude = m_longitude;
-    ue.latitude = m_latitude;
-    ue.track = m_track;
+    event_update ue(
+            m_mode,
+            point2d<double>(m_longitude, m_latitude),
+            m_track);
 
-    fire_safe(&ue);
+    fire(&ue);
 }
 
 void gpsdclient::worker(void)
@@ -73,7 +87,7 @@ void gpsdclient::worker(void)
     for (;;)
     {
         // Exit request
-        if (m_exit == true)
+        if (exit())
             break;
 
         // Initialisation failure
@@ -117,38 +131,38 @@ bool gpsdclient::handle_set()
         // Handle latitude / longitude set
         if (m_gpsdata.set & LATLON_SET)
         {
-            if (!(m_gpsdata.set & MODE_SET))
-                break;
-
-            int mode = FIX_NONE;
-            if (m_gpsdata.fix.mode == MODE_2D) 
+            if (m_gpsdata.set & MODE_SET)
             {
+                int mode = FIX_NONE;
+                if (m_gpsdata.fix.mode == MODE_2D) 
+                {
+                    m_mutex.lock();
+                    mode = FIX_2D;
+                    m_mutex.unlock();
+                } else if (m_gpsdata.fix.mode == MODE_3D) 
+                {
+                    m_mutex.lock();
+                    mode = FIX_3D;
+                    m_mutex.unlock();                
+                }
+
+                if (m_mode != mode)
+                    ret = true;
+
                 m_mutex.lock();
-                mode = FIX_2D;
+                m_mode = mode;
                 m_mutex.unlock();
-            } else if (m_gpsdata.fix.mode == MODE_3D) 
-            {
-                m_mutex.lock();
-                mode = FIX_3D;
-                m_mutex.unlock();                
-            }
 
-            if (m_mode != mode)
-                ret = true;
-
-            m_mutex.lock();
-            m_mode = mode;
-            m_mutex.unlock();
-
-            // Handle latitude / longitude
-            if ((m_gpsdata.fix.latitude != m_latitude) ||
-                (m_gpsdata.fix.longitude != m_longitude)) 
-            {
-                m_mutex.lock();
-                m_latitude = m_gpsdata.fix.latitude;
-                m_longitude = m_gpsdata.fix.longitude;
-                m_mutex.unlock();
-                ret = true;
+                // Handle latitude / longitude
+                if ((m_gpsdata.fix.latitude != m_latitude) ||
+                    (m_gpsdata.fix.longitude != m_longitude)) 
+                {
+                    m_mutex.lock();
+                    m_latitude = m_gpsdata.fix.latitude;
+                    m_longitude = m_gpsdata.fix.longitude;
+                    m_mutex.unlock();
+                    ret = true;
+                }
             }
         }
 
@@ -163,9 +177,8 @@ bool gpsdclient::handle_set()
             }
         }
 
-        if (ret) {
-            event_update();
-        }
+        if (ret)
+            fire_event_update();
 
         break;
     }

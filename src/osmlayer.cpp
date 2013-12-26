@@ -7,8 +7,6 @@
 #define TILE_W                  (256)
 #define TILE_H                  (256)
 
-std::set<osmlayer*> osmlayer::m_instances;
-
 class osmlayer::tileinfo
 {
     public:
@@ -61,8 +59,6 @@ osmlayer::osmlayer(
 
     // Register event handlers
     register_event_handler<osmlayer, downloader::event_complete>(this, &osmlayer::evt_downloadcomplete);
-
-    m_instances.insert(this);
 };
 
 osmlayer::~osmlayer()
@@ -79,9 +75,6 @@ osmlayer::~osmlayer()
 
     // Destroy the cache
     delete m_cache;
-
-    // Not a valid osmlayer instance anymore
-    m_instances.erase(m_instances.find(this));
 };
 
 void osmlayer::process_downloads()
@@ -127,13 +120,15 @@ void osmlayer::process_downloads()
 
 void osmlayer::cb_download(void *userdata)
 {
-    osmlayer *l = static_cast<osmlayer*>(userdata);
-
-    std::set<osmlayer*>::iterator it = m_instances.find(l);
-    if (it == m_instances.end())
+    layer *l = static_cast<layer*>(userdata);
+    if (!is_instance(l))
         return;
 
-    l->process_downloads();
+    osmlayer *osml = dynamic_cast<osmlayer*>(l);
+    if (!osml)
+        return;
+
+    osml->process_downloads();
 }
 
 bool osmlayer::evt_downloadcomplete(const downloader::event_complete *e)

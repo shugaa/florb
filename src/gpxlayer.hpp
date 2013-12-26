@@ -24,6 +24,7 @@ class gpxlayer : public layer
         void load_track(const std::string &path);
         void save_track(const std::string &path);
         void clear_track();
+        void add_trackpoint(const point2d<double>& p);
     
         double trip();
     private:

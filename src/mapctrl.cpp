@@ -20,9 +20,13 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
 {
     m_gpxlayer = new gpxlayer();
     m_gpxlayer->addobserver(*this);
+    add_event_listener(m_gpxlayer);
 
     m_gpsdlayer = new gpsdlayer();
     m_gpsdlayer->addobserver(*this);
+    m_gpsdlayer->add_event_listener(this);
+
+    register_event_handler<mapctrl, gpsdlayer::event_motion>(this, &mapctrl::handle_evt_motion);
 }
 
 mapctrl::~mapctrl()
@@ -55,11 +59,35 @@ void mapctrl::save_track(const std::string& path)
 
 void mapctrl::clear_track()
 {
+    if (!m_gpxlayer)
+        throw 0;
+
     m_gpxlayer->clear_track();
+}
+
+void mapctrl::goto_cursor()
+{
+    if (!m_gpsdlayer)
+        throw 0;
+
+    if (!m_gpsdlayer->valid())
+        return;
+
+    point2d<unsigned long> ppx(utils::wsg842px(m_viewport.z(), m_gpsdlayer->pos()));
+
+    unsigned long x = (ppx.x() < (m_viewport.w()/2)) ? 0 : ppx.x()-(m_viewport.w()/2);
+    unsigned long y = (ppx.y() < (m_viewport.h()/2)) ? 0 : ppx.y()-(m_viewport.h()/2);
+
+    m_viewport.x(x);
+    m_viewport.y(y);
+    refresh();
 }
 
 double mapctrl::trip()
 {
+    if (!m_gpxlayer)
+        throw 0;
+
     return m_gpxlayer->trip();
 }
 
@@ -202,14 +230,11 @@ bool mapctrl::vp_inside(const point2d<int>& pos)
     return true;
 }
 
-#if 1
-void mapctrl::teardown()
+bool mapctrl::handle_evt_motion(const gpsdlayer::event_motion *e)
 {
-    delete m_basemap; m_basemap = NULL;
-    delete m_gpxlayer; m_gpxlayer = NULL;
-    delete m_gpsdlayer; m_gpsdlayer = NULL;
+    m_gpxlayer->add_trackpoint(e->pos());
+    return true;
 }
-#endif
 
 int mapctrl::handle(int event) 
 {
@@ -248,7 +273,7 @@ int mapctrl::handle(int event)
                         button, 
                         vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
                 
-                m_gpxlayer->handle(&me);
+                fire(&me);
 
                 // The push event always needs to return 1, otherwise dragging
                 // will not work
@@ -271,7 +296,7 @@ int mapctrl::handle(int event)
                         button, 
                         vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
                 
-                return (m_gpxlayer->handle(&me) ? 1 : 0);
+                return (fire(&me) ? 1 : 0);
             }
         case FL_DRAG: 
             {
@@ -291,7 +316,7 @@ int mapctrl::handle(int event)
                         button, 
                         vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
                 
-                int ret = (m_gpxlayer->handle(&me) ? 1 : 0);
+                int ret = (fire(&me) ? 1 : 0);
  
                 if (Fl::event_state(FL_BUTTON3) != 0)
                 {
@@ -353,7 +378,7 @@ int mapctrl::handle(int event)
                         layer_keyevent::ACTION_RELEASE, 
                         layer_keyevent::KEY_DEL);
                 
-                return (m_gpxlayer->handle(&ke) ? 1 : 0);
+                return (fire(&ke) ? 1 : 0);
             }
     }
 

@@ -38,7 +38,7 @@ decl {\#include "dlg_servers.hpp"} {public global
 decl {\#include "mapctrl.hpp"} {public global
 } 
 
-class dlg_ui {: {public mapctrl_observer}
+class dlg_ui {open : {public mapctrl_observer}
 } {
   decl {void create_ex(void);} {private local
   }
@@ -53,6 +53,8 @@ class dlg_ui {: {public mapctrl_observer}
   decl {void cb_btn_savetrack_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_btn_cleartrack_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_gotocursor_ex(Fl_Widget *widget);} {selected private local
   }
   decl {void cb_choice_basemap_ex(Fl_Widget *widget);} {private local
   }
@@ -72,13 +74,12 @@ class dlg_ui {: {public mapctrl_observer}
   }
   decl {dlg_servers *m_dlg_servers;} {private local
   }
-  Function {dlg_ui()} {open
-  } {
+  Function {dlg_ui()} {} {
     Fl_Window m_window {
-      label florb
+      label florb open
       private xywh {541 187 805 565} type Double align 80 resizable visible
     } {
-      Fl_Pack {} {
+      Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
       } {
         Fl_Menu_Bar m_menubar {
@@ -123,7 +124,7 @@ class dlg_ui {: {public mapctrl_observer}
         Fl_Box {} {
           private xywh {0 25 805 4}
         }
-        Fl_Pack {} {
+        Fl_Pack {} {open
           private xywh {0 29 805 26} type HORIZONTAL
         } {
           Fl_Box {} {
@@ -191,7 +192,7 @@ class dlg_ui {: {public mapctrl_observer}
           }
           Fl_Button m_btn_gotocursor {
             user_data this
-            callback cb_btn_cleartrack
+            callback cb_btn_gotocursor
             private tooltip {Go to cursor} image {../res/go-home.png} xywh {199 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
@@ -270,15 +271,14 @@ class dlg_ui {: {public mapctrl_observer}
     }
     code {create_ex();} {}
   }
-  Function {~dlg_ui()} {open
-  } {
+  Function {~dlg_ui()} {} {
     code {destroy_ex();} {}
   }
-  Function {show(int argc, char *argv[])} {open return_type void
+  Function {show(int argc, char *argv[])} {return_type void
   } {
     code {show_ex(argc, argv);} {}
   }
-  Function {hide()} {open return_type void
+  Function {hide()} {return_type void
   } {
     code {hide_ex();} {}
   }
@@ -307,6 +307,11 @@ ui->cb_btn_savetrack_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_cleartrack_ex(widget);} {}
   }
+  Function {cb_btn_gotocursor(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_btn_gotocursor_ex(widget);} {}
+  }
   Function {cb_choice_basemap(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
@@ -333,11 +338,10 @@ ui->show(argc, argv);
 
 int ret = Fl::run();
 delete ui;
-return ret;} {selected
-  }
+return ret;} {}
 } 
 
-Function {sighandler(int sig)} {open return_type void
+Function {sighandler(int sig)} {return_type void
 } {
   code {ui->hide();} {}
 } 

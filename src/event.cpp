@@ -30,7 +30,7 @@ event_listener::~event_listener()
     }
 }
 
-bool event_listener::handle(const event_base* evt)
+bool event_listener::evthandle(const event_base* evt)
 {
     evthandlers::iterator it = m_evthandlers.find(tinfo(&typeid(*evt)));
     if(it != m_evthandlers.end())
@@ -77,21 +77,31 @@ void event_generator::remove_event_listener(event_listener *l)
         m_listeners.erase(it);
 }
 
-void event_generator::fire(event_base* evt)
+bool event_generator::fire(event_base* evt)
 {
+    bool ret = false;
+    
     std::set<event_listener*>::iterator it;
     for (it = m_listeners.begin(); it != m_listeners.end();++it)
     {
-        (*it)->handle(evt);
+        if((*it)->evthandle(evt))
+            ret = true;
     }
+
+    return ret;
 }
 
-void event_generator::fire_safe(event_base* evt)
+bool event_generator::fire_safe(event_base* evt)
 {
+    bool ret = false;
+
     std::set<event_listener*>::iterator it;
     for (it = m_listeners.begin(); it != m_listeners.end();++it)
     {
-        (*it)->handle_safe(evt);
+        if ((*it)->handle_safe(evt))
+            ret = true;
     }
+
+    return ret;
 }
 
