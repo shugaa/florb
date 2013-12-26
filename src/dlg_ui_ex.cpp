@@ -82,6 +82,7 @@ void dlg_ui::destroy_ex(void)
 
     // Delete toplevel window
     delete(m_window);
+    delete(m_waitwin);
 
     // Curl cleanup
     curl_global_cleanup();
@@ -188,4 +189,12 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
 void dlg_ui::cb_close_ex(Fl_Widget *widget)
 {
     m_window->hide();
+    
 }
+
+void dlg_ui::hide_ex()
+{
+    m_window->hide();
+    
+}
+

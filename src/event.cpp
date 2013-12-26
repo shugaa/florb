@@ -42,14 +42,17 @@ bool event_listener::handle(const event_base* evt)
 bool event_listener::handle_safe(const event_base* evt)
 {
     evthandlers::iterator it = m_evthandlers.find(tinfo(&typeid(*evt)));
-    if(it == m_evthandlers.end()) {
-        std::cout << "no handler found" << std::endl;
+    if(it == m_evthandlers.end()) 
+    {
         return false;
     }
 
     exec_info execinfo(it->second, evt);
-    Fl::awake(event_listener::mt_callback, (void*)&execinfo);
-    std::cout << "awake is under way" << std::cout;
+    if (Fl::awake(event_listener::mt_callback, (void*)&execinfo) != 0)
+    {
+        return false;
+    }
+
     execinfo.wait();
 
     return execinfo.ret();

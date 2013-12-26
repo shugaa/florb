@@ -26,19 +26,13 @@ class osmlayer : public layer
         int zoom_max() { return m_zmax; };
 
     private:
-        class tileinfo 
-        {
-            public:
-                int x;
-                int y;
-                int z;
-        };
-       
+        static std::set<osmlayer*> m_instances;
+
+        class tileinfo;
+
         canvas m_canvas_0;
         canvas m_canvas_1;
         canvas m_canvas_tmp;
-
-        bool m_shutdown;
 
         std::string m_name;
         std::string m_url;
@@ -51,15 +45,16 @@ class osmlayer : public layer
         viewport m_vp;
         std::vector<char> m_imgbuf;
 
-        std::vector<downloader*> m_downloaders;
-        std::vector<tileinfo> m_downloadq;
+        static void cb_download(void *userdata);
+        std::vector<tileinfo*> m_tileinfos;
+        void process_downloads();
+
+        downloader* m_downloader;
 
         bool drawvp(const viewport &viewport, canvas &c);
         void update_map(const viewport &vp);
 
-        void download_process(void);
-        void download_startnext(void);
-        void download_qtile(const tileinfo& tile);
+        void download_qtile(int z, int x, int y);
 
         bool evt_downloadcomplete(const downloader::event_complete *e);
 

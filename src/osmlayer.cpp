@@ -1,11 +1,31 @@
 #include <cmath>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include "utils.hpp"
 #include "osmlayer.hpp"
 
 #define ONE_WEEK                (7*24*60*60)
-#define MAX_TILE_BACKLOG        (150)
 #define TILE_W                  (256)
 #define TILE_H                  (256)
+
+std::set<osmlayer*> osmlayer::m_instances;
+
+class osmlayer::tileinfo
+{
+    public:
+        tileinfo(int z, int x, int y) :
+            m_z(z),
+            m_x(x),
+            m_y(y) {};
+
+        int z() const { return m_z; };
+        int x() const { return m_x; };
+        int y() const { return m_y; };
+
+    private:
+        int m_z;
+        int m_x;
+        int m_y;
+};
 
 osmlayer::osmlayer(
         const std::string& nm,  
@@ -18,7 +38,6 @@ osmlayer::osmlayer(
     m_canvas_0(500, 500),           // Canvas for 'double buffering'. Will be resized as needed
     m_canvas_1(500, 500),           // Canvas for 'double buffering'. Will be resized as needed
     m_canvas_tmp(500,500),          // Temporary drawing canvas. Will be resized as needed
-    m_shutdown(false),              // Shutdown flag
     m_name(nm),                     // Layer name
     m_url(url),                     // Tileserver URL
     m_zmin(zmin),                   // Min. zoomlevel supported by server
@@ -37,157 +56,126 @@ osmlayer::osmlayer(
     m_cache->sessionid(url);
 
     // Create the requested number of download threads
-    for (unsigned int i = 0; i<parallel; i++)
-    {
-        downloader *d = new downloader(new tileinfo());
-        d->add_event_listener(this);
-        m_downloaders.push_back(d);
-    }
+    m_downloader = new downloader(parallel);
+    m_downloader->add_event_listener(this);
 
     // Register event handlers
     register_event_handler<osmlayer, downloader::event_complete>(this, &osmlayer::evt_downloadcomplete);
+
+    m_instances.insert(this);
 };
 
 osmlayer::~osmlayer()
 {
-    // No new downloads will be started
-    m_shutdown = true;
+    // destroy the downloader
+    delete m_downloader;
 
-    // Clear the download queue, only active downloads may finish now
-    m_downloadq.clear();
-
-    // Wait for all pending downloads to be processed. download_process() will
-    // usually only be called from the UI thread through FL::awake.
-    // Unfortunately the UI thread is now stuck right here, waiting for our
-    // destruction. So we need to poll the status of each remaining download.
-#if 0
-    bool all_idle;
-    do {
-        all_idle = true;
-
-        std::vector<downloader*>::iterator it;
-        for (it = m_downloaders.begin(); it != m_downloaders.end();++it)
-        {
-            if ((*it)->idle() == false)
-            {
-                all_idle = false;
-                Fl::wait();
-                break;
-            }
-        }
-    } while (all_idle == false);
-#endif
-
-    m_test = true;
-    Fl::awake(testcb, this);
-    do 
+    // Destroy all download userdata
+    std::vector<tileinfo*>::iterator it;
+    for (it=m_tileinfos.begin();it!=m_tileinfos.end();++it)
     {
-        Fl::wait();
-    } while (m_test == true);
-
-    std::cout << "all downloaders exited" << std::endl;
-
-    // Destroy all downloaders
-    std::vector<downloader*>::iterator it;
-    for (it = m_downloaders.begin(); it != m_downloaders.end();++it)
-    {
-        delete static_cast<tileinfo*>((*it)->userdata());
         delete (*it);
     }
 
     // Destroy the cache
     delete m_cache;
+
+    // Not a valid osmlayer instance anymore
+    m_instances.erase(m_instances.find(this));
 };
 
-void osmlayer::testcb(void *ud)
+void osmlayer::process_downloads()
 {
-    std::cout << "testcb" << std::endl;
-    static_cast<osmlayer*>(ud)->m_test = false;
+    bool ret = false; 
+
+    // Cache all downloaded tiles
+    downloader::download dtmp;
+    while (m_downloader->get(dtmp))
+    {
+        std::vector<tileinfo*>::iterator it = 
+            std::find(m_tileinfos.begin(), m_tileinfos.end(), dtmp.userdata());
+
+        tileinfo *ti;
+        if (it == m_tileinfos.end())
+        {
+            continue; 
+        } 
+        else
+        {
+            ti = (*it);
+            m_tileinfos.erase(it);
+        }
+
+        time_t expires = dtmp.expires();
+        time_t now = time(NULL);
+
+        if (expires <= now)
+            expires = now + ONE_WEEK;
+
+        if (dtmp.buf().size() != 0)
+        {
+            m_cache->put(ti->z(), ti->x(), ti->y(), expires, dtmp.buf());
+            ret = true;
+        }
+
+        delete ti;
+    }
+
+    if (ret)
+        notify_observers();
+}
+
+void osmlayer::cb_download(void *userdata)
+{
+    osmlayer *l = static_cast<osmlayer*>(userdata);
+
+    std::set<osmlayer*>::iterator it = m_instances.find(l);
+    if (it == m_instances.end())
+        return;
+
+    l->process_downloads();
 }
 
 bool osmlayer::evt_downloadcomplete(const downloader::event_complete *e)
 {
-    time_t expires = e->expires();
-    time_t now = time(NULL);
-
-    tileinfo *ti = static_cast<tileinfo*>(e->userdata());
-
-    if (expires <= now)
-        expires = now + ONE_WEEK;
-
-    if (e->buf().size() != 0)
-    {
-        m_cache->put(ti->z, ti->x, ti->y, expires, e->buf());
-        notify_observers();
-    }
-
-    std::cout << "download complete event" << std::endl;
-
-    // Maybe we can start another download
-    //download_startnext();
-
+    Fl::awake(cb_download, this);
     return true;
 }
 
-void osmlayer::download_startnext(void)
+void osmlayer::download_qtile(int z, int x, int y)
 {
-    if (m_shutdown)
-        return;
-
-    // See whether there are more requests in the queue
-    if (m_downloadq.size() == 0)
-        return;
-
-    // Find an idle dowloader
-    std::vector<downloader*>::iterator it;
-    for (it = m_downloaders.begin(); it != m_downloaders.end();++it)
+    // Check whether the requested tile is already being processed
+    std::vector<tileinfo*>::iterator it;
+    for (it=m_tileinfos.begin();it!=m_tileinfos.end();++it)
     {
-        if  ((*it)->idle())
-            break;
+        if (((*it)->z() == z) && ((*it)->x() == x) && ((*it)->y() == y))
+            return;
     }
 
-    // No idle downloader available right now
-    if (it == m_downloaders.end())
-        return;
+    // Create the userdata component to be attached to the download
+    tileinfo *ti = new tileinfo(z, x, y);
 
-    // Get the request from the queue and start it...
-    tileinfo next = m_downloadq.back();
-    m_downloadq.pop_back();
-
-    //...if it is not already in the cache
-    if (m_cache->exists(next.z, next.x, next.y) == sqlitecache::FOUND)
-        return;
-
-
-    std::cout << "downloading using " << (*it) << std::endl;
-
-    // Consruct the url
     std::ostringstream sz, sx, sy;
-    sz << next.z;
-    sx << next.x;
-    sy << next.y;
+    sz << z;
+    sx << x;
+    sy << y;
 
     std::string url(m_url);
     url.replace (url.find("$FLORBZ$"), std::string("$FLORBZ$").length(), sz.str());
     url.replace (url.find("$FLORBX$"), std::string("$FLORBX$").length(), sx.str());
     url.replace (url.find("$FLORBY$"), std::string("$FLORBY$").length(), sy.str());
 
-    // Create and start the download
-    *(static_cast<tileinfo*>((*it)->userdata())) = next;
-    (*it)->fetch(url);
-}
-
-void osmlayer::download_qtile(const tileinfo& tile)
-{
-    // Queue is full, erase oldest entry
-    if (m_downloadq.size() >= MAX_TILE_BACKLOG)
-        m_downloadq.erase(m_downloadq.begin());
-
-    // Add tile request to queue
-    m_downloadq.push_back(tile);
-
-    // Eventually start the next download
-    download_startnext();
+    // Try to queue this URL for downloading
+    bool ret = m_downloader->queue(url, ti);
+   
+    // Item queued for downloading
+    if (ret)
+    {
+        m_tileinfos.push_back(ti); 
+    }
+    // Item not added
+    else
+        delete ti;
 }
 
 void osmlayer::draw(const viewport &vp, canvas &os)
@@ -396,11 +384,7 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {
-              tileinfo t;
-              t.z = vp.z();
-              t.x = tx; 
-              t.y = ty;
-              download_qtile(t);
+              download_qtile(vp.z(), tx, ty);
               ret = false;
           }
        }

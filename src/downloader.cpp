@@ -1,43 +1,104 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <boost/bind.hpp>
+#include <FL/Fl.H>
 
 #include "downloader.hpp"
 
-downloader::downloader(void *userdata) : 
+downloader::downloader(int nthreads) : 
     m_threadblock(0),
-    m_idle(true),
-    m_exit(false),
-    m_userdata(userdata)
+    m_exit(false)
 {
-    m_thread = new boost::thread(boost::bind(&downloader::worker, this));
+    nthreads=1;
+    for (int i=0;i<nthreads;i++)
+    {
+        workerinfo *ti = new workerinfo(
+            new boost::thread(boost::bind(&downloader::worker, this)));
+
+        m_workers.push_back(ti);
+    }
 }
 
 downloader::~downloader()
 {
     exit(true);
-    m_threadblock.post();
 
-    if (m_thread) 
+    // Post once for each worker thread
+    for (size_t i=0;i<m_workers.size();i++)
     {
-        m_thread->join();
-        delete m_thread;
+        m_threadblock.post();
+    }
+
+    // Join all active threads and delete them
+    std::vector<workerinfo*>::iterator it;
+    for (it=m_workers.begin();it!=m_workers.end();++it)
+    {
+        (*it)->t()->join();
+        delete (*it)->t();
+        delete (*it);
     }
 }
 
-void downloader::idle(bool i)
-{
+bool downloader::queue(const std::string& url, void* userdata)
+{   
+    if (exit())
+        return false;
+
     m_mutex.lock();
-    m_idle = i;
+
+    // Find an existing item in the list
+    bool newitem = false;
+    download_internal d(this, url, userdata);
+    std::vector<download_internal>::iterator it;
+    for (it=m_queue.begin(); it!=m_queue.end(); ++it)
+    {
+        if ((*it) == d)
+            break;
+    }
+    
+    // Existing item, boost priority
+    if (it != m_queue.end())
+    {
+        download_internal dtmp = (*it);
+        m_queue.erase(it);
+        m_queue.push_back(dtmp);
+    }
+    // New item, add to queue with max. priority
+    else
+    {
+        m_queue.push_back(d);
+        newitem = true;
+    }
+
     m_mutex.unlock();
+
+    // One more item on the list, post the counter semaphore
+    if (newitem == true) 
+    {
+        m_threadblock.post();
+    }
+
+    return newitem;
 }
 
-bool downloader::idle(void)
+bool downloader::get(download& dl)
 {
-    bool ret;
+    bool ret = false;
 
     m_mutex.lock();
-    ret = m_idle;
+
+    for (;;)
+    {
+        if (m_done.size() == 0)
+            break;
+
+        dl = *(m_done.end()-1);
+        m_done.erase(m_done.end()-1);
+        ret = true;
+
+        break;
+    }
+
     m_mutex.unlock();
 
     return ret;
@@ -61,22 +122,7 @@ bool downloader::exit(void)
     return ret;
 }
 
-void downloader::fetch(const std::string& url)
-{
-    if (!idle())
-        return;
-
-    idle(false);
-    m_url = url;
-    m_threadblock.post();
-}
-
-void* downloader::userdata(void)
-{
-    return m_userdata;
-}
-
-void downloader::worker(void)
+void downloader::worker()
 {
     CURL *curl_handle = curl_easy_init();
 
@@ -100,26 +146,36 @@ void downloader::worker(void)
         if (exit())
             break;
 
-        // Clear the buffer, reset the expires header
-        m_buf.resize(0);
-        m_expires = 0;
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
 
-        curl_easy_setopt(curl_handle, CURLOPT_URL, m_url.c_str());
+        // Get a download item from the list
+        m_mutex.lock();
+        download_internal dl = *(m_queue.end()-1);
+        m_queue.erase(m_queue.end()-1);
+        m_mutex.unlock();
+
+        // Clear the buffer, reset the expires header
+        dl.buf().resize(0);
+        
+        int rc;
+        curl_easy_setopt(curl_handle, CURLOPT_URL, dl.url().c_str());
+        curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &dl);
+        curl_easy_setopt(curl_handle, CURLOPT_WRITEHEADER, &dl);
 
         // Start download
-        int rc = curl_easy_perform(curl_handle);
+        rc = curl_easy_perform(curl_handle);
 
         // Download failed
         if (rc != 0)
-            m_buf.resize(0);
+            dl.buf().resize(0);
+
+        m_mutex.lock();
+        m_done.push_back(dl);
+        m_mutex.unlock();
 
         // Fire event
-        event_complete ce(this, m_userdata, m_buf, m_expires);
-        std::cout << "calling back" << std::endl;
-        fire_safe(&ce);
-
-        // Back to idle state
-        idle(true);
+        event_complete ce(this);
+        fire(&ce);
     }
 
     curl_easy_cleanup(curl_handle);
@@ -127,28 +183,28 @@ void downloader::worker(void)
 
 size_t downloader::cb_data(void *ptr, size_t size, size_t nmemb, void *data)
 {
-    downloader *d = reinterpret_cast<downloader*>(data);
-    return d->handle_data(ptr, size, nmemb);
+    download_internal *d = reinterpret_cast<download_internal*>(data);
+    return d->dldr()->handle_data(ptr, size, nmemb, d->buf());
 }
 
 size_t downloader::cb_header(void *ptr, size_t size, size_t nmemb, void *data) 
 {
-    downloader *d = reinterpret_cast<downloader*>(data);
-    return d->handle_header(ptr, size, nmemb);
+    download_internal *d = reinterpret_cast<download_internal*>(data);
+    return d->dldr()->handle_header(ptr, size, nmemb, d->expires());
 }
 
-size_t downloader::handle_data(void *ptr, size_t size, size_t nmemb)
+size_t downloader::handle_data(void *ptr, size_t size, size_t nmemb, std::vector<char>& buf)
 {
     size_t realsize = size * nmemb;
-    size_t currentsize = m_buf.size();
+    size_t currentsize = buf.size();
 
-    m_buf.resize(currentsize + realsize);
-    memcpy(reinterpret_cast<void*>(&m_buf[currentsize]), ptr, realsize);
+    buf.resize(currentsize + realsize);
+    memcpy(reinterpret_cast<void*>(&(buf[currentsize])), ptr, realsize);
 
     return realsize;
 }
 
-size_t downloader::handle_header(void *ptr, size_t size, size_t nmemb) 
+size_t downloader::handle_header(void *ptr, size_t size, size_t nmemb, time_t& expires) 
 {
     size_t realsize = size * nmemb;
     std::string line;
@@ -165,7 +221,7 @@ size_t downloader::handle_header(void *ptr, size_t size, size_t nmemb)
     line = line.substr(strlen("Expires: "), line.size()-strlen("Expires: ")-1);    
 
     // Convert string to time_t
-    m_expires = curl_getdate(line.c_str(), NULL);
+    expires = curl_getdate(line.c_str(), NULL);
 
     return realsize;
 }

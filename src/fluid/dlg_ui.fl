@@ -5,6 +5,9 @@ code_name {.cxx}
 decl {\#include <cstring>} {private global
 } 
 
+decl {\#include <signal.h>} {private global
+} 
+
 decl {\#include <iostream>} {private global
 } 
 
@@ -35,7 +38,7 @@ decl {\#include "dlg_servers.hpp"} {public global
 decl {\#include "mapctrl.hpp"} {public global
 } 
 
-class dlg_ui {open : {public mapctrl_observer}
+class dlg_ui {: {public mapctrl_observer}
 } {
   decl {void create_ex(void);} {private local
   }
@@ -43,9 +46,11 @@ class dlg_ui {open : {public mapctrl_observer}
   }
   decl {void show_ex(int argc, char *argv[]);} {private local
   }
+  decl {void hide_ex();} {private local
+  }
   decl {void cb_btn_loadtrack_ex(Fl_Widget *widget);} {private local
   }
-  decl {void cb_btn_savetrack_ex(Fl_Widget *widget);} {selected private local
+  decl {void cb_btn_savetrack_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_btn_cleartrack_ex(Fl_Widget *widget);} {private local
   }
@@ -67,12 +72,13 @@ class dlg_ui {open : {public mapctrl_observer}
   }
   decl {dlg_servers *m_dlg_servers;} {private local
   }
-  Function {dlg_ui()} {} {
+  Function {dlg_ui()} {open
+  } {
     Fl_Window m_window {
       label florb
-      private xywh {550 157 805 565} type Double align 80 resizable visible
+      private xywh {541 187 805 565} type Double align 80 resizable visible
     } {
-      Fl_Pack {} {open
+      Fl_Pack {} {
         private xywh {0 0 805 565} resizable
       } {
         Fl_Menu_Bar m_menubar {
@@ -117,7 +123,7 @@ class dlg_ui {open : {public mapctrl_observer}
         Fl_Box {} {
           private xywh {0 25 805 4}
         }
-        Fl_Pack {} {open
+        Fl_Pack {} {
           private xywh {0 29 805 26} type HORIZONTAL
         } {
           Fl_Box {} {
@@ -254,14 +260,27 @@ class dlg_ui {open : {public mapctrl_observer}
         }
       }
     }
+    Fl_Window m_waitwin {
+      private xywh {869 381 200 60} type Double modal visible
+    } {
+      Fl_Box {} {
+        label {Please wait...}
+        xywh {0 0 200 60}
+      }
+    }
     code {create_ex();} {}
   }
-  Function {~dlg_ui()} {} {
+  Function {~dlg_ui()} {open
+  } {
     code {destroy_ex();} {}
   }
-  Function {show(int argc, char *argv[])} {return_type void
+  Function {show(int argc, char *argv[])} {open return_type void
   } {
     code {show_ex(argc, argv);} {}
+  }
+  Function {hide()} {open return_type void
+  } {
+    code {hide_ex();} {}
   }
   Function {cb_close(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
@@ -283,7 +302,7 @@ ui->cb_btn_loadtrack_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_savetrack_ex(widget);} {}
   }
-  Function {cb_btn_cleartrack(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  Function {cb_btn_cleartrack(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_cleartrack_ex(widget);} {}
@@ -295,13 +314,30 @@ ui->cb_choice_basemap_ex(widget);} {}
   }
 } 
 
-Function {} {open
+decl {dlg_ui *ui;} {private local
+} 
+
+Function {} {open return_type int
 } {
-  code {// Init CURL
+  code {signal(SIGABRT, &sighandler);
+signal(SIGTERM, &sighandler);
+signal(SIGINT, &sighandler);
+
+// Init CURL
 curl_global_init(CURL_GLOBAL_ALL);
 
 // Start the application
 Fl::lock();
-dlg_ui ui;
-ui.show(argc, argv);} {}
+ui = new dlg_ui();
+ui->show(argc, argv);
+
+int ret = Fl::run();
+delete ui;
+return ret;} {selected
+  }
+} 
+
+Function {sighandler(int sig)} {open return_type void
+} {
+  code {ui->hide();} {}
 } 

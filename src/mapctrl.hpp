@@ -47,6 +47,8 @@ class mapctrl : public Fl_Widget, public layer_observer
         void save_track(const std::string& path);
         void clear_track();
         double trip();
+
+        void teardown();
     private:
         osmlayer *m_basemap;
         gpxlayer *m_gpxlayer;
@@ -66,6 +68,8 @@ class mapctrl : public Fl_Widget, public layer_observer
 class mapctrl_observer
 {
     public:
+        mapctrl_observer() {};
+        virtual ~mapctrl_observer() {};
         virtual void mapctrl_notify() = 0;
 };
 

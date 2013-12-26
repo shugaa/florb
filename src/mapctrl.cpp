@@ -202,6 +202,15 @@ bool mapctrl::vp_inside(const point2d<int>& pos)
     return true;
 }
 
+#if 1
+void mapctrl::teardown()
+{
+    delete m_basemap; m_basemap = NULL;
+    delete m_gpxlayer; m_gpxlayer = NULL;
+    delete m_gpsdlayer; m_gpsdlayer = NULL;
+}
+#endif
+
 int mapctrl::handle(int event) 
 {
     switch (event) {
