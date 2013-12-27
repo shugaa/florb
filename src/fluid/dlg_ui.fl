@@ -38,7 +38,7 @@ decl {\#include "dlg_servers.hpp"} {public global
 decl {\#include "mapctrl.hpp"} {public global
 } 
 
-class dlg_ui {open : {public mapctrl_observer}
+class dlg_ui {open : {public mapctrl_observer, public event_listener}
 } {
   decl {void create_ex(void);} {private local
   }
@@ -54,7 +54,11 @@ class dlg_ui {open : {public mapctrl_observer}
   }
   decl {void cb_btn_cleartrack_ex(Fl_Widget *widget);} {private local
   }
-  decl {void cb_btn_gotocursor_ex(Fl_Widget *widget);} {selected private local
+  decl {void cb_btn_gotocursor_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_recordtrack_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_editselection_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_choice_basemap_ex(Fl_Widget *widget);} {private local
   }
@@ -74,10 +78,11 @@ class dlg_ui {open : {public mapctrl_observer}
   }
   decl {dlg_servers *m_dlg_servers;} {private local
   }
-  Function {dlg_ui()} {} {
+  Function {dlg_ui()} {open
+  } {
     Fl_Window m_window {
       label florb open
-      private xywh {541 187 805 565} type Double align 80 resizable visible
+      private xywh {551 134 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
@@ -160,9 +165,9 @@ class dlg_ui {open : {public mapctrl_observer}
           Fl_Box {} {
             private xywh {97 29 5 25} box FLAT_BOX
           }
-          Fl_Button m_btn_editwaypoint {
+          Fl_Button m_btn_editselection {
             user_data this
-            callback cb_btn_cleartrack
+            callback cb_btn_editselection selected
             private tooltip {Edit Waypoint} image {../res/preferences-system.png} xywh {102 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
@@ -198,22 +203,24 @@ class dlg_ui {open : {public mapctrl_observer}
           Fl_Box {} {
             private xywh {224 29 5 25} box FLAT_BOX
           }
-          Fl_Light_Button {} {
-            image {../res/audio-input-microphone.png} xywh {229 29 43 25} box FLAT_BOX down_box THIN_DOWN_BOX
+          Fl_Button m_btn_recordtrack {
+            user_data this
+            callback cb_btn_recordtrack
+            private image {../res/audio-input-microphone.png} xywh {229 29 25 25} type Toggle box NO_BOX down_box DOWN_BOX
           }
           Fl_Box {} {
-            private xywh {272 29 5 25} box FLAT_BOX
+            private xywh {254 29 5 25} box FLAT_BOX
           }
           Fl_Box {} {
-            private xywh {277 29 2 25} box ENGRAVED_BOX
+            private xywh {259 29 2 25} box ENGRAVED_BOX
           }
           Fl_Box {} {
-            private xywh {279 29 5 25} box FLAT_BOX
+            private xywh {261 29 5 25} box FLAT_BOX
           }
           Fl_Choice m_choice_basemap {
             user_data this
             callback cb_choice_basemap open
-            private xywh {284 29 516 26} down_box BORDER_BOX resizable
+            private xywh {266 29 534 26} down_box BORDER_BOX resizable
           } {}
           Fl_Box {} {
             private xywh {800 29 5 25}
@@ -256,17 +263,13 @@ class dlg_ui {open : {public mapctrl_observer}
             private xywh {420 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
           }
           Fl_Box {} {
-            private xywh {560 543 245 22} box THIN_DOWN_BOX resizable
+            private xywh {560 543 195 22} box THIN_DOWN_BOX resizable
+          }
+          Fl_Box m_box_fix {
+            label 3D
+            private xywh {755 543 50 22} box THIN_DOWN_BOX color 63 labelsize 12
           }
         }
-      }
-    }
-    Fl_Window m_waitwin {
-      private xywh {869 381 200 60} type Double modal visible
-    } {
-      Fl_Box {} {
-        label {Please wait...}
-        xywh {0 0 200 60}
       }
     }
     code {create_ex();} {}
@@ -312,6 +315,16 @@ ui->cb_btn_cleartrack_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_gotocursor_ex(widget);} {}
   }
+  Function {cb_btn_recordtrack(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_btn_recordtrack_ex(widget);} {}
+  }
+  Function {cb_btn_editselection(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_btn_editselection_ex(widget);} {}
+  }
   Function {cb_choice_basemap(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
@@ -337,11 +350,12 @@ ui = new dlg_ui();
 ui->show(argc, argv);
 
 int ret = Fl::run();
+
 delete ui;
 return ret;} {}
 } 
 
-Function {sighandler(int sig)} {return_type void
+Function {sighandler(int sig)} {open return_type void
 } {
   code {ui->hide();} {}
 } 

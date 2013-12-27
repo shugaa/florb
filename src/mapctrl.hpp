@@ -15,7 +15,7 @@
 
 class mapctrl_observer;
 
-class mapctrl : public Fl_Widget, public layer_observer, public event_listener, public event_generator
+class mapctrl : public Fl_Widget, public event_listener, public event_generator
 {
     public:
         mapctrl(int x, int y, int w, int h, const char *label);
@@ -31,6 +31,9 @@ class mapctrl : public Fl_Widget, public layer_observer, public event_listener, 
 
         int handle(int event);
         bool handle_evt_motion(const gpsdlayer::event_motion *e);
+        bool handle_evt_status(const gpsdlayer::event_status *e);
+        bool handle_evt_notify(const osmlayer::event_notify *e);
+        bool handle_evt_notify(const gpxlayer::event_notify *e);
         void layer_notify();
         void refresh();
 
@@ -48,9 +51,16 @@ class mapctrl : public Fl_Widget, public layer_observer, public event_listener, 
         void save_track(const std::string& path);
         void clear_track();
         void goto_cursor();
+        void record_track(bool start);
         double trip();
+        int mode();
 
-        void teardown();
+        bool selected();
+        point2d<double> selection_pos();
+        void selection_pos(const point2d<double>& p);
+
+        double selection_elevation();
+        void selection_elevation(double e);
     private:
         osmlayer *m_basemap;
         gpxlayer *m_gpxlayer;
@@ -59,6 +69,8 @@ class mapctrl : public Fl_Widget, public layer_observer, public event_listener, 
         point2d<int> m_mousepos;
         viewport m_viewport;
         canvas m_offscreen;
+
+        bool m_recordtrack;
 
         std::set<mapctrl_observer*> m_observers;
         void notify_observers();

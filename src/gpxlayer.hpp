@@ -25,8 +25,19 @@ class gpxlayer : public layer
         void save_track(const std::string &path);
         void clear_track();
         void add_trackpoint(const point2d<double>& p);
+
+
+        bool selected();
+        point2d<double> selection_pos();
+        void selection_pos(const point2d<double>& p);
+
+        double selection_elevation();
+        void selection_elevation(double e);
     
         double trip();
+
+        class event_notify;
+
     private:
         struct gpx_trkpt {
             double lat;
@@ -39,6 +50,8 @@ class gpxlayer : public layer
             bool dragging;
             std::vector<gpx_trkpt>::iterator it;
         };
+
+        void notify();
 
         bool press(const layer_mouseevent* evt);
         bool release(const layer_mouseevent* evt);
@@ -54,6 +67,13 @@ class gpxlayer : public layer
         std::vector<gpx_trkpt> m_trkpts;
         selection m_selection;
         long double m_trip;
+};
+
+class gpxlayer::event_notify : public event_base
+{
+    public:
+        event_notify() {};
+        ~event_notify() {};
 };
 
 #endif // GPXLAYER_HPP

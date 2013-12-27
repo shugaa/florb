@@ -8,9 +8,6 @@
 #include "point.hpp"
 #include "event.hpp"
 
-// Forward declare observer class
-class layer_observer;
-
 class layer : public event_listener, public event_generator
 {
     public:
@@ -20,25 +17,13 @@ class layer : public event_listener, public event_generator
         virtual void draw(const viewport &viewport, canvas &c) = 0;
         const std::string& name();
 
-        void addobserver(layer_observer &o);
-        void removeobserver(layer_observer &o);
-
-        void notify_observers();
-
         static bool is_instance(layer* l);
     private:
         static std::set<layer*> m_instances;
         std::string m_name;
-        std::set<layer_observer*> m_observers;
         
     protected:
         void name(const std::string &name);
-};
-
-class layer_observer
-{
-    public:
-        virtual void layer_notify() = 0;
 };
 
 class layer_mouseevent : public event_base

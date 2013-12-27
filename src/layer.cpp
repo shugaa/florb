@@ -26,23 +26,6 @@ void layer::name(const std::string &name)
     m_name = name;
 };
 
-void layer::addobserver(layer_observer &o)
-{
-    m_observers.insert(&o);
-};
-
-void layer::removeobserver(layer_observer &o)
-{
-    m_observers.erase(&o);
-};
-
-void layer::notify_observers()
-{
-    std::set<layer_observer*>::iterator it;
-    for (it = m_observers.begin(); it != m_observers.end(); it++)
-        (*it)->layer_notify();
-};
-
 bool layer::is_instance(layer* l)
 {
     std::set<layer*>::iterator it = m_instances.find(l);

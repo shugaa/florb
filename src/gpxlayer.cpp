@@ -16,6 +16,8 @@ gpxlayer::gpxlayer() :
     layer(),
     m_trip(0.0)
 {
+    m_selection.it = m_trkpts.end();
+
     name(std::string("Unnamed GPX layer"));
     register_event_handler<gpxlayer, layer_mouseevent>(this, &gpxlayer::handle_evt_mouse);
     register_event_handler<gpxlayer, layer_keyevent>(this, &gpxlayer::handle_evt_key);
@@ -31,7 +33,7 @@ bool gpxlayer::key(const layer_keyevent* evt)
     {
         m_trkpts.erase(m_selection.it);
         m_selection.it = m_trkpts.end();
-        notify_observers();
+        notify();
         ret = true;
     }
 
@@ -159,7 +161,7 @@ bool gpxlayer::drag(const layer_mouseevent* evt)
     m_selection.highlight = false;
 
     // Trigger redraw
-    notify_observers();
+    notify();
 
     return true;
 }
@@ -176,7 +178,7 @@ bool gpxlayer::release(const layer_mouseevent* evt)
         if (m_selection.dragging)
             trip_calcall();
 
-        notify_observers();
+        notify();
         return true;
     };
 
@@ -212,7 +214,7 @@ bool gpxlayer::release(const layer_mouseevent* evt)
     m_selection.highlight = true;
 
     // Indicate that this layer has changed
-    notify_observers();
+    notify();
 
     return true;
 }
@@ -237,7 +239,7 @@ void gpxlayer::add_trackpoint(const point2d<double>& p)
     m_selection.highlight = true;
 
     // Indicate that this layer has changed
-    notify_observers(); 
+    notify(); 
 }
 
 void gpxlayer::load_track(const std::string &path)
@@ -249,7 +251,7 @@ void gpxlayer::load_track(const std::string &path)
 
     m_trkpts.clear();
     parsetree(doc.RootElement());
-    notify_observers();
+    notify();
 };
 
 void gpxlayer::save_track(const std::string &path)
@@ -325,13 +327,65 @@ void gpxlayer::save_track(const std::string &path)
 void gpxlayer::clear_track()
 {
    m_trkpts.clear();
+   m_selection.it = m_trkpts.end();
    trip_calcall();
-   notify_observers();
+   notify();
 }
 
 double gpxlayer::trip()
 {
     return m_trip;
+}
+
+void gpxlayer::notify()
+{
+    event_notify e;
+    fire(&e);
+}
+
+bool gpxlayer::selected()
+{
+    return ((m_selection.it != m_trkpts.end()) && (m_selection.highlight));
+}
+
+point2d<double> gpxlayer::selection_pos()
+{
+    if (!selected())
+        throw 0;
+
+    double lonmerc = (*(m_selection.it)).lon;
+    double latmerc = (*(m_selection.it)).lat;
+
+    return utils::merc2wsg84(point2d<double>(lonmerc, latmerc));
+}
+
+void gpxlayer::selection_pos(const point2d<double>& p)
+{
+    if (!selected())
+        throw 0;
+
+    point2d<double> pmerc(utils::wsg842merc(p));
+    
+    (*(m_selection.it)).lon = pmerc.x();
+    (*(m_selection.it)).lat = pmerc.y();
+    notify();
+}
+
+double gpxlayer::selection_elevation()
+{
+    if (!selected())
+        throw 0;
+
+    return (*(m_selection.it)).ele;
+}
+
+void gpxlayer::selection_elevation(double e)
+{
+    if (!selected())
+        throw 0;
+
+    (*(m_selection.it)).ele = e;    
+    notify();
 }
 
 gpxlayer::~gpxlayer()

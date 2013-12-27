@@ -20,21 +20,27 @@ class gpsdlayer : public layer
         double track(); 
         double mode();
         bool valid();
+        bool connected();
 
+        class event_status;
         class event_motion;
     private:
         void pos(point2d<double> p);
         void track(double t); 
         void mode(int m);
         void valid(bool v);
+        void connected(bool c);
 
         static void cb_fire_event_motion(void* userdata);
+        static void cb_fire_event_status(void* userdata);
         void fire_event_motion();
+        void fire_event_status();
 
         point2d<double> m_pos;
         double m_track;
         int m_mode;
         bool m_valid;
+        bool m_connected;
 
         bool handle_evt_gpsupdate(const gpsdclient::event_update *e);
         gpsdclient *m_gpsdclient;
@@ -42,21 +48,35 @@ class gpsdlayer : public layer
         boost::interprocess::interprocess_mutex m_mutex;
 };
 
-class gpsdlayer::event_motion : public event_base
+class gpsdlayer::event_status : public event_base
 {
     public:
-        event_motion(int mode, const point2d<double>& pos, double track) :
-            m_mode(mode),
+        event_status(bool connected, int mode) :
+            m_connected(connected),
+            m_mode(mode) {};
+        virtual ~event_status() {};
+
+        bool connected() const { return m_connected; }
+        int mode() const { return m_mode; };
+
+    private:
+        bool m_connected;
+        int m_mode;
+};
+
+class gpsdlayer::event_motion : public event_status
+{
+    public:
+        event_motion(bool connected, int mode, const point2d<double>& pos, double track) :
+            event_status(connected, mode),
             m_pos(pos),
             m_track(track) {};
         ~event_motion() {};
 
-        int mode() const { return m_mode; };
         const point2d<double>& pos() const { return m_pos; };
         double track() const { return m_track; };
 
     private:
-        int m_mode;
         point2d<double> m_pos;
         double m_track;
 };

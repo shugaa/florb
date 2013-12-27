@@ -4,7 +4,9 @@
 #include "gpxlayer.hpp"
 #include "mapctrl.hpp"
 #include "settings.hpp"
+#include "gpsdclient.hpp"
 #include "fluid/dlg_ui.hpp"
+#include "fluid/dlg_editselection.hpp"
 
 void dlg_ui::mapctrl_notify()
 {
@@ -30,6 +32,22 @@ void dlg_ui::mapctrl_notify()
     ss.str("");
     ss << "Trip: " << m_mapctrl->trip() << "km";
     m_txtout_trip->value(ss.str().c_str());
+
+    switch(m_mapctrl->mode())
+    {
+        case (gpsdclient::FIX_NONE):
+            m_box_fix->color(FL_RED);
+            m_box_fix->label("?");
+            break;
+        case (gpsdclient::FIX_2D):
+            m_box_fix->color(FL_YELLOW);
+            m_box_fix->label("2D");
+        break;
+        case (gpsdclient::FIX_3D):
+            m_box_fix->color(FL_GREEN);
+            m_box_fix->label("3D");
+        break;
+    }
 }
 
 void dlg_ui::create_ex(void)
@@ -82,7 +100,6 @@ void dlg_ui::destroy_ex(void)
 
     // Delete toplevel window
     delete(m_window);
-    delete(m_waitwin);
 
     // Curl cleanup
     curl_global_cleanup();
@@ -142,8 +159,22 @@ void dlg_ui::cb_btn_cleartrack_ex(Fl_Widget *widget)
 
 void dlg_ui::cb_btn_gotocursor_ex(Fl_Widget *widget)
 {
-    // Clear the current track
     m_mapctrl->goto_cursor();
+}
+
+void dlg_ui::cb_btn_recordtrack_ex(Fl_Widget *widget)
+{
+    bool start = (m_btn_recordtrack->value() == 1) ? true : false;
+    m_mapctrl->record_track(start);
+}
+
+void dlg_ui::cb_btn_editselection_ex(Fl_Widget *widget)
+{
+    if (!m_mapctrl->selected())
+        return;
+
+    dlg_editselection es;
+    es.show(m_mapctrl);
 }
 
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)

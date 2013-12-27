@@ -110,8 +110,8 @@ class event_generator
         std::set<event_listener*> m_listeners;
 
     protected:
-        bool fire(event_base* evt);
-        bool fire_safe(event_base* evt);
+        bool fire(const event_base* evt);
+        bool fire_safe(const event_base* evt);
 };
 
 #endif // EVENT_HPP

@@ -1,0 +1,116 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0300 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include "mapctrl.hpp"} {public global
+} 
+
+class dlg_editselection {open
+} {
+  decl {void show_ex(mapctrl *m);} {private local
+  }
+  Function {dlg_editselection()} {open
+  } {
+    Fl_Window m_window {
+      label {Edit waypoint} open selected
+      private xywh {720 307 220 180} type Double modal visible
+    } {
+      Fl_Pack {} {open
+        private xywh {0 0 220 183}
+      } {
+        Fl_Box {} {
+          private xywh {0 0 220 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 5 220 135} type HORIZONTAL resizable
+        } {
+          Fl_Box {} {
+            private xywh {0 5 5 135}
+          }
+          Fl_Pack {} {open
+            private xywh {5 5 210 135}
+          } {
+            Fl_Box {} {
+              label {Longitude [°]}
+              private xywh {5 5 210 20} labelsize 12 align 20
+            }
+            Fl_Input m_txtin_lon {
+              label Longitude
+              private xywh {5 25 210 25} labeltype NO_LABEL labelsize 12 align 5
+            }
+            Fl_Box {} {
+              label {Latitude [°]}
+              private xywh {5 50 210 20} labelsize 12 align 20
+            }
+            Fl_Input m_txtin_lat {
+              label Latitude
+              private xywh {5 70 210 25} labeltype NO_LABEL labelsize 12 align 5
+            }
+            Fl_Box {} {
+              label {Elevation [m]}
+              private xywh {5 95 210 20} labelsize 12 align 20
+            }
+            Fl_Input m_txtin_ele {
+              label Elevation
+              private xywh {5 115 210 25} labeltype NO_LABEL labelsize 12 align 5
+            }
+          }
+          Fl_Box {} {
+            private xywh {215 5 5 135}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 140 220 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 145 220 2} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 145 5 2}
+          }
+          Fl_Box {} {
+            private xywh {5 145 210 2} box ENGRAVED_BOX resizable
+          }
+          Fl_Box {} {
+            private xywh {215 145 5 2}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 147 220 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 152 220 25} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 152 5 25} resizable
+          }
+          Fl_Button m_btn_ok {
+            label OK
+            private xywh {5 152 100 25}
+          }
+          Fl_Box {} {
+            private xywh {105 152 10 25}
+          }
+          Fl_Button m_btn_cancel {
+            label Cancel
+            private xywh {115 152 100 25}
+          }
+          Fl_Box {} {
+            private xywh {215 152 5 25}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 178 220 5}
+        }
+      }
+    }
+  }
+  Function {~dlg_editselection()} {} {
+    code {if (m_window)
+    delete(m_window);} {}
+  }
+  Function {show(mapctrl *m)} {open return_type void
+  } {
+    code {show_ex(m);} {}
+  }
+} 

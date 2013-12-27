@@ -114,8 +114,11 @@ void osmlayer::process_downloads()
         delete ti;
     }
 
-    if (ret)
-        notify_observers();
+    if (ret) 
+    {
+        event_notify e;
+        fire(&e);
+    }
 }
 
 void osmlayer::cb_download(void *userdata)

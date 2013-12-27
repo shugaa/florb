@@ -16,17 +16,20 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_gpsdlayer(NULL),
     m_mousepos(0, 0),
     m_viewport((unsigned long)w, (unsigned long)h),
-    m_offscreen(500,500)
+    m_offscreen(500,500),
+    m_recordtrack(false)
 {
     m_gpxlayer = new gpxlayer();
-    m_gpxlayer->addobserver(*this);
+    m_gpxlayer->add_event_listener(this);
     add_event_listener(m_gpxlayer);
 
     m_gpsdlayer = new gpsdlayer();
-    m_gpsdlayer->addobserver(*this);
     m_gpsdlayer->add_event_listener(this);
 
+    register_event_handler<mapctrl, gpsdlayer::event_status>(this, &mapctrl::handle_evt_status);
     register_event_handler<mapctrl, gpsdlayer::event_motion>(this, &mapctrl::handle_evt_motion);
+    register_event_handler<mapctrl, osmlayer::event_notify>(this, &mapctrl::handle_evt_notify);
+    register_event_handler<mapctrl, gpxlayer::event_notify>(this, &mapctrl::handle_evt_notify);
 }
 
 mapctrl::~mapctrl()
@@ -83,12 +86,62 @@ void mapctrl::goto_cursor()
     refresh();
 }
 
+bool mapctrl::selected()
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    return m_gpxlayer->selected();
+}
+
+point2d<double> mapctrl::selection_pos()
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    return m_gpxlayer->selection_pos();
+}
+
+void mapctrl::selection_pos(const point2d<double>& p)
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    m_gpxlayer->selection_pos(p);
+}
+
+double mapctrl::selection_elevation()
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    return m_gpxlayer->selection_elevation();
+}
+
+void mapctrl::selection_elevation(double e)
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    m_gpxlayer->selection_elevation(e);
+}
+
+void mapctrl::record_track(bool start)
+{
+    m_recordtrack = start;
+}
+
 double mapctrl::trip()
 {
     if (!m_gpxlayer)
         throw 0;
 
     return m_gpxlayer->trip();
+}
+
+int mapctrl::mode()
+{
+    return m_gpsdlayer->mode();
 }
 
 void mapctrl::layer_notify()
@@ -129,7 +182,7 @@ void mapctrl::basemap(
 
     // Create a new basemap layer
     m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
-    m_basemap->addobserver(*this);
+    m_basemap->add_event_listener(this);
 
     // Destroy the original basemap layer 
     if (tmp)
@@ -232,7 +285,29 @@ bool mapctrl::vp_inside(const point2d<int>& pos)
 
 bool mapctrl::handle_evt_motion(const gpsdlayer::event_motion *e)
 {
-    m_gpxlayer->add_trackpoint(e->pos());
+    if (m_recordtrack)
+        m_gpxlayer->add_trackpoint(e->pos());
+    else 
+        refresh();
+
+    return true;
+}
+
+bool mapctrl::handle_evt_status(const gpsdlayer::event_status *e)
+{
+    notify_observers();
+    return true;
+}
+
+bool mapctrl::handle_evt_notify(const osmlayer::event_notify *e)
+{
+    refresh();
+    return true;
+}
+
+bool mapctrl::handle_evt_notify(const gpxlayer::event_notify *e)
+{
+    refresh();
     return true;
 }
 

@@ -25,6 +25,8 @@ class osmlayer : public layer
         int zoom_min() { return m_zmin; };
         int zoom_max() { return m_zmax; };
 
+        class event_notify;
+
     private:
         class tileinfo;
 
@@ -60,4 +62,12 @@ class osmlayer : public layer
         static void testcb(void *ud);
 };
 
+class osmlayer::event_notify : public event_base
+{
+    public:
+        event_notify() {};
+        ~event_notify() {};
+};
+
 #endif // OSMLAYER_HPP
+

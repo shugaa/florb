@@ -10,6 +10,7 @@ gpsdlayer::gpsdlayer() :
     layer(),
     m_mode(gpsdclient::FIX_NONE),
     m_valid(false),
+    m_connected(false),
     m_gpsdclient(NULL)
 {
     name(std::string("Unnamed GPSD layer"));
@@ -98,6 +99,20 @@ void gpsdlayer::valid(bool v)
     m_valid = v;
     m_mutex.unlock();
 }
+bool gpsdlayer::connected(void)
+{
+    m_mutex.lock();
+    bool ret = m_connected;
+    m_mutex.unlock();
+
+    return ret;
+}
+void gpsdlayer::connected(bool b)
+{
+    m_mutex.lock();
+    m_connected = b;
+    m_mutex.unlock();
+}
 
 void gpsdlayer::cb_fire_event_motion(void* userdata)
 {
@@ -114,9 +129,30 @@ void gpsdlayer::cb_fire_event_motion(void* userdata)
     gpsdl->fire_event_motion();
 }
 
+void gpsdlayer::cb_fire_event_status(void* userdata)
+{
+    // Are we pointing to a valid layer instance?
+    layer *l = static_cast<layer*>(userdata);
+    if (!is_instance(l))
+        return;
+
+    // Is the layer instance we're pointing to a gpsdlayer?
+    gpsdlayer *gpsdl = dynamic_cast<gpsdlayer*>(l);
+    if (!gpsdl)
+        return;
+    
+    gpsdl->fire_event_status();
+}
+
 void gpsdlayer::fire_event_motion()
 {
-    event_motion e(mode(), pos(), track());
+    event_motion e(connected(), mode(), pos(), track());
+    fire(&e);
+}
+
+void gpsdlayer::fire_event_status()
+{
+    event_status e(connected(), mode());
     fire(&e);
 }
 
@@ -124,8 +160,8 @@ bool gpsdlayer::handle_evt_gpsupdate(const gpsdclient::event_update *e)
 {
     bool motion = false;
 
-    // Found fix
-    if ((e->mode() != mode()) && (mode() == gpsdclient::FIX_NONE)) 
+    // Found first fix or better fix
+    if (e->mode() > mode()) 
         motion = true;
     // Motion > 1m
     else if (((e->mode() != gpsdclient::FIX_NONE)) && (utils::dist(pos(), e->pos()) >= 0.001))
@@ -139,6 +175,10 @@ bool gpsdlayer::handle_evt_gpsupdate(const gpsdclient::event_update *e)
         valid(true);
         pos(e->pos());
         Fl::awake(cb_fire_event_motion, this);
+    }
+    else
+    {
+        Fl::awake(cb_fire_event_status, this);
     }
 
     return true;

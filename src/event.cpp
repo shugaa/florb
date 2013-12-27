@@ -77,7 +77,7 @@ void event_generator::remove_event_listener(event_listener *l)
         m_listeners.erase(it);
 }
 
-bool event_generator::fire(event_base* evt)
+bool event_generator::fire(const event_base* evt)
 {
     bool ret = false;
     
@@ -91,7 +91,7 @@ bool event_generator::fire(event_base* evt)
     return ret;
 }
 
-bool event_generator::fire_safe(event_base* evt)
+bool event_generator::fire_safe(const event_base* evt)
 {
     bool ret = false;
 
