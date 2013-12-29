@@ -23,13 +23,16 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_gpxlayer->add_event_listener(this);
     add_event_listener(m_gpxlayer);
 
-    m_gpsdlayer = new gpsdlayer();
-    m_gpsdlayer->add_event_listener(this);
-
     register_event_handler<mapctrl, gpsdlayer::event_status>(this, &mapctrl::handle_evt_status);
     register_event_handler<mapctrl, gpsdlayer::event_motion>(this, &mapctrl::handle_evt_motion);
     register_event_handler<mapctrl, osmlayer::event_notify>(this, &mapctrl::handle_evt_notify);
     register_event_handler<mapctrl, gpxlayer::event_notify>(this, &mapctrl::handle_evt_notify);
+
+    // Add a gpsdlayer if enabled
+    if (settings::get_instance()["gpsd"]["enabled"].as<bool>())
+    connect(
+        settings::get_instance()["gpsd"]["host"].as<std::string>(),  
+        settings::get_instance()["gpsd"]["port"].as<std::string>());
 }
 
 mapctrl::~mapctrl()
@@ -126,6 +129,42 @@ void mapctrl::selection_elevation(double e)
     m_gpxlayer->selection_elevation(e);
 }
 
+void mapctrl::selection_delete()
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    m_gpxlayer->selection_delete();    
+}
+
+bool mapctrl::connected()
+{
+    if (!m_gpsdlayer)
+        return false;
+
+    return m_gpsdlayer->connected();
+}
+
+void mapctrl::connect(const std::string& host, const std::string& port)
+{
+    if (connected())
+        disconnect();
+
+    m_gpsdlayer = new gpsdlayer(host, port);
+    m_gpsdlayer->add_event_listener(this);
+}
+
+void mapctrl::disconnect()
+{
+    if (!m_gpsdlayer)
+        return;
+
+    delete m_gpsdlayer;
+    m_gpsdlayer = NULL;
+    refresh();
+    notify_observers();
+}
+
 void mapctrl::record_track(bool start)
 {
     m_recordtrack = start;
@@ -141,6 +180,9 @@ double mapctrl::trip()
 
 int mapctrl::mode()
 {
+    if (!m_gpsdlayer)
+        throw 0;
+
     return m_gpsdlayer->mode();
 }
 
@@ -289,6 +331,8 @@ bool mapctrl::handle_evt_motion(const gpsdlayer::event_motion *e)
         m_gpxlayer->add_trackpoint(e->pos());
     else 
         refresh();
+
+    notify_observers();
 
     return true;
 }

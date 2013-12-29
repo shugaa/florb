@@ -6,21 +6,23 @@
 #include "point.hpp"
 #include "gpsdlayer.hpp"
 
-gpsdlayer::gpsdlayer() :
+gpsdlayer::gpsdlayer(const std::string& host, const std::string& port) :
     layer(),
+    m_pos(0.0, 0.0),
+    m_track(0.0),
     m_mode(gpsdclient::FIX_NONE),
     m_valid(false),
     m_connected(false),
     m_gpsdclient(NULL)
 {
-    name(std::string("Unnamed GPSD layer"));
+    name(std::string("GPSD"));
 
-    m_gpsdclient = new gpsdclient("localhost", "2947");
+    m_gpsdclient = new gpsdclient(host, port);
+    if (!m_gpsdclient)
+        throw 0;
 
-    if (m_gpsdclient)
-        m_gpsdclient->add_event_listener(this);
-
-    register_event_handler<gpsdlayer, gpsdclient::event_update>(this, &gpsdlayer::handle_evt_gpsupdate);
+    register_event_handler<gpsdlayer, gpsdclient::event_gpsd>(this, &gpsdlayer::handle_evt_gpsd);
+    m_gpsdclient->add_event_listener(this);
 };
 
 gpsdlayer::~gpsdlayer()
@@ -28,18 +30,6 @@ gpsdlayer::~gpsdlayer()
     if (m_gpsdclient)
         delete m_gpsdclient;
 };
-
-//void gpsdlayer::connect(const std::sting& host, int port)
-//{
-//    disconnect();
-//    m_gpsdclient = new gpsdclient(host, port);
-//}
-
-//void gpsdlayer::disconnect()
-//{
-//    if (m_gpsdclient)
-//        delete m_gpsdclient;
-//}
 
 const point2d<double> gpsdlayer::pos()
 {
@@ -49,6 +39,7 @@ const point2d<double> gpsdlayer::pos()
 
     return ptmp;
 }
+
 void gpsdlayer::pos(point2d<double> p) 
 {
     m_mutex.lock();
@@ -64,6 +55,7 @@ double gpsdlayer::track()
 
     return ret;
 }
+
 void gpsdlayer::track(double t) 
 {
     m_mutex.lock();
@@ -79,12 +71,14 @@ double gpsdlayer::mode()
 
     return ret;
 }
+
 void gpsdlayer::mode(int m) 
 {
     m_mutex.lock();
     m_mode = m;
     m_mutex.unlock();
 }
+
 bool gpsdlayer::valid(void)
 {
     m_mutex.lock();
@@ -93,12 +87,14 @@ bool gpsdlayer::valid(void)
 
     return ret;
 }
+
 void gpsdlayer::valid(bool v)
 {
     m_mutex.lock();
     m_valid = v;
     m_mutex.unlock();
 }
+
 bool gpsdlayer::connected(void)
 {
     m_mutex.lock();
@@ -107,10 +103,11 @@ bool gpsdlayer::connected(void)
 
     return ret;
 }
-void gpsdlayer::connected(bool b)
+
+void gpsdlayer::connected(bool c)
 {
     m_mutex.lock();
-    m_connected = b;
+    m_connected = c;
     m_mutex.unlock();
 }
 
@@ -156,17 +153,21 @@ void gpsdlayer::fire_event_status()
     fire(&e);
 }
 
-bool gpsdlayer::handle_evt_gpsupdate(const gpsdclient::event_update *e)
+bool gpsdlayer::handle_evt_gpsd(const gpsdclient::event_gpsd *e)
 {
     bool motion = false;
 
-    // Found first fix or better fix
+    // Found first fix or better quality fix
     if (e->mode() > mode()) 
         motion = true;
-    // Motion > 1m
-    else if (((e->mode() != gpsdclient::FIX_NONE)) && (utils::dist(pos(), e->pos()) >= 0.001))
+    // Motion >= 2m compared to the previous update
+    else if (
+        (valid()) &&
+        ((e->mode() != gpsdclient::FIX_NONE)) && 
+        (utils::dist(pos(), e->pos()) >= 0.002))
         motion = true;
-     
+    
+    connected(e->connected());
     mode(e->mode());
     track(e->track());
 
@@ -189,16 +190,17 @@ void gpsdlayer::draw(const viewport &viewport, canvas &os)
     if (!m_gpsdclient)
         return;
 
-    if (!m_gpsdclient->connected())
-        return;
-
     if (!valid())
         return;
 
+    double t = track();
+    double d2r = (M_PI/180.0);
+    double csize = 17.0;
+
     // Calculate cursor rotation
-    point2d<int> p1((int)((cos((90.0+track())*(M_PI/180.0))*17.0)), (int)(sin((90.0+track())*(M_PI/180))*17.0));
-    point2d<int> p2((int)((cos((222.0+track())*(M_PI/180.0))*17.0)), (int)(sin((222.0+track())*(M_PI/180))*17.0));
-    point2d<int> p3((int)((cos((310.0+track())*(M_PI/180.0))*17.0)), (int)(sin((310.0+track())*(M_PI/180))*17.0));
+    point2d<int> p1((int)((cos((90.0+t)*d2r)*csize)), (int)(sin((90.0+t)*d2r)*csize));
+    point2d<int> p2((int)((cos((222.0+t)*d2r)*csize)), (int)(sin((222.0+t)*d2r)*csize));
+    point2d<int> p3((int)((cos((310.0+t)*d2r)*csize)), (int)(sin((310.0+t)*d2r)*csize));
 
     // Calculate current pixel position on the map
     point2d<unsigned long> pxpos(utils::wsg842px(viewport.z(), pos()));

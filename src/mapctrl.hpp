@@ -37,6 +37,10 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         void layer_notify();
         void refresh();
 
+        bool connected();
+        void connect(const std::string& host, const std::string& port);
+        void disconnect();
+
         point2d<double> mousegps();
         unsigned int zoom();
         void zoom(unsigned int z);
@@ -58,6 +62,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         bool selected();
         point2d<double> selection_pos();
         void selection_pos(const point2d<double>& p);
+        void selection_delete();
 
         double selection_elevation();
         void selection_elevation(double e);

@@ -7,11 +7,12 @@ gpsdclient::gpsdclient(const std::string host, const std::string port) :
     m_exit(false),
     m_connected(false),
     m_mode(FIX_NONE),
-    m_latitude(0.0),
-    m_longitude(0.0),
+    m_pos(0.0, 0.0),
     m_track(0.0)
 {
     m_thread = new boost::thread(boost::bind(&gpsdclient::worker, this));
+    if (!m_thread)
+        throw 0;
 }
 
 gpsdclient::~gpsdclient()
@@ -39,25 +40,102 @@ void gpsdclient::exit(bool e)
     m_mutex.unlock();
 }
 
+void gpsdclient::connected(bool c)
+{
+    m_mutex.lock();
+
+    if (!c)
+    {
+        m_mode = FIX_NONE;
+        m_track = 0.0;
+        m_pos.x(0.0);
+        m_pos.y(0.0);
+    }
+
+    m_connected = c;
+
+    m_mutex.unlock();
+}
+
 bool gpsdclient::connected(void)
 {
-    bool ret;
-
     m_mutex.lock();
-    ret = m_connected;
+    bool ret = m_connected;
     m_mutex.unlock();
 
     return ret;   
 }
 
-void gpsdclient::fire_event_update(void)
+void gpsdclient::mode(int m)
 {
-    event_update ue(
-            m_mode,
-            point2d<double>(m_longitude, m_latitude),
-            m_track);
+    m_mutex.lock();
 
-    fire(&ue);
+    if (m == FIX_NONE)
+    {
+        m_track = 0.0;
+        m_pos.x(0.0);
+        m_pos.y(0.0);
+    }
+
+    m_mode = m;
+
+    m_mutex.unlock();
+}
+
+int gpsdclient::mode(void)
+{
+    m_mutex.lock();
+    int ret = m_mode;
+    m_mutex.unlock();
+
+    return ret;   
+}
+
+void gpsdclient::track(double t)
+{
+    m_mutex.lock();
+    m_track = t;
+    m_mutex.unlock();
+}
+
+double gpsdclient::track(void)
+{
+    m_mutex.lock();
+    double ret = m_track;
+    m_mutex.unlock();
+
+    return ret;   
+}
+
+void gpsdclient::pos(const point2d<double>& p)
+{
+    m_mutex.lock();
+    m_pos = p;
+    m_mutex.unlock();
+}
+
+void gpsdclient::pos(double lon, double lat)
+{
+    m_mutex.lock();
+    m_pos.x(lon);
+    m_pos.y(lat);
+    m_mutex.unlock();
+}
+
+
+point2d<double> gpsdclient::pos(void)
+{
+    m_mutex.lock();
+    point2d<double> ret(m_pos);
+    m_mutex.unlock();
+
+    return ret;   
+}
+
+void gpsdclient::fire_event_gpsd(void)
+{
+    event_gpsd ge(m_connected, m_mode, m_pos, m_track);
+    fire(&ge);
 }
 
 void gpsdclient::worker(void)
@@ -79,9 +157,8 @@ void gpsdclient::worker(void)
 
     // Update connection status
     if (rc == 0) {
-        m_mutex.lock();
-        m_connected = true;
-        m_mutex.unlock();
+        connected(true);
+        fire_event_gpsd();
     }
 
     for (;;)
@@ -110,17 +187,20 @@ void gpsdclient::worker(void)
             break;
         }
 
+        // Handle received data
         handle_set();
     }
 
-    // Try to shut down
-    gps_stream(&m_gpsdata, WATCH_DISABLE, NULL);
-    gps_close(&m_gpsdata);
+    // Try to shut down if the previous initialisation step didn't fail
+    if (rc == 0)
+    {
+        gps_stream(&m_gpsdata, WATCH_DISABLE, NULL);
+        gps_close(&m_gpsdata);
+    }
 
     // Update connection status
-    m_mutex.lock();
-    m_connected = false;
-    m_mutex.unlock();
+    connected(false);
+    fire_event_gpsd();
 }
 
 bool gpsdclient::handle_set()
@@ -128,39 +208,30 @@ bool gpsdclient::handle_set()
     bool ret = false;
 
     for (;;) {
-        // Handle latitude / longitude set
-        if (m_gpsdata.set & LATLON_SET)
+
+        // Mode update / Position update
+        if (m_gpsdata.set & MODE_SET)
         {
-            if (m_gpsdata.set & MODE_SET)
+            int m = FIX_NONE;
+            if (m_gpsdata.fix.mode == MODE_2D) 
+                m = FIX_2D;
+            else if (m_gpsdata.fix.mode == MODE_3D) 
+                m = FIX_3D;
+
+            if (m_mode != m)
             {
-                int mode = FIX_NONE;
-                if (m_gpsdata.fix.mode == MODE_2D) 
-                {
-                    m_mutex.lock();
-                    mode = FIX_2D;
-                    m_mutex.unlock();
-                } else if (m_gpsdata.fix.mode == MODE_3D) 
-                {
-                    m_mutex.lock();
-                    mode = FIX_3D;
-                    m_mutex.unlock();                
-                }
+                ret = true;
+                mode(m);
+            }
 
-                if (m_mode != mode)
-                    ret = true;
-
-                m_mutex.lock();
-                m_mode = mode;
-                m_mutex.unlock();
-
+            // Handle latitude / longitude set
+            if (m_gpsdata.set & LATLON_SET)
+            {
                 // Handle latitude / longitude
-                if ((m_gpsdata.fix.latitude != m_latitude) ||
-                    (m_gpsdata.fix.longitude != m_longitude)) 
+                if ((m_gpsdata.fix.latitude != m_pos.y()) ||
+                    (m_gpsdata.fix.longitude != m_pos.x())) 
                 {
-                    m_mutex.lock();
-                    m_latitude = m_gpsdata.fix.latitude;
-                    m_longitude = m_gpsdata.fix.longitude;
-                    m_mutex.unlock();
+                    pos(m_gpsdata.fix.longitude, m_gpsdata.fix.latitude);
                     ret = true;
                 }
             }
@@ -170,15 +241,14 @@ bool gpsdclient::handle_set()
         if (m_gpsdata.set & TRACK_SET)
         {
             if (m_track != m_gpsdata.fix.track) {
-                m_mutex.lock();
-                m_track = m_gpsdata.fix.track;
-                m_mutex.unlock();
+                track(m_gpsdata.fix.track);
                 ret = true;
             }
         }
 
+        // FIre notification event if necessary.
         if (ret)
-            fire_event_update();
+            fire_event_gpsd();
 
         break;
     }

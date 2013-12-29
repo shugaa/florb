@@ -378,7 +378,7 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
               c.fillrect(px, py, TILE_W, TILE_H);
           }
 
-          // Tile not in cache or expired
+          // Tile not in cache or expired, schedule for downloading
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {

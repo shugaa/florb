@@ -2,16 +2,7 @@
 version 1.0300 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <cstring>} {private global
-} 
-
 decl {\#include <signal.h>} {private global
-} 
-
-decl {\#include <iostream>} {private global
-} 
-
-decl {\#include <sstream>} {private global
 } 
 
 decl {\#include <curl/curl.h>} {private global
@@ -20,19 +11,7 @@ decl {\#include <curl/curl.h>} {private global
 decl {\#include "dlg_ui.hpp"} {private global
 } 
 
-decl {\#include "orb_dlg_settings.hpp"} {public global
-} 
-
-decl {\#include "orb_dlg_layers.hpp"} {public global
-} 
-
-decl {\#include "orb_dlg_about.hpp"} {public global
-} 
-
-decl {\#include "orb_dlg_elpro.hpp"} {public global
-} 
-
-decl {\#include "dlg_servers.hpp"} {public global
+decl {\#include "dlg_about.hpp"} {public global
 } 
 
 decl {\#include "mapctrl.hpp"} {public global
@@ -44,6 +23,22 @@ class dlg_ui {open : {public mapctrl_observer, public event_listener}
   }
   decl {void destroy_ex(void);} {private local
   }
+  decl {void loadtrack_ex(void);} {private local
+  }
+  decl {void savetrack_ex(void);} {private local
+  }
+  decl {void gotocursor_ex(void);} {private local
+  }
+  decl {void recordtrack_ex(void);} {private local
+  }
+  decl {void editselection_ex(void);} {private local
+  }
+  decl {void deleteselection_ex(void);} {private local
+  }
+  decl {void cleartrack_ex(void);} {private local
+  }
+  decl {void gpsdsettings_ex(void);} {private local
+  }
   decl {void show_ex(int argc, char *argv[]);} {private local
   }
   decl {void hide_ex();} {private local
@@ -54,11 +49,15 @@ class dlg_ui {open : {public mapctrl_observer, public event_listener}
   }
   decl {void cb_btn_cleartrack_ex(Fl_Widget *widget);} {private local
   }
-  decl {void cb_btn_gotocursor_ex(Fl_Widget *widget);} {private local
-  }
   decl {void cb_btn_recordtrack_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_btn_editselection_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_gpsd_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_gotocursor_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_deleteselection_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_choice_basemap_ex(Fl_Widget *widget);} {private local
   }
@@ -68,222 +67,7 @@ class dlg_ui {open : {public mapctrl_observer, public event_listener}
   }
   decl {void mapctrl_notify();} {public local
   }
-  decl {orb_dlg_layers *m_dlg_layers;} {private local
-  }
-  decl {orb_dlg_about *m_dlg_about;} {private local
-  }
-  decl {orb_dlg_settings *m_dlg_settings;} {private local
-  }
-  decl {orb_dlg_elpro *m_dlg_elpro;} {private local
-  }
-  decl {dlg_servers *m_dlg_servers;} {private local
-  }
-  Function {dlg_ui()} {open
-  } {
-    Fl_Window m_window {
-      label florb open
-      private xywh {551 134 805 565} type Double align 80 resizable visible
-    } {
-      Fl_Pack {} {open
-        private xywh {0 0 805 565} resizable
-      } {
-        Fl_Menu_Bar m_menubar {
-          private xywh {0 0 805 25}
-        } {
-          Submenu {} {
-            label File
-            private xywh {0 0 100 20}
-          } {
-            MenuItem m_menu_file_close {
-              label Quit
-              private xywh {0 0 100 20}
-            }
-          }
-          Submenu {} {
-            label Edit
-            private xywh {0 0 100 20}
-          } {
-            MenuItem m_menu_edit_settings {
-              label Settings
-              private xywh {0 0 100 20}
-            }
-            MenuItem m_menu_edit_layers {
-              label Layers
-              private xywh {0 0 100 20}
-            }
-            MenuItem m_menu_edit_servers {
-              label Tileservers
-              private xywh {10 10 100 20}
-            }
-          }
-          Submenu {} {
-            label Help
-            private xywh {0 0 100 20}
-          } {
-            MenuItem m_menu_help_about {
-              label About
-              private xywh {0 0 100 20}
-            }
-          }
-        }
-        Fl_Box {} {
-          private xywh {0 25 805 4}
-        }
-        Fl_Pack {} {open
-          private xywh {0 29 805 26} type HORIZONTAL
-        } {
-          Fl_Box {} {
-            private xywh {0 29 5 25} box FLAT_BOX
-          }
-          Fl_Button m_btn_loadtrack {
-            user_data this
-            callback cb_btn_loadtrack
-            private tooltip {Load GPX file} image {../res/document-open.png} xywh {5 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
-          }
-          Fl_Box {} {
-            private xywh {30 29 5 25} box FLAT_BOX
-          }
-          Fl_Button m_btn_savetrack {
-            user_data this
-            callback cb_btn_savetrack
-            private tooltip {Save current track} image {../res/document-save.png} xywh {35 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
-          }
-          Fl_Box {} {
-            private xywh {60 29 5 25} box FLAT_BOX
-          }
-          Fl_Button m_btn_cleartrack {
-            user_data this
-            callback cb_btn_cleartrack
-            private tooltip {Clear current track} image {../res/edit-clear.png} xywh {65 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
-          }
-          Fl_Box {} {
-            private xywh {90 29 5 25} box FLAT_BOX
-          }
-          Fl_Box {} {
-            private xywh {95 29 2 25} box ENGRAVED_BOX
-          }
-          Fl_Box {} {
-            private xywh {97 29 5 25} box FLAT_BOX
-          }
-          Fl_Button m_btn_editselection {
-            user_data this
-            callback cb_btn_editselection selected
-            private tooltip {Edit Waypoint} image {../res/preferences-system.png} xywh {102 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
-          }
-          Fl_Box {} {
-            private xywh {127 29 5 25} box FLAT_BOX
-          }
-          Fl_Button m_btn_deletewaypoint {
-            user_data this
-            callback cb_btn_cleartrack
-            private tooltip {Delete Waypoint} image {../res/edit-delete.png} xywh {132 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
-          }
-          Fl_Box {} {
-            private xywh {157 29 5 25} box FLAT_BOX
-          }
-          Fl_Box {} {
-            private xywh {162 29 2 25} box ENGRAVED_BOX
-          }
-          Fl_Box {} {
-            private xywh {164 29 5 25} box FLAT_BOX
-          }
-          Fl_Button m_btn_gpsd {
-            user_data this
-            callback cb_btn_cleartrack
-            private tooltip GPSD image {../res/network-wired.png} xywh {169 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
-          }
-          Fl_Box {} {
-            private xywh {194 29 5 25} box FLAT_BOX
-          }
-          Fl_Button m_btn_gotocursor {
-            user_data this
-            callback cb_btn_gotocursor
-            private tooltip {Go to cursor} image {../res/go-home.png} xywh {199 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
-          }
-          Fl_Box {} {
-            private xywh {224 29 5 25} box FLAT_BOX
-          }
-          Fl_Button m_btn_recordtrack {
-            user_data this
-            callback cb_btn_recordtrack
-            private image {../res/audio-input-microphone.png} xywh {229 29 25 25} type Toggle box NO_BOX down_box DOWN_BOX
-          }
-          Fl_Box {} {
-            private xywh {254 29 5 25} box FLAT_BOX
-          }
-          Fl_Box {} {
-            private xywh {259 29 2 25} box ENGRAVED_BOX
-          }
-          Fl_Box {} {
-            private xywh {261 29 5 25} box FLAT_BOX
-          }
-          Fl_Choice m_choice_basemap {
-            user_data this
-            callback cb_choice_basemap open
-            private xywh {266 29 534 26} down_box BORDER_BOX resizable
-          } {}
-          Fl_Box {} {
-            private xywh {800 29 5 25}
-          }
-        }
-        Fl_Box {} {
-          private xywh {0 54 805 4}
-        }
-        Fl_Pack {} {open
-          private xywh {0 58 805 480} type HORIZONTAL resizable
-        } {
-          Fl_Box {} {
-            private xywh {0 58 5 480} box FLAT_BOX
-          }
-          Fl_Box m_mapctrl {
-            label {Slippy Map}
-            private xywh {5 58 795 480} box FLAT_BOX resizable
-            class mapctrl
-          }
-          Fl_Box {} {
-            private xywh {800 58 5 480} box FLAT_BOX
-          }
-        }
-        Fl_Box {} {
-          private xywh {0 538 805 5}
-        }
-        Fl_Pack {} {open
-          private xywh {0 543 805 22} type HORIZONTAL
-        } {
-          Fl_Output m_txtout_zoom {
-            private xywh {0 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
-          }
-          Fl_Output m_txtout_lon {
-            private xywh {140 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
-          }
-          Fl_Output m_txtout_lat {
-            private xywh {280 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
-          }
-          Fl_Output m_txtout_trip {
-            private xywh {420 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
-          }
-          Fl_Box {} {
-            private xywh {560 543 195 22} box THIN_DOWN_BOX resizable
-          }
-          Fl_Box m_box_fix {
-            label 3D
-            private xywh {755 543 50 22} box THIN_DOWN_BOX color 63 labelsize 12
-          }
-        }
-      }
-    }
-    code {create_ex();} {}
-  }
-  Function {~dlg_ui()} {} {
-    code {destroy_ex();} {}
-  }
-  Function {show(int argc, char *argv[])} {return_type void
-  } {
-    code {show_ex(argc, argv);} {}
-  }
-  Function {hide()} {return_type void
-  } {
-    code {hide_ex();} {}
+  decl {dlg_about *m_dlg_about;} {private local
   }
   Function {cb_close(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
@@ -320,22 +104,265 @@ ui->cb_btn_gotocursor_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_recordtrack_ex(widget);} {}
   }
-  Function {cb_btn_editselection(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  Function {cb_btn_editselection(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_editselection_ex(widget);} {}
+  }
+  Function {cb_btn_gpsd(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_btn_gpsd_ex(widget);} {}
+  }
+  Function {cb_btn_deleteselection(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_btn_deleteselection_ex(widget);} {}
   }
   Function {cb_choice_basemap(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
+  Function {dlg_ui()} {open
+  } {
+    Fl_Window m_window {
+      label florb open
+      private xywh {550 255 805 565} type Double align 80 resizable visible
+    } {
+      Fl_Pack {} {open
+        private xywh {0 0 805 565} resizable
+      } {
+        Fl_Menu_Bar m_menubar {
+          user_data this
+          callback cb_menu open
+          private xywh {0 0 805 25} box FLAT_BOX
+        } {
+          Submenu {} {
+            label File open
+            private xywh {0 0 100 20}
+          } {
+            MenuItem {} {
+              label {&Open GPX}
+              private xywh {0 0 100 20} shortcut 0x4006f
+            }
+            MenuItem {} {
+              label {&Save GPX as}
+              private xywh {10 10 100 20} shortcut 0x40073
+            }
+            MenuItem {} {
+              label {&Quit}
+              private xywh {20 20 100 20} shortcut 0x40071
+            }
+          }
+          Submenu {} {
+            label Edit open
+            private xywh {0 0 100 20}
+          } {
+            MenuItem {} {
+              label {&Clear track}
+              private xywh {0 0 100 20} shortcut 0x40063
+            }
+            MenuItem {} {
+              label {&Edit waypoint}
+              private xywh {0 0 100 20} shortcut 0x40065
+            }
+            MenuItem {} {
+              label {&Delete waypoint}
+              private xywh {10 10 100 20} shortcut 0x40064
+            }
+          }
+          Submenu {} {
+            label GPSd open
+            private xywh {20 20 100 20}
+          } {
+            MenuItem {} {
+              label Settings
+              private xywh {20 20 100 20}
+            }
+            MenuItem {} {
+              label {&Go to cursor}
+              private xywh {20 20 100 20} shortcut 0x40067
+            }
+            MenuItem m_menuitem_gpsd_recordtrack {
+              label {&Record track}
+              private xywh {30 30 100 20} type Toggle shortcut 0x40072
+            }
+          }
+          Submenu {} {
+            label Help open
+            private xywh {0 0 100 20}
+          } {
+            MenuItem {} {
+              label About
+              private xywh {0 0 100 20}
+            }
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 25 805 4}
+        }
+        Fl_Pack {} {open
+          private xywh {0 29 805 26} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_loadtrack {
+            user_data this
+            callback cb_btn_loadtrack
+            private tooltip {Load GPX file} image {../res/document-open.png} xywh {5 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {30 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_savetrack {
+            user_data this
+            callback cb_btn_savetrack
+            private tooltip {Save current track} image {../res/document-save.png} xywh {35 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {60 29 5 25} box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {65 29 2 25} box ENGRAVED_BOX
+          }
+          Fl_Box {} {
+            private xywh {67 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_cleartrack {
+            user_data this
+            callback cb_btn_cleartrack
+            private tooltip {Clear current track} image {../res/edit-clear.png} xywh {74 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {97 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_editselection {
+            user_data this
+            callback cb_btn_editselection
+            private tooltip {Edit Waypoint} image {../res/preferences-system.png} xywh {102 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {127 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_deletewaypoint {
+            user_data this
+            callback cb_btn_deleteselection
+            private tooltip {Delete Waypoint} image {../res/edit-delete.png} xywh {132 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {157 29 5 25} box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {162 29 2 25} box ENGRAVED_BOX
+          }
+          Fl_Box {} {
+            private xywh {164 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_gpsd {
+            user_data this
+            callback cb_btn_gpsd
+            private tooltip GPSD image {../res/network-wired.png} xywh {169 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {194 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_gotocursor {
+            user_data this
+            callback cb_btn_gotocursor
+            private tooltip {Go to cursor} image {../res/go-home.png} xywh {199 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {224 29 5 25} box FLAT_BOX
+          }
+          Fl_Button m_btn_recordtrack {
+            user_data this
+            callback cb_btn_recordtrack
+            private tooltip {Record track} image {../res/audio-input-microphone.png} xywh {229 29 25 25} type Toggle box NO_BOX down_box DOWN_BOX
+          }
+          Fl_Box {} {
+            private xywh {254 29 5 25} box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {259 29 2 25} box ENGRAVED_BOX
+          }
+          Fl_Box {} {
+            private xywh {261 29 5 25} box FLAT_BOX
+          }
+          Fl_Choice m_choice_basemap {
+            user_data this
+            callback cb_choice_basemap open
+            private xywh {266 29 534 26} down_box BORDER_BOX resizable
+          } {}
+          Fl_Box {} {
+            private xywh {800 29 5 25}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 54 805 4}
+        }
+        Fl_Pack {} {open
+          private xywh {0 58 805 480} type HORIZONTAL resizable
+        } {
+          Fl_Box {} {
+            private xywh {0 58 5 480} box FLAT_BOX
+          }
+          Fl_Box m_mapctrl {
+            label {Slippy Map} selected
+            private xywh {5 58 795 480} box FLAT_BOX resizable
+            class mapctrl
+          }
+          Fl_Box {} {
+            private xywh {800 58 5 480} box FLAT_BOX
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 538 805 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 543 805 22} type HORIZONTAL
+        } {
+          Fl_Output m_txtout_zoom {
+            private xywh {0 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
+          }
+          Fl_Output m_txtout_lon {
+            private xywh {140 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
+          }
+          Fl_Output m_txtout_lat {
+            private xywh {280 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
+          }
+          Fl_Output m_txtout_trip {
+            private xywh {420 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
+          }
+          Fl_Box {} {
+            private xywh {560 543 195 22} box THIN_DOWN_BOX resizable
+          }
+          Fl_Box m_box_fix {
+            private xywh {755 543 50 22} box THIN_DOWN_BOX color 55 labelsize 12
+          }
+        }
+      }
+    }
+    code {create_ex();} {}
+  }
+  Function {~dlg_ui()} {} {
+    code {destroy_ex();} {}
+  }
+  Function {show(int argc, char *argv[])} {return_type void
+  } {
+    code {show_ex(argc, argv);} {}
+  }
+  Function {hide()} {return_type void
+  } {
+    code {hide_ex();} {}
+  }
 } 
 
 decl {dlg_ui *ui;} {private local
 } 
 
-Function {} {open return_type int
+Function {} {return_type int
 } {
   code {signal(SIGABRT, &sighandler);
 signal(SIGTERM, &sighandler);
@@ -355,7 +382,7 @@ delete ui;
 return ret;} {}
 } 
 
-Function {sighandler(int sig)} {open return_type void
+Function {sighandler(int sig)} {return_type void
 } {
   code {ui->hide();} {}
 } 

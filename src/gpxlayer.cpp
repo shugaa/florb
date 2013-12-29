@@ -28,20 +28,8 @@ bool gpxlayer::key(const layer_keyevent* evt)
     if (evt->key() != layer_keyevent::KEY_DEL)
         return false;
 
-    int ret = false;
-    if ((m_selection.it != m_trkpts.end()) && m_selection.highlight)
-    {
-        m_trkpts.erase(m_selection.it);
-        m_selection.it = m_trkpts.end();
-        notify();
-        ret = true;
-    }
-
-    // Recalculate trip for the entire track
-    if (ret == true)
-        trip_calcall();
-
-    return ret;
+    selection_delete();
+    return true;
 }
 
 void gpxlayer::trip_update()
@@ -385,6 +373,20 @@ void gpxlayer::selection_elevation(double e)
         throw 0;
 
     (*(m_selection.it)).ele = e;    
+    notify();
+}
+
+void gpxlayer::selection_delete()
+{
+    if (!selected())
+        throw 0;
+
+    m_trkpts.erase(m_selection.it);
+    m_selection.it = m_trkpts.end();
+
+    // Recalculate trip for the entire track
+    trip_calcall();
+
     notify();
 }
 

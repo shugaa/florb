@@ -1,0 +1,129 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0300 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include "mapctrl.hpp"} {public global
+} 
+
+class dlg_gpsd {open
+} {
+  decl {mapctrl *m_mapctrl;} {private local
+  }
+  decl {void ui_setup_ex();} {private local
+  }
+  decl {void show_ex();} {private local
+  }
+  decl {void create_ex();} {private local
+  }
+  decl {void cb_chkbtn_enable_ex(Fl_Widget *widget);} {private local
+  }
+  Function {cb_chkbtn_enable(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_gpsd *dlg = static_cast<dlg_gpsd*>(userdata);
+dlg->cb_chkbtn_enable_ex(widget);} {}
+  }
+  Function {dlg_gpsd(mapctrl *m)} {open
+  } {
+    Fl_Window m_window {
+      label GPSD open
+      private xywh {697 219 220 160} type Double modal visible
+    } {
+      Fl_Pack {} {open
+        private xywh {0 0 220 163}
+      } {
+        Fl_Box {} {
+          private xywh {0 0 220 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 5 220 115} type HORIZONTAL resizable
+        } {
+          Fl_Box {} {
+            private xywh {0 5 5 115}
+          }
+          Fl_Pack {} {open
+            private xywh {5 5 210 115}
+          } {
+            Fl_Check_Button m_chkbtn_enable {
+              label {Enable GPSD}
+              user_data this
+              callback cb_chkbtn_enable
+              private xywh {5 5 210 25} down_box DOWN_BOX
+            }
+            Fl_Box m_box_server {
+              label Server
+              private xywh {5 30 210 20} labelsize 12 align 20
+            }
+            Fl_Input m_txtin_server {
+              label Latitude
+              private xywh {5 50 210 25} labeltype NO_LABEL labelsize 12 align 5
+            }
+            Fl_Box m_box_port {
+              label Port
+              private xywh {5 75 210 20} labelsize 12 align 20
+            }
+            Fl_Input m_txtin_port {
+              label Elevation
+              private xywh {5 95 210 25} type Int labeltype NO_LABEL labelsize 12 align 5
+            }
+          }
+          Fl_Box {} {
+            private xywh {215 5 5 115}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 120 220 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 125 220 2} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 125 5 2}
+          }
+          Fl_Box {} {
+            private xywh {5 125 210 2} box ENGRAVED_BOX resizable
+          }
+          Fl_Box {} {
+            private xywh {215 125 5 2}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 127 220 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 132 220 25} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 132 5 25} resizable
+          }
+          Fl_Button m_btn_ok {
+            label OK
+            private xywh {5 132 100 25}
+          }
+          Fl_Box {} {
+            private xywh {105 132 10 25}
+          }
+          Fl_Button m_btn_cancel {
+            label Cancel selected
+            private xywh {115 132 100 25}
+          }
+          Fl_Box {} {
+            private xywh {215 132 5 25}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 158 220 5}
+        }
+      }
+    }
+    code {m_mapctrl = m;
+create_ex();} {}
+  }
+  Function {~dlg_gpsd()} {} {
+    code {if (m_window)
+    delete(m_window);} {}
+  }
+  Function {show()} {open return_type void
+  } {
+    code {show_ex();} {}
+  }
+} 

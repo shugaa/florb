@@ -7,6 +7,7 @@
 #include "gpsdclient.hpp"
 #include "fluid/dlg_ui.hpp"
 #include "fluid/dlg_editselection.hpp"
+#include "fluid/dlg_gpsd.hpp"
 
 void dlg_ui::mapctrl_notify()
 {
@@ -33,39 +34,38 @@ void dlg_ui::mapctrl_notify()
     ss << "Trip: " << m_mapctrl->trip() << "km";
     m_txtout_trip->value(ss.str().c_str());
 
-    switch(m_mapctrl->mode())
+    if (m_mapctrl->connected())
     {
-        case (gpsdclient::FIX_NONE):
-            m_box_fix->color(FL_RED);
-            m_box_fix->label("?");
-            break;
-        case (gpsdclient::FIX_2D):
-            m_box_fix->color(FL_YELLOW);
-            m_box_fix->label("2D");
-        break;
-        case (gpsdclient::FIX_3D):
-            m_box_fix->color(FL_GREEN);
-            m_box_fix->label("3D");
-        break;
+        m_box_fix->color(FL_YELLOW);
+
+        switch(m_mapctrl->mode())
+        {
+            case (gpsdclient::FIX_NONE):
+                m_box_fix->label("?");
+                break;
+            case (gpsdclient::FIX_2D):
+                m_box_fix->color(FL_GREEN);
+                m_box_fix->label("2D");
+                break;
+            case (gpsdclient::FIX_3D):
+                m_box_fix->color(FL_GREEN);
+                m_box_fix->label("3D");
+                break;
+        }
+    } else
+    {
+        m_box_fix->color(FL_RED);
+        m_box_fix->label("GPS");
     }
 }
 
 void dlg_ui::create_ex(void)
 {
     // Create UI dialogs
-    m_dlg_about = new orb_dlg_about();
-    m_dlg_layers = new orb_dlg_layers();
-    m_dlg_settings = new orb_dlg_settings();
-    m_dlg_elpro = new orb_dlg_elpro();
-    m_dlg_servers = new dlg_servers();
+    m_dlg_about = new dlg_about();
 
     // Register UI callbacks
     m_window->callback(cb_close, this);
-    m_menu_help_about->callback(cb_menu, this);
-    m_menu_file_close->callback(cb_menu, this);
-    m_menu_edit_layers->callback(cb_menu, this);
-    m_menu_edit_servers->callback(cb_menu, this);
-    m_menu_edit_settings->callback(cb_menu, this);
 
     // Populate the Basemap selector
     node section = settings::get_instance()["tileservers"];
@@ -93,10 +93,6 @@ void dlg_ui::destroy_ex(void)
 {
     // Delete UI dialogs
     delete(m_dlg_about);
-    delete(m_dlg_layers);
-    delete(m_dlg_settings);
-    delete(m_dlg_elpro);
-    delete(m_dlg_servers);
 
     // Delete toplevel window
     delete(m_window);
@@ -113,7 +109,7 @@ void dlg_ui::show_ex(int argc, char *argv[])
     m_window->show(argc, argv);
 }
 
-void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
+void dlg_ui::loadtrack_ex()
 {
     // Create a file chooser instance
     Fl_File_Chooser fc("/", "*.gpx", Fl_File_Chooser::SINGLE, "Open GPX file");
@@ -132,7 +128,7 @@ void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
     m_mapctrl->load_track(std::string(fc.value()));
 }
 
-void dlg_ui::cb_btn_savetrack_ex(Fl_Widget *widget)
+void dlg_ui::savetrack_ex()
 {
     // Create a file chooser instance
     Fl_File_Chooser fc("/", "*.gpx", Fl_File_Chooser::CREATE, "Save GPX file");
@@ -151,30 +147,91 @@ void dlg_ui::cb_btn_savetrack_ex(Fl_Widget *widget)
     m_mapctrl->save_track(std::string(fc.value()));
 }
 
-void dlg_ui::cb_btn_cleartrack_ex(Fl_Widget *widget)
+void dlg_ui::cleartrack_ex()
 {
-    // Clear the current track
     m_mapctrl->clear_track();
 }
 
-void dlg_ui::cb_btn_gotocursor_ex(Fl_Widget *widget)
+void dlg_ui::gotocursor_ex()
 {
+    if (!m_mapctrl->connected())
+        return;
+
     m_mapctrl->goto_cursor();
 }
 
-void dlg_ui::cb_btn_recordtrack_ex(Fl_Widget *widget)
+void dlg_ui::recordtrack_ex()
 {
     bool start = (m_btn_recordtrack->value() == 1) ? true : false;
     m_mapctrl->record_track(start);
 }
 
-void dlg_ui::cb_btn_editselection_ex(Fl_Widget *widget)
+void dlg_ui::editselection_ex()
 {
     if (!m_mapctrl->selected())
         return;
 
-    dlg_editselection es;
-    es.show(m_mapctrl);
+    dlg_editselection es(m_mapctrl);
+    es.show();
+}
+
+void dlg_ui::deleteselection_ex()
+{
+    if (!m_mapctrl->selected())
+        return;
+
+    m_mapctrl->selection_delete();
+}
+
+void dlg_ui::gpsdsettings_ex()
+{
+    dlg_gpsd gd(m_mapctrl);
+    gd.show();
+}
+
+void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
+{
+    loadtrack_ex();
+}
+
+void dlg_ui::cb_btn_savetrack_ex(Fl_Widget *widget)
+{
+    savetrack_ex();
+}
+
+void dlg_ui::cb_btn_cleartrack_ex(Fl_Widget *widget)
+{
+    cleartrack_ex();
+}
+
+void dlg_ui::cb_btn_gotocursor_ex(Fl_Widget *widget)
+{
+    gotocursor_ex();
+}
+
+void dlg_ui::cb_btn_recordtrack_ex(Fl_Widget *widget)
+{
+    if (m_btn_recordtrack->value() != 0)
+        m_menuitem_gpsd_recordtrack->set();
+    else
+        m_menuitem_gpsd_recordtrack->clear();
+
+    recordtrack_ex();
+}
+
+void dlg_ui::cb_btn_editselection_ex(Fl_Widget *widget)
+{
+    editselection_ex();
+}
+
+void dlg_ui::cb_btn_gpsd_ex(Fl_Widget *widget)
+{
+    gpsdsettings_ex(); 
+}
+
+void dlg_ui::cb_btn_deleteselection_ex(Fl_Widget *widget)
+{
+    deleteselection_ex(); 
 }
 
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
@@ -195,29 +252,47 @@ void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
 
 void dlg_ui::cb_menu_ex(Fl_Widget *widget)
 {
-    char picked[80];
-    m_menubar->item_pathname(picked, sizeof(picked)-1);
+    char picked[200];
+    if (m_menubar->item_pathname(picked, sizeof(picked)-1) != 0)
+        return;
 
-    if (strcmp(picked, "File/Quit") == 0) {
+    // File submenu
+    if (strcmp(picked, "File/&Quit") == 0) {
         m_window->hide();
     }
+    else if (strcmp(picked, "File/&Open GPX") == 0) { 
+        loadtrack_ex();
+    }
+    else if (strcmp(picked, "File/&Save GPX as") == 0) { 
+        savetrack_ex();
+    } 
+
+    // Edit submenu
+    else if (strcmp(picked, "Edit/&Clear track") == 0) {
+        cleartrack_ex();
+    }
+    else if (strcmp(picked, "Edit/&Edit waypoint") == 0) {
+        editselection_ex();
+    }
+    else if (strcmp(picked, "Edit/&Delete waypoint") == 0) {
+        deleteselection_ex();
+    }
+
+    // GPSd submenu
+    else if (strcmp(picked, "GPSd/Settings") == 0) {
+        gpsdsettings_ex();
+    }
+    else if (strcmp(picked, "GPSd/&Go to cursor") == 0) {
+        gotocursor_ex();
+    }
+    else if (strcmp(picked, "GPSd/&Record track") == 0) {
+        m_btn_recordtrack->value(m_menuitem_gpsd_recordtrack->value());
+        recordtrack_ex();
+    }
+
+    // Help submenu
     else if (strcmp(picked, "Help/About") == 0) { 
         m_dlg_about->show();
-    }
-    else if (strcmp(picked, "Edit/Layers") == 0) {
-        // Show the layers editor dialog
-        int rc = m_dlg_layers->show();
-        if (rc != 0)
-            return;
-    }
-    else if (strcmp(picked, "Edit/Settings") == 0) {
-        m_dlg_settings->show();
-    }
-    else if (strcmp(picked, "Edit/Tileservers") == 0) {
-        m_dlg_servers->show();
-    }
-    else if (strcmp(picked, "View/Elevation profile") == 0) {
-        m_dlg_elpro->show();
     }
 
     m_mapctrl->refresh();
@@ -226,12 +301,10 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
 void dlg_ui::cb_close_ex(Fl_Widget *widget)
 {
     m_window->hide();
-    
 }
 
 void dlg_ui::hide_ex()
 {
     m_window->hide();
-    
 }
 

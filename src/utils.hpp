@@ -22,6 +22,11 @@ class utils
         static time_t iso8601_2timet(const std::string& iso);
         static std::string timet2iso8601(time_t t);
 
+        static std::string userdir();
+        static std::string appdir();
+        static void mkdir(const std::string& path);
+        static bool exists(const std::string& path);
+
 #if 0
         static bool on_segment(point2d<double> pi, point2d<double> pj, point2d<double> pk);
         static char orientation(point2d<double> pi, point2d<double> pj, point2d<double> pk);

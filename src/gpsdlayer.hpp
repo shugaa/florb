@@ -2,7 +2,6 @@
 #define GPSDLAYER_HPP
 
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
-
 #include "point.hpp"
 #include "layer.hpp"
 #include "viewport.hpp"
@@ -11,10 +10,10 @@
 class gpsdlayer : public layer
 {
     public:
-        gpsdlayer();
+        gpsdlayer(const std::string& host, const std::string& port);
         ~gpsdlayer();
 
-        void draw(const viewport &viewport,canvas &os);
+        void draw(const viewport &viewport, canvas &os);
 
         const point2d<double> pos();
         double track(); 
@@ -42,7 +41,7 @@ class gpsdlayer : public layer
         bool m_valid;
         bool m_connected;
 
-        bool handle_evt_gpsupdate(const gpsdclient::event_update *e);
+        bool handle_evt_gpsd(const gpsdclient::event_gpsd *e);
         gpsdclient *m_gpsdclient;
 
         boost::interprocess::interprocess_mutex m_mutex;

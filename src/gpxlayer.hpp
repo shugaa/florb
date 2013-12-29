@@ -33,6 +33,7 @@ class gpxlayer : public layer
 
         double selection_elevation();
         void selection_elevation(double e);
+        void selection_delete();
     
         double trip();
 

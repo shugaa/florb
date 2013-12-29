@@ -2,7 +2,6 @@
 #define GPSDCLIENT_HPP
 
 #include <string>
-#include <set>
 #include <boost/thread.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <gps.h>
@@ -16,6 +15,9 @@ class gpsdclient : public event_generator
         ~gpsdclient();
 
         bool connected(void);
+        int mode(void);
+        point2d<double> pos(void);
+        double track(void);
 
         enum {
             FIX_NONE, 
@@ -23,16 +25,21 @@ class gpsdclient : public event_generator
             FIX_3D,
         };
 
-        class event_update;
+        class event_gpsd;
 
     private:
+        void connected(bool c);
+        void mode(int m);
+        void pos(const point2d<double>& p);
+        void pos(double lon, double lat);
+        void track(double t);
+
         bool exit();
         void exit(bool e);
-
         void worker(void);
         bool handle_set(void);
 
-        void fire_event_update(void);
+        void fire_event_gpsd(void);
 
         struct gps_data_t m_gpsdata;
         boost::interprocess::interprocess_mutex m_mutex; 
@@ -40,32 +47,35 @@ class gpsdclient : public event_generator
         std::string m_host;
         std::string m_port;
         boost::thread *m_thread;
+
         bool m_exit;
         bool m_connected;
-
-        int    m_mode;
-        double m_latitude;
-        double m_longitude;
+        int m_mode;
+        point2d<double> m_pos;
         double m_track;
 };
 
-class gpsdclient::event_update : public event_base
+class gpsdclient::event_gpsd : public event_base
 {
     public:
-        event_update(int mode, const point2d<double>& pos, double track) :
+        event_gpsd(bool c, int mode, const point2d<double>& pos, double track) :
+            m_connected(c),
             m_mode(mode),
             m_pos(pos),
             m_track(track) {};
-        ~event_update() {};
+        ~event_gpsd() {};
 
         int mode() const { return m_mode; };
         const point2d<double>& pos() const { return m_pos; };
         double track() const { return m_track; };
+        bool connected() const { return m_connected; };
 
     private:
+        bool m_connected;
         int m_mode;
         point2d<double> m_pos;
         double m_track;
 };
 
 #endif // GPSDCLIENT_HPP
+

@@ -48,6 +48,7 @@ class node
         iterator begin() { return iterator(*this, -1); }
         iterator end() { return iterator(*this, 1); }  
 
+        node();
         node(yaml_node *in) : m_ref(in) {};
         node(const std::string& path);
         node(const node& n);
@@ -55,6 +56,7 @@ class node
 
         node operator[] (const int idx);
         node operator[] (const std::string &name);
+        node& operator= (const node& n);
         template<typename T> node& operator= (const T& rhs);
 
         size_t size();
@@ -78,7 +80,9 @@ class settings
         node operator[] (const std::string &name) { return m_rootnode[name]; };
     private:
         settings();
+        void defaults(const std::string& path);
         node m_rootnode;
+        std::string m_cfgfile;
 };
 
 #endif // SETTINGS_HPP

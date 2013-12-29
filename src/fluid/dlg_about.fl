@@ -1,43 +1,44 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0300 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <FL/Fl_Text_Buffer.H>} {public global
 } 
 
-class orb_dlg_about {open
+class dlg_about {open
 } {
-  decl {Fl_Text_Buffer *m_buf;} {}
-  Function {orb_dlg_about()} {open
+  decl {Fl_Text_Buffer *m_buf;} {private local
+  }
+  Function {dlg_about()} {open
   } {
     Fl_Window m_window {
-      label {About / License} open selected
-      private xywh {554 188 500 297} type Double resizable modal visible
+      label {About / License} open
+      private xywh {554 188 500 295} type Double resizable modal visible
     } {
       Fl_Pack {} {open
-        xywh {0 0 500 297} resizable
+        private xywh {0 0 500 297} resizable
       } {
         Fl_Box {} {
-          xywh {0 0 500 5}
+          private xywh {0 0 500 5}
         }
         Fl_Pack {} {open
-          xywh {0 5 500 250} type HORIZONTAL resizable
+          private xywh {0 5 500 250} type HORIZONTAL resizable
         } {
           Fl_Box {} {
-            xywh {0 5 5 250}
+            private xywh {0 5 5 250}
           }
           Fl_Text_Display m_display {
-            xywh {5 5 490 250} resizable
+            private xywh {5 5 490 250} resizable
           }
           Fl_Box {} {
-            xywh {495 5 5 250}
+            private xywh {495 5 5 250}
           }
         }
         Fl_Box {} {
-          xywh {0 255 500 5}
+          private xywh {0 255 500 5}
         }
         Fl_Pack {} {
-          xywh {0 260 500 2} type HORIZONTAL
+          private xywh {0 260 500 2} type HORIZONTAL
         } {
           Fl_Box {} {
             xywh {0 260 5 2}
@@ -50,30 +51,30 @@ class orb_dlg_about {open
           }
         }
         Fl_Box {} {
-          xywh {0 262 500 5}
+          private xywh {0 262 500 5}
         }
         Fl_Pack {} {open
-          xywh {0 267 500 25} type HORIZONTAL
+          private xywh {0 267 500 25} type HORIZONTAL
         } {
           Fl_Box {} {
-            xywh {0 267 390 25} resizable
+            private xywh {0 267 390 25} resizable
           }
           Fl_Button m_btn_ok {
             label OK
-            xywh {390 267 105 25}
+            private xywh {390 267 105 25}
           }
           Fl_Box {} {
-            xywh {495 267 5 25}
+            private xywh {495 267 5 25}
           }
         }
         Fl_Box {} {
-          xywh {0 292 500 5}
+          private xywh {0 292 500 5}
         }
       }
     }
     code {m_buf = new Fl_Text_Buffer();
 m_buf->append("Version: 0.1\\n\\n\\
-© 2010 Bjoern Rehm <bjoern@shugaa.de>\\n\\n\\
+© 2013 Bjoern Rehm <bjoern@shugaa.de>\\n\\n\\
 Distributed under the terms of the MIT license as stated below:\\n\\n\\
 \\
 Permission is hereby granted, free of charge, to any person obtaining a copy\\n\\
@@ -94,9 +95,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\\n
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\\n\\
 THE SOFTWARE.");
 
-m_display->buffer(m_buf);} {}
+m_display->buffer(m_buf);} {selected
+    }
   }
-  Function {~orb_dlg_about()} {open
+  Function {~dlg_about()} {open
   } {
     code {if (m_window)
     delete(m_window);

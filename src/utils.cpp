@@ -1,6 +1,10 @@
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
+#include <boost/filesystem.hpp>
+#include <sstream>
+#include <cstdlib>
+
 #include "utils.hpp"
 
 point2d<double> utils::wsg842merc(const point2d<double> &wsg84)
@@ -74,7 +78,6 @@ point2d<double> utils::px2merc(unsigned int z, const point2d<unsigned long> &px)
     // Make sure the coordinate is on the map
     if ((px.x() >= dimxy) || (px.y() >= dimxy))
     {
-        std::cout << px.x() << " " << px.y() << std::endl;
         throw std::out_of_range("Invalid pixel position");
     }
 
@@ -127,7 +130,33 @@ std::string utils::timet2iso8601(time_t t)
     return std::string(buf);
 }
 
+std::string utils::userdir()
+{
+    char *home = getenv("HOME");
+    if (!home)
+        throw 0;
 
+    return std::string(home);
+}
+
+std::string utils::appdir()
+{
+    std::ostringstream oss;
+    oss << userdir();
+    oss << "/.florb";
+
+    return oss.str();
+}
+
+void utils::mkdir(const std::string& path)
+{
+    boost::filesystem::create_directory(path);
+}
+
+bool utils::exists(const std::string& path)
+{
+    return boost::filesystem::exists(path);
+}
 
 // Not needed right now, might come in handy some time.
 #if 0

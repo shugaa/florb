@@ -7,12 +7,14 @@ decl {\#include "mapctrl.hpp"} {public global
 
 class dlg_editselection {open
 } {
-  decl {void show_ex(mapctrl *m);} {private local
+  decl {mapctrl *m_mapctrl;} {private local
   }
-  Function {dlg_editselection()} {open
+  decl {void show_ex();} {private local
+  }
+  Function {dlg_editselection(mapctrl *m)} {open
   } {
     Fl_Window m_window {
-      label {Edit waypoint} open selected
+      label {Edit waypoint} open
       private xywh {720 307 220 180} type Double modal visible
     } {
       Fl_Pack {} {open
@@ -36,7 +38,7 @@ class dlg_editselection {open
             }
             Fl_Input m_txtin_lon {
               label Longitude
-              private xywh {5 25 210 25} labeltype NO_LABEL labelsize 12 align 5
+              private xywh {5 25 210 25} type Float labeltype NO_LABEL labelsize 12 align 5
             }
             Fl_Box {} {
               label {Latitude [°]}
@@ -44,15 +46,15 @@ class dlg_editselection {open
             }
             Fl_Input m_txtin_lat {
               label Latitude
-              private xywh {5 70 210 25} labeltype NO_LABEL labelsize 12 align 5
+              private xywh {5 70 210 25} type Float labeltype NO_LABEL labelsize 12 align 5
             }
             Fl_Box {} {
               label {Elevation [m]}
               private xywh {5 95 210 20} labelsize 12 align 20
             }
             Fl_Input m_txtin_ele {
-              label Elevation
-              private xywh {5 115 210 25} labeltype NO_LABEL labelsize 12 align 5
+              label Elevation selected
+              private xywh {5 115 210 25} type Float labeltype NO_LABEL labelsize 12 align 5
             }
           }
           Fl_Box {} {
@@ -104,13 +106,14 @@ class dlg_editselection {open
         }
       }
     }
+    code {m_mapctrl = m;} {}
   }
   Function {~dlg_editselection()} {} {
     code {if (m_window)
     delete(m_window);} {}
   }
-  Function {show(mapctrl *m)} {open return_type void
+  Function {show()} {open return_type void
   } {
-    code {show_ex(m);} {}
+    code {show_ex();} {}
   }
 } 

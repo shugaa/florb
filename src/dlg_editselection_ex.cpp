@@ -1,12 +1,12 @@
 #include <sstream>
 #include "fluid/dlg_editselection.hpp"
 
-void dlg_editselection::show_ex(mapctrl *m)
+void dlg_editselection::show_ex()
 {
     m_window->show();
 
-    point2d<double> pos(m->selection_pos());
-    double ele(m->selection_elevation());
+    point2d<double> pos(m_mapctrl->selection_pos());
+    double ele(m_mapctrl->selection_elevation());
 
     std::ostringstream os;
     os.precision(6);
@@ -50,8 +50,8 @@ void dlg_editselection::show_ex(mapctrl *m)
     is.str(m_txtin_ele->value());
     is >> ele;
 
-    m->selection_pos(pos);
-    m->selection_elevation(ele);
+    m_mapctrl->selection_pos(pos);
+    m_mapctrl->selection_elevation(ele);
     
     m_window->hide();
 }

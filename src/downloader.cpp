@@ -9,11 +9,17 @@ downloader::downloader(int nthreads) :
     m_threadblock(0),
     m_exit(false)
 {
-    nthreads=1;
+    //nthreads=1;
     for (int i=0;i<nthreads;i++)
     {
         workerinfo *ti = new workerinfo(
             new boost::thread(boost::bind(&downloader::worker, this)));
+
+#if 0
+        struct sched_param param;
+        param.sched_priority = 99;
+        pthread_setschedparam(ti->t()->native_handle(), SCHED_RR, &param);
+#endif
 
         m_workers.push_back(ti);
     }
@@ -146,7 +152,7 @@ void downloader::worker()
         if (exit())
             break;
 
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
+        //boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
 
         // Get a download item from the list
         m_mutex.lock();

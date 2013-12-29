@@ -2,6 +2,7 @@
 #include <fstream>
 #include "settings.hpp"
 #include "gfx.hpp"
+#include "utils.hpp"
 
 namespace YAML {
    template<>
@@ -48,6 +49,7 @@ namespace YAML {
 class yaml_node
 {
     public:
+        //yaml_node(YAML::Node n) : m_node(n) {};
         yaml_node(YAML::Node n) : m_node(n) {};
         yaml_node(const std::string& path)
         {
@@ -129,20 +131,53 @@ node node::iterator::operator* () const
     return node(tmp);
 }
 
-settings::settings() :
-    m_rootnode(std::string("/home/bjoern/florb2.cfg"))
+settings::settings()
 {
+    std::string ad(utils::appdir());
+    m_cfgfile = ad+"/config";
+    utils::mkdir(ad);
+
+    if (!utils::exists(m_cfgfile))
+        defaults(m_cfgfile);
+
+    m_rootnode = node(m_cfgfile);
 }
 
 settings::~settings()
 {
-    m_rootnode.serialize(std::string("/home/bjoern/florb2.cfg"));
+    m_rootnode.serialize(m_cfgfile);
 }
 
 settings& settings::get_instance()
 {
     static settings instance;
     return instance;
+}
+
+void settings::defaults(const std::string& path)
+{
+    cfg_tileserver cts;
+    cts.name = "OpenStreetMap";
+    cts.url  = "http://tile.openstreetmap.org/$FLORBZ$/$FLORBX$/$FLORBY$.png";
+    cts.zmin = 0;
+    cts.zmax = 18;
+    cts.parallel = 2;
+    cts.type = image::PNG;
+
+    node rn;
+
+    // Tileserver configuration
+    rn["tileservers"].push_back(cts);
+
+    // GPSd configuration
+    rn["gpsd"]["port"] = 2947;
+    rn["gpsd"]["host"] = "localhost";
+    rn["gpsd"]["enabled"] = false;
+
+    // Cache configuration
+    rn["cache"]["location"] = utils::appdir() + "/cache.db";
+
+    rn.serialize(path);
 }
 
 node::node(const std::string& path)
@@ -155,9 +190,15 @@ node::node(const node& n)
     m_ref = new yaml_node(n.m_ref->get());
 }
 
+node::node()
+{
+    m_ref = new yaml_node(YAML::Node());
+}
+
 node::~node()
 {
-    delete m_ref;
+    if (m_ref)
+        delete m_ref;
 }
 
 node node::operator[] (const int idx)
@@ -168,6 +209,16 @@ node node::operator[] (const int idx)
 node node::operator[] (const std::string &name)
 {
     return node(new yaml_node(m_ref->get()[name]));
+}
+
+node& node::operator= (const node& n)
+{
+    if (m_ref)
+        delete m_ref;
+
+    m_ref = new yaml_node(n.m_ref->get());
+
+    return *this;
 }
 
 template<typename T> node& node::operator= (const T& rhs)
@@ -193,7 +244,7 @@ void node::push_back(const node& rhs)
 
 void node::serialize(const std::string& path)
 {
-    std::ofstream fout(path.c_str());
+    std::ofstream fout(path.c_str(), std::fstream::in|std::fstream::out|std::fstream::trunc);
     fout << m_ref->get();
 }
 
@@ -208,6 +259,7 @@ template int node::as<int>() const;
 template std::string node::as<std::string>() const;
 template cfg_tileserver node::as<cfg_tileserver>() const;
 template std::vector< cfg_tileserver > node::as< std::vector<cfg_tileserver> >() const;
+template bool node::as<bool>() const;
 
 template void node::push_back<int>(const int& rhs);
 template void node::push_back<std::string>(const std::string& rhs);
@@ -218,3 +270,4 @@ template node& node::operator=< std::vector<int> > (const std::vector<int>& rhs)
 template node& node::operator=<std::string> (const std::string& rhs);
 template node& node::operator=< std::vector<cfg_tileserver> > (const std::vector<cfg_tileserver>& rhs);
 template node& node::operator=<cfg_tileserver> (const cfg_tileserver& rhs);
+template node& node::operator=<bool> (const bool& rhs);
