@@ -5,6 +5,9 @@ code_name {.cxx}
 decl {\#include "mapctrl.hpp"} {public global
 } 
 
+decl {\#include "utils.hpp"} {selected private global
+} 
+
 class dlg_editselection {open
 } {
   decl {mapctrl *m_mapctrl;} {private local
@@ -53,7 +56,7 @@ class dlg_editselection {open
               private xywh {5 95 210 20} labelsize 12 align 20
             }
             Fl_Input m_txtin_ele {
-              label Elevation selected
+              label Elevation
               private xywh {5 115 210 25} type Float labeltype NO_LABEL labelsize 12 align 5
             }
           }
@@ -106,7 +109,10 @@ class dlg_editselection {open
         }
       }
     }
-    code {m_mapctrl = m;} {}
+    code {m_mapctrl = m;
+
+// Set the window icon
+utils::set_window_icon(m_window);} {}
   }
   Function {~dlg_editselection()} {} {
     code {if (m_window)

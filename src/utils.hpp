@@ -2,6 +2,7 @@
 #define UTILS_HPP
 
 #include <ctime>
+#include <FL/Fl_Window.H>
 #include "point.hpp"
 
 class utils
@@ -26,6 +27,8 @@ class utils
         static std::string appdir();
         static void mkdir(const std::string& path);
         static bool exists(const std::string& path);
+
+        static void set_window_icon(Fl_Window *w);
 
 #if 0
         static bool on_segment(point2d<double> pi, point2d<double> pj, point2d<double> pk);

@@ -1,5 +1,6 @@
 #include <sstream>
 #include "settings.hpp"
+#include "utils.hpp"
 #include "fluid/dlg_gpsd.hpp"
 
 void dlg_gpsd::create_ex()
@@ -10,6 +11,9 @@ void dlg_gpsd::create_ex()
         m_chkbtn_enable->value(1);
     else
         m_chkbtn_enable->value(0);
+
+    // Set the window icon
+    utils::set_window_icon(m_window); 
 }
 
 void dlg_gpsd::ui_setup_ex()

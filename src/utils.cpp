@@ -4,8 +4,10 @@
 #include <boost/filesystem.hpp>
 #include <sstream>
 #include <cstdlib>
-
+#include <X11/xpm.h>
+#include <FL/x.H>
 #include "utils.hpp"
+#include "florb.xpm"
 
 point2d<double> utils::wsg842merc(const point2d<double> &wsg84)
 {
@@ -96,10 +98,12 @@ double utils::dist(const point2d<double> &p1, const point2d<double> &p2)
     if (p1 == p2)
         return 0.0;
 
-    double lon1 = p1.x()*(M_PI/180.0);
-    double lat1 = p1.y()*(M_PI/180.0);
-    double lon2 = p2.x()*(M_PI/180.0);
-    double lat2 = p2.y()*(M_PI/180.0);
+    double d2r = (M_PI/180.0);
+
+    double lon1 = p1.x()*d2r;
+    double lat1 = p1.y()*d2r;
+    double lon2 = p2.x()*d2r;
+    double lat2 = p2.y()*d2r;
 
     return (6378.388 * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)));
 }
@@ -156,6 +160,14 @@ void utils::mkdir(const std::string& path)
 bool utils::exists(const std::string& path)
 {
     return boost::filesystem::exists(path);
+}
+
+void utils::set_window_icon(Fl_Window *w)
+{
+    fl_open_display();
+    Pixmap p, mask;
+    XpmCreatePixmapFromData(fl_display, DefaultRootWindow(fl_display), const_cast<char**>(florb_xpm), &p, &mask, NULL);
+    w->icon((char *)p);
 }
 
 // Not needed right now, might come in handy some time.

@@ -5,6 +5,9 @@ code_name {.cxx}
 decl {\#include <FL/Fl_Text_Buffer.H>} {public global
 } 
 
+decl {\#include "utils.hpp"} {selected private global
+} 
+
 class dlg_about {open
 } {
   decl {Fl_Text_Buffer *m_buf;} {private local
@@ -95,8 +98,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\\n
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\\n\\
 THE SOFTWARE.");
 
-m_display->buffer(m_buf);} {selected
-    }
+m_display->buffer(m_buf);
+
+// Set the window icon
+utils::set_window_icon(m_window);} {}
   }
   Function {~dlg_about()} {open
   } {

@@ -5,6 +5,7 @@
 #include "mapctrl.hpp"
 #include "settings.hpp"
 #include "gpsdclient.hpp"
+#include "utils.hpp"
 #include "fluid/dlg_ui.hpp"
 #include "fluid/dlg_editselection.hpp"
 #include "fluid/dlg_gpsd.hpp"
@@ -61,6 +62,9 @@ void dlg_ui::mapctrl_notify()
 
 void dlg_ui::create_ex(void)
 {
+    // Set the window icon
+    utils::set_window_icon(m_window);
+
     // Create UI dialogs
     m_dlg_about = new dlg_about();
 
