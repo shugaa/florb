@@ -11,7 +11,7 @@ CXXFLAGS = -g -Wall -O2 -funroll-loops \
 	$(shell pkg-config --cflags libgps) \
 	$(shell pkg-config --cflags x11) \
 	$(shell pkg-config --cflags xpm) \
-	$(shell PKG_CONFIG_PATH=/opt/yaml-cpp/lib/pkgconfig/ pkg-config --cflags yaml-cpp)
+	$(shell pkg-config --cflags yaml-cpp)
 	
 LDFLAGS = \
 	$(shell fltk-config --use-images --ldflags) \
@@ -20,7 +20,7 @@ LDFLAGS = \
 	$(shell pkg-config --libs tinyxml2) \
 	$(shell pkg-config --libs libgps) \
 	$(shell pkg-config --libs x11) \
-	$(shell PKG_CONFIG_PATH=/opt/yaml-cpp/lib/pkgconfig/ pkg-config --libs yaml-cpp) \
+	$(shell pkg-config --libs yaml-cpp) \
 	$(shell pkg-config --libs xpm) \
 	-lpthread \
 	-lboost_system \
