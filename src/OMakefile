@@ -59,8 +59,8 @@ if $(not $(defined PREFIX))
     export
 
 install:
-    mkdir($(PREFIX)/bin/ -p)
-    install $(PROGRAM) $(PREFIX)/bin/
+	mkdir($(PREFIX)/bin/ -p)
+	install $(PROGRAM) $(PREFIX)/bin/
 
 # clean target
 clean:

@@ -314,6 +314,7 @@ void gpxlayer::save_track(const std::string &path)
 
 void gpxlayer::clear_track()
 {
+   name(std::string("Unnamed GPX layer"));
    m_trkpts.clear();
    m_selection.it = m_trkpts.end();
    trip_calcall();
