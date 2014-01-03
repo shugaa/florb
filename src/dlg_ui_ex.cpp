@@ -74,18 +74,18 @@ void dlg_ui::create_ex(void)
     // Populate the Basemap selector
     node section = settings::get_instance()["tileservers"];
     for(node::iterator it=section.begin(); it!=section.end(); ++it) {
-        m_choice_basemap->add((*it).as<cfg_tileserver>().name.c_str(), 0, NULL, NULL, 0);
+        m_choice_basemap->add((*it).as<cfg_tileserver>().name().c_str(), 0, NULL, NULL, 0);
     }
     if (section.size() > 0)
     {
         cfg_tileserver ts0((*section.begin()).as<cfg_tileserver>()); 
         m_mapctrl->basemap(
-            ts0.name, 
-            ts0.url, 
-            ts0.zmin, 
-            ts0.zmax, 
-            ts0.parallel,
-            ts0.type); 
+            ts0.name(), 
+            ts0.url(), 
+            ts0.zmin(), 
+            ts0.zmax(), 
+            ts0.parallel(),
+            ts0.type()); 
         m_choice_basemap->value(0);
         m_mapctrl->take_focus();
     }
@@ -244,12 +244,12 @@ void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
 
     std::vector<cfg_tileserver> tileservers(settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >());
     m_mapctrl->basemap(
-            tileservers[idx].name, 
-            tileservers[idx].url, 
-            tileservers[idx].zmin, 
-            tileservers[idx].zmax, 
-            tileservers[idx].parallel,
-            tileservers[idx].type);
+            tileservers[idx].name(), 
+            tileservers[idx].url(), 
+            tileservers[idx].zmin(), 
+            tileservers[idx].zmax(), 
+            tileservers[idx].parallel(),
+            tileservers[idx].type());
 
     m_mapctrl->take_focus();
 }

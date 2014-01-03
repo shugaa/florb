@@ -30,6 +30,14 @@ class viewport
             return !cmp(vp);   
         }
 
+        // unsigned long range for map dimensions: at least 0 to
+        // 4294967295. So the maximum zoomlevel can be
+        // floor(log2(4294967295/256)) = 23. Zoomlevel 0 just results
+        // in a 256x256 pixels size map. See utils::dim() for
+        // details.
+        static const int ZMIN = 0;
+        static const int ZMAX = 23;
+
     private:
         bool cmp(const viewport& vp); 
 
@@ -39,8 +47,6 @@ class viewport
         unsigned long m_w;
         unsigned long m_h;
         unsigned long m_dim;
-        unsigned int  m_zmin;
-        unsigned int  m_zmax;
 };
 
 #endif // VIEWPORT_HPP

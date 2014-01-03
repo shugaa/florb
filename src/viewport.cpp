@@ -1,24 +1,20 @@
 #include <cmath>
+#include <iostream>
+#include <vector>
 #include "settings.hpp"
 #include "viewport.hpp"
 #include "utils.hpp"
-#include <iostream>
-#include <vector>
-viewport::viewport(unsigned long w, unsigned long h):
-    // unsigned long range for map dimensions: at least 0 to 4294967295. So the
-    // maximum zoomlevel can be floor(log2(4294967295/256)) = 23. Zoomlevel 0
-    // just results in a 256x256 pixels size map. See utils::dim() for details.
-    m_zmin(0),
-    m_zmax(23)
+
+viewport::viewport(unsigned long w, unsigned long h)
 {
     // See which zoomlevel fits best for the size request
     m_dim = 0;
-    for (m_z=m_zmin;m_z<m_zmax;m_z++)
+    for (m_z=ZMIN;m_z<=ZMAX;m_z++)
     {
         m_dim = utils::dim(m_z);
 
         // At this zoomlevel the map fills the viewport in both directions
-        if ((m_dim >= (unsigned long)w) && (m_dim >= (unsigned long)h))
+        if ((m_dim >= w) && (m_dim >= h))
            break;
     }
 
@@ -30,12 +26,20 @@ viewport::viewport(unsigned long w, unsigned long h):
 };
 
 viewport::viewport(unsigned long x, unsigned long y, unsigned int z, unsigned long w, unsigned long h) :
-    m_x(x), m_y(y), m_z(z), m_w(w), m_h(h)
+    m_x(x), 
+    m_y(y), 
+    m_z(z), 
+    m_w(w), 
+    m_h(h)
 {
 };
 
 viewport::viewport() :
-    m_x(0), m_y(0), m_z(0), m_w(0), m_h(0)
+    m_x(0), 
+    m_y(0), 
+    m_z(0), 
+    m_w(0), 
+    m_h(0)
 {
 };
 
@@ -168,9 +172,9 @@ void viewport::h(unsigned long h)
 void viewport::z(unsigned int z, unsigned long x, unsigned long y)
 {
    // Invalid zoom values
-   if (z > m_zmax)
+   if (z > ZMAX)
       return;
-   if (z < m_zmin)
+   if (z < ZMIN)
       return;
 
    // Coordinates outside viewport
@@ -209,15 +213,15 @@ void viewport::z(unsigned int z, unsigned long x, unsigned long y)
 
 bool viewport::cmp(const viewport& vp) 
 {
-    if (vp.x() != m_x)
+    if (vp.m_x != m_x)
         return false;
-    if (vp.y() != m_y)
+    if (vp.m_y != m_y)
         return false;
-    if (vp.z() != m_z)
+    if (vp.m_z != m_z)
         return false;
-    if (vp.w() != m_w)
+    if (vp.m_w != m_w)
         return false;
-    if (vp.h() != m_h)
+    if (vp.m_h != m_h)
         return false;
 
     return true;

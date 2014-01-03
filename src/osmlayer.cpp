@@ -47,17 +47,21 @@ osmlayer::osmlayer(
     name(m_name);
 
     // Create cache
-    m_cache = new sqlitecache(
-            settings::get_instance()["cache"]["location"].as<std::string>());
+    cfg_cache cfgcache = settings::get_instance()["cache"].as<cfg_cache>();
+    m_cache = new sqlitecache(cfgcache.location());
+    if (!m_cache)
+        throw 0;
 
     // Create a cache session for the given URL
     m_cache->sessionid(url);
 
     // Create the requested number of download threads
     m_downloader = new downloader(parallel);
-    m_downloader->add_event_listener(this);
+    if (!m_downloader)
+        throw 0;
 
     // Register event handlers
+    m_downloader->add_event_listener(this);
     register_event_handler<osmlayer, downloader::event_complete>(this, &osmlayer::evt_downloadcomplete);
 };
 
@@ -192,13 +196,12 @@ void osmlayer::draw(const viewport &vp, canvas &os)
         // current local viewport
         m_vp.w(0);
         m_vp.h(0);
-
-        return;
+    } else
+    {
+        // Regular tile drawing
+        update_map(vp);
+        os.draw(m_canvas_0, 0, 0, (int)vp.w(), (int)vp.h(), 0, 0);
     }
-
-    // Regular tile drawig
-    update_map(vp);
-    os.draw(m_canvas_0, 0, 0, (int)vp.w(), (int)vp.h(), 0, 0);
 }
 
 void osmlayer::update_map(const viewport &vp)

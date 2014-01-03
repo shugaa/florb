@@ -10,14 +10,91 @@
 // attempt at hiding the YAML-cpp internals. It could have been so easy...
 // On a positive note it is now relatively easy to swap out YAML-cpp for some
 // other backend.
-struct cfg_tileserver
+
+// Tileserver configuration class
+class cfg_tileserver
 {
-    std::string name;
-    std::string url;
-    unsigned int zmin;
-    unsigned int zmax;
-    unsigned int parallel;
-    int type;
+    public:
+        cfg_tileserver() {};
+        cfg_tileserver(
+                const std::string& name,
+                const std::string& url,
+                unsigned int zmin,
+                unsigned int zmax,
+                unsigned int parallel,
+                int type) :
+            m_name(name),
+            m_url(url),
+            m_zmin(zmin),
+            m_zmax(zmax),
+            m_parallel(parallel),
+            m_type(type) {};
+
+        const std::string& name() const { return m_name; };
+        void name(const std::string& n) { m_name = n; }
+
+        const std::string& url() const { return m_url; };
+        void url(const std::string& u) { m_url = u; }
+
+        unsigned int zmin() const { return m_zmin; };
+        void zmin(unsigned int z) { m_zmin = z; };
+
+        unsigned int zmax() const { return m_zmax; };
+        void zmax(unsigned int z) { m_zmax = z; };
+
+        unsigned int parallel() const { return m_parallel; };
+        void parallel(unsigned int p) { m_parallel = p; };
+
+        unsigned int type() const { return m_type; };
+        void type(unsigned int t) { m_type = t; };
+
+    private:
+        std::string m_name;
+        std::string m_url;
+        unsigned int m_zmin;
+        unsigned int m_zmax;
+        unsigned int m_parallel;
+        int m_type;
+};
+
+// GPSd configuration class
+class cfg_gpsd
+{
+    public:
+        cfg_gpsd() {};
+        cfg_gpsd(bool enabled, const std::string& host, const std::string& port) :
+            m_enabled(enabled),
+            m_host(host),
+            m_port(port) {};
+
+        bool enabled() const { return m_enabled; };
+        void enabled(bool e) { m_enabled = e; };
+
+        const std::string& host() const { return m_host; };
+        void host(const std::string& h) { m_host = h; };
+
+        const std::string& port() const { return m_port; };
+        void port(const std::string& p) { m_port = p; };
+
+    private:
+        bool m_enabled;
+        std::string m_host;
+        std::string m_port;
+};
+
+// Cache configuration class
+class cfg_cache
+{
+    public:
+        cfg_cache() {};
+        cfg_cache(const std::string& location) :
+            m_location(location) {};
+    
+        const std::string& location() const { return m_location; }
+        void location(const std::string& location) { m_location = location; };
+
+    private:    
+        std::string m_location; 
 };
 
 // Forward declaration of YAML-cpp node container and iterator container

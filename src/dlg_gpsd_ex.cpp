@@ -5,9 +5,9 @@
 
 void dlg_gpsd::create_ex()
 {
-    bool enable = settings::get_instance()["gpsd"]["enabled"].as<bool>();
+    cfg_gpsd cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
 
-    if (enable)
+    if (cfggpsd.enabled())
         m_chkbtn_enable->value(1);
     else
         m_chkbtn_enable->value(0);
@@ -40,14 +40,12 @@ void dlg_gpsd::ui_setup_ex()
 void dlg_gpsd::show_ex()
 {
     ui_setup_ex();
+    
+    cfg_gpsd cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
+    m_txtin_server->value(cfggpsd.host().c_str());
+    m_txtin_port->value(cfggpsd.port().c_str());
+
     m_window->show();
-
-    std::string host(settings::get_instance()["gpsd"]["host"].as<std::string>());
-    std::string port(settings::get_instance()["gpsd"]["port"].as<std::string>());
-
-    m_txtin_server->value(host.c_str());
-    m_txtin_port->value(port.c_str());
-
     bool ok = false;
     for (;;) {
         Fl_Widget *o = Fl::readqueue();
@@ -62,23 +60,21 @@ void dlg_gpsd::show_ex()
         return;
 
     // OK, store and connect / disconnect
-    host = std::string(m_txtin_server->value());
-    port = std::string(m_txtin_port->value());
-
-    settings::get_instance()["gpsd"]["host"] = host;
-    settings::get_instance()["gpsd"]["port"] = port;
+    cfggpsd.host(std::string(m_txtin_server->value()));
+    cfggpsd.port(std::string(m_txtin_port->value()));
 
     if (m_chkbtn_enable->value() == 0)
     {
-        settings::get_instance()["gpsd"]["enabled"] = false;
+        cfggpsd.enabled(false);
         m_mapctrl->disconnect();
     }
     else
     {
-        settings::get_instance()["gpsd"]["enabled"] = true;
-        m_mapctrl->connect(host, port); 
+        cfggpsd.enabled(true);
+        m_mapctrl->connect(cfggpsd.host(), cfggpsd.port()); 
     }
-
+    
+    settings::get_instance()["gpsd"] = cfggpsd;
     m_window->hide();
 }
 

@@ -29,10 +29,11 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     register_event_handler<mapctrl, gpxlayer::event_notify>(this, &mapctrl::handle_evt_notify);
 
     // Add a gpsdlayer if enabled
-    if (settings::get_instance()["gpsd"]["enabled"].as<bool>())
-    connect(
-        settings::get_instance()["gpsd"]["host"].as<std::string>(),  
-        settings::get_instance()["gpsd"]["port"].as<std::string>());
+    cfg_gpsd cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
+    if (cfggpsd.enabled())
+    {
+        connect(cfggpsd.host(), cfggpsd.port());  
+    }
 }
 
 mapctrl::~mapctrl()

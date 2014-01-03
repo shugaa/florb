@@ -5,51 +5,88 @@
 #include "utils.hpp"
 
 namespace YAML {
-   template<>
-   struct convert<cfg_tileserver> {
-      static Node encode(const cfg_tileserver& rhs) {
-         Node node;
-         node["name"] = rhs.name;
-         node["url"] = rhs.url;
-         node["zmin"] = rhs.zmin;
-         node["zmax"] = rhs.zmax;
-         node["parallel"] = rhs.parallel;
+    template<>
+        struct convert<cfg_tileserver> {
+            static Node encode(const cfg_tileserver& rhs) {
+                Node node;
+                node["name"] = rhs.name();
+                node["url"] = rhs.url();
+                node["zmin"] = rhs.zmin();
+                node["zmax"] = rhs.zmax();
+                node["parallel"] = rhs.parallel();
 
-         node["type"] = "PNG";
-         if      (rhs.type == image::PNG)
-            node["type"] = "PNG";
-         else if (rhs.type == image::JPG)
-            node["type"] = "JPG";
+                node["type"] = "PNG";
+                if      (rhs.type() == image::PNG)
+                    node["type"] = "PNG";
+                else if (rhs.type() == image::JPG)
+                    node["type"] = "JPG";
 
-         return node;
-      }
+                return node;
+            }
 
-      static bool decode(const Node& node, cfg_tileserver& rhs) {
-         if(!node.IsMap() || node.size() != 6)
-            return false;
+            static bool decode(const Node& node, cfg_tileserver& rhs) {
+                if(!node.IsMap() || node.size() != 6)
+                    return false;
 
-         rhs.name = node["name"].as<std::string>();
-         rhs.url = node["url"].as<std::string>();
-         rhs.zmin = node["zmin"].as<int>();
-         rhs.zmax = node["zmax"].as<int>();
-         rhs.parallel= node["parallel"].as<int>();
-         
-         rhs.type = image::PNG;
-         std::string imgtype = node["type"].as<std::string>();
-         if      (imgtype.compare("PNG") == 0)
-            rhs.type = image::PNG;
-         else if (imgtype.compare("JPG") == 0)
-            rhs.type = image::JPG;
-         
-         return true;
-      }
-   };
+                rhs.name(node["name"].as<std::string>());
+                rhs.url(node["url"].as<std::string>());
+                rhs.zmin(node["zmin"].as<int>());
+                rhs.zmax(node["zmax"].as<int>());
+                rhs.parallel(node["parallel"].as<int>());
+
+                rhs.type(image::PNG);
+                std::string imgtype = node["type"].as<std::string>();
+                if      (imgtype.compare("PNG") == 0)
+                    rhs.type(image::PNG);
+                else if (imgtype.compare("JPG") == 0)
+                    rhs.type(image::JPG);
+
+                return true;
+            }
+        };
+
+    template<>
+        struct convert<cfg_cache> {
+            static Node encode(const cfg_cache& rhs) {
+                Node node;
+                node["location"] = rhs.location();
+                return node;
+            }
+
+            static bool decode(const Node& node, cfg_cache& rhs) {
+                if(!node.IsMap() || node.size() != 1)
+                    return false;
+
+                rhs.location(node["location"].as<std::string>());
+                return true;
+            }
+        };
+
+    template<>
+        struct convert<cfg_gpsd> {
+            static Node encode(const cfg_gpsd& rhs) {
+                Node node;
+                node["enabled"] = rhs.enabled();
+                node["host"] = rhs.host();
+                node["port"] = rhs.port();
+                return node;
+            }
+
+            static bool decode(const Node& node, cfg_gpsd& rhs) {
+                if(!node.IsMap() || node.size() != 3)
+                    return false;
+
+                rhs.enabled(node["enabled"].as<bool>());
+                rhs.host(node["host"].as<std::string>());
+                rhs.port(node["port"].as<std::string>());
+                return true;
+            }
+        };
 }
 
 class yaml_node
 {
     public:
-        //yaml_node(YAML::Node n) : m_node(n) {};
         yaml_node(YAML::Node n) : m_node(n) {};
         yaml_node(const std::string& path)
         {
@@ -156,26 +193,22 @@ settings& settings::get_instance()
 
 void settings::defaults(const std::string& path)
 {
-    cfg_tileserver cts;
-    cts.name = "OpenStreetMap";
-    cts.url  = "http://tile.openstreetmap.org/$FLORBZ$/$FLORBX$/$FLORBY$.png";
-    cts.zmin = 0;
-    cts.zmax = 18;
-    cts.parallel = 2;
-    cts.type = image::PNG;
-
     node rn;
 
-    // Tileserver configuration
-    rn["tileservers"].push_back(cts);
+    // Tileserver default configuration
+    cfg_tileserver cfgtileserver(
+        "OpenStreetMap",
+        "http://tile.openstreetmap.org/$FLORBZ$/$FLORBX$/$FLORBY$.png",
+        0, 18, 2, image::PNG);
+    rn["tileservers"].push_back(cfgtileserver);
 
-    // GPSd configuration
-    rn["gpsd"]["port"] = 2947;
-    rn["gpsd"]["host"] = "localhost";
-    rn["gpsd"]["enabled"] = false;
+    // GPSd default configuration
+    cfg_gpsd cfggpsd(false, "localhost", "2947");
+    rn["gpsd"] = cfggpsd;
 
-    // Cache configuration
-    rn["cache"]["location"] = utils::appdir() + "/cache.db";
+    // Cache default configuration
+    cfg_cache cfgcache(utils::appdir() + "/cache.db");
+    rn["cache"] = cfgcache;
 
     rn.serialize(path);
 }
@@ -260,6 +293,8 @@ template std::string node::as<std::string>() const;
 template cfg_tileserver node::as<cfg_tileserver>() const;
 template std::vector< cfg_tileserver > node::as< std::vector<cfg_tileserver> >() const;
 template bool node::as<bool>() const;
+template cfg_cache node::as<cfg_cache>() const;
+template cfg_gpsd node::as<cfg_gpsd>() const;
 
 template void node::push_back<int>(const int& rhs);
 template void node::push_back<std::string>(const std::string& rhs);
@@ -271,3 +306,5 @@ template node& node::operator=<std::string> (const std::string& rhs);
 template node& node::operator=< std::vector<cfg_tileserver> > (const std::vector<cfg_tileserver>& rhs);
 template node& node::operator=<cfg_tileserver> (const cfg_tileserver& rhs);
 template node& node::operator=<bool> (const bool& rhs);
+template node& node::operator=<cfg_gpsd> (const cfg_gpsd& rhs);
+
