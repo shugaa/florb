@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
+   width="81.28125"
+   height="103.78125"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
    inkscape:export-filename="/home/bjoern/florb.png"
    inkscape:export-xdpi="28.046257"
    inkscape:export-ydpi="28.046257"
-   sodipodi:docname="Neues Dokument 1">
+   sodipodi:docname="florb.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="373.99999"
-     inkscape:cy="514.28571"
+     inkscape:zoom="0.7"
+     inkscape:cx="33.928561"
+     inkscape:cy="-10.96933"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -39,32 +39,11 @@
      inkscape:window-height="845"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1">
-    <sodipodi:guide
-       orientation="1,0"
-       position="400,414.28571"
-       id="guide2985" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="-54.285714,600"
-       id="guide2987" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="360,700"
-       id="guide2989" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="440,767.14286"
-       id="guide2991" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="-234.28571,650"
-       id="guide2993" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="117.14286,700"
-       id="guide2995" />
-  </sodipodi:namedview>
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -80,10 +59,11 @@
   <g
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-341.5,-80.46875)">
     <path
        style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.39999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 489.28571,486.6479 40,100 40,-100 -40,50 z"
+       d="m 342.14285,82.362186 40,99.999994 40,-99.999994 -40,50.000004 z"
        id="path3767-5"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/bjoern/florb.png"
@@ -91,7 +71,7 @@
        inkscape:export-ydpi="28" />
     <path
        style="fill:#a70000;fill-opacity:1;stroke:#000000;stroke-width:1.39999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 489.28571,586.6479 40,-100 40,100 -40,-50 z"
+       d="m 342.14285,182.36218 40,-99.999994 40,99.999994 -40,-49.99999 z"
        id="path3767"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/bjoern/florb.png"

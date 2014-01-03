@@ -3,6 +3,7 @@
 #include <boost/bind.hpp>
 #include <FL/Fl.H>
 
+#include "version.hpp"
 #include "downloader.hpp"
 
 downloader::downloader(int nthreads) : 
@@ -134,7 +135,7 @@ void downloader::worker()
 
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, this);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEHEADER, this); 
-    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "florb/0.1");
+    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, FLORB_USERAGENT);
 
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, cb_data);
     curl_easy_setopt(curl_handle, CURLOPT_HEADERFUNCTION, cb_header);

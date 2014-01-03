@@ -5,7 +5,13 @@ code_name {.cxx}
 decl {\#include <FL/Fl_Text_Buffer.H>} {public global
 } 
 
-decl {\#include "utils.hpp"} {selected private global
+decl {\#include <string>} {private global
+} 
+
+decl {\#include "version.hpp"} {private global
+} 
+
+decl {\#include "utils.hpp"} {private global
 } 
 
 class dlg_about {open
@@ -76,7 +82,13 @@ class dlg_about {open
       }
     }
     code {m_buf = new Fl_Text_Buffer();
-m_buf->append("Version: 0.1\\n\\n\\
+
+std::string v(std::string("Version: ") + std::string(FLORB_PROGSTR));
+
+m_buf->append(v.c_str());
+m_buf->append("\\n\\n");
+
+m_buf->append("\\
 © 2013 Bjoern Rehm <bjoern@shugaa.de>\\n\\n\\
 Distributed under the terms of the MIT license as stated below:\\n\\n\\
 \\
@@ -101,7 +113,8 @@ THE SOFTWARE.");
 m_display->buffer(m_buf);
 
 // Set the window icon
-utils::set_window_icon(m_window);} {}
+utils::set_window_icon(m_window);} {selected
+    }
   }
   Function {~dlg_about()} {open
   } {
