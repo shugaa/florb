@@ -326,6 +326,7 @@ bool mapctrl::gpsd_evt_motion(const gpsdlayer::event_motion *e)
 
 bool mapctrl::gpsd_evt_status(const gpsdlayer::event_status *e)
 {
+    refresh();
     event_notify en;
     fire(&en);
     return true;
