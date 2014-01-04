@@ -30,7 +30,7 @@ event_listener::~event_listener()
     }
 }
 
-bool event_listener::evthandle(const event_base* evt)
+bool event_listener::handle(const event_base* evt)
 {
     evthandlers::iterator it = m_evthandlers.find(tinfo(&typeid(*evt)));
     if(it != m_evthandlers.end())
@@ -84,7 +84,7 @@ bool event_generator::fire(const event_base* evt)
     std::set<event_listener*>::iterator it;
     for (it = m_listeners.begin(); it != m_listeners.end();++it)
     {
-        if((*it)->evthandle(evt))
+        if((*it)->handle(evt))
             ret = true;
     }
 

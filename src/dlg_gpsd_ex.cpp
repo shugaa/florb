@@ -66,12 +66,12 @@ void dlg_gpsd::show_ex()
     if (m_chkbtn_enable->value() == 0)
     {
         cfggpsd.enabled(false);
-        m_mapctrl->disconnect();
+        m_mapctrl->gpsd_disconnect();
     }
     else
     {
         cfggpsd.enabled(true);
-        m_mapctrl->connect(cfggpsd.host(), cfggpsd.port()); 
+        m_mapctrl->gpsd_connect(cfggpsd.host(), cfggpsd.port()); 
     }
     
     settings::get_instance()["gpsd"] = cfggpsd;

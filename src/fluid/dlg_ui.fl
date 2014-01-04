@@ -17,7 +17,10 @@ decl {\#include "dlg_about.hpp"} {public global
 decl {\#include "mapctrl.hpp"} {public global
 } 
 
-class dlg_ui {open : {public mapctrl_observer, public event_listener}
+decl {\#include "event.hpp"} {public global
+} 
+
+class dlg_ui {open : {public event_listener}
 } {
   decl {void create_ex(void);} {private local
   }
@@ -65,7 +68,7 @@ class dlg_ui {open : {public mapctrl_observer, public event_listener}
   }
   decl {void cb_close_ex(Fl_Widget *widget);} {private local
   }
-  decl {void mapctrl_notify();} {public local
+  decl {bool mapctrl_evt_notify_ex(const mapctrl::event_notify *e);} {selected private local
   }
   decl {dlg_about *m_dlg_about;} {private local
   }
@@ -309,7 +312,7 @@ ui->cb_choice_basemap_ex(widget);} {}
             private xywh {0 58 5 480} box FLAT_BOX
           }
           Fl_Box m_mapctrl {
-            label {Slippy Map} selected
+            label {Slippy Map}
             private xywh {5 58 795 480} box FLAT_BOX resizable
             class mapctrl
           }

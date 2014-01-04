@@ -13,14 +13,16 @@
 #include "gpsdlayer.hpp"
 #include "gfx.hpp"
 
-class mapctrl_observer;
-
 class mapctrl : public Fl_Widget, public event_listener, public event_generator
 {
     public:
         mapctrl(int x, int y, int w, int h, const char *label);
         ~mapctrl();
 
+        // FLTK event handling routine
+        int handle(int event);
+
+        // Basemap configuration
         void basemap(
                 const std::string& name, 
                 const std::string& url, 
@@ -29,44 +31,60 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
                 unsigned int parallel,
                 int imgtype);
 
-        int handle(int event);
-        bool handle_evt_motion(const gpsdlayer::event_motion *e);
-        bool handle_evt_status(const gpsdlayer::event_status *e);
-        bool handle_evt_notify(const osmlayer::event_notify *e);
-        bool handle_evt_notify(const gpxlayer::event_notify *e);
-        void layer_notify();
-        void refresh();
+        // GPSd configuration
+        bool gpsd_connected();
+        void gpsd_connect(const std::string& host, const std::string& port);
+        void gpsd_disconnect();
+        void gpsd_record(bool start);
+        int gpsd_mode();
 
-        bool connected();
-        void connect(const std::string& host, const std::string& port);
-        void disconnect();
-
-        point2d<double> mousegps();
+        // GPX configuration
+        void gpx_loadtrack(const std::string& path);
+        void gpx_savetrack(const std::string& path);
+        void gpx_cleartrack();
+        bool gpx_wpselected();
+        void gpx_wpdelete();
+        double gpx_wpelevation();
+        void gpx_wpelevation(double e);
+        point2d<double> gpx_wppos();
+        void gpx_wppos(const point2d<double>& p);
+        double gpx_trip();
+        
+        // Viewport control
         unsigned int zoom();
         void zoom(unsigned int z);
+        void goto_cursor();
+        point2d<double> mousepos();
+        
+        // Event classes
+        class event_notify;
+    private:
+        // Utility methods
+        void refresh();
 
+        // Widget event handling routines
+        int handle_move(int event);
+        int handle_enter(int event);
+        int handle_leave(int event);
+        int handle_push(int event);
+        int handle_release(int event);
+        int handle_drag(int event);
+        int handle_mousewheel(int event);
+        int handle_keyboard(int event);
         point2d<int> vp_relative(const point2d<int>& pos);
         bool vp_inside(const point2d<int>& pos);
-        
-        void addobserver(mapctrl_observer &o);
-        void removeobserver(mapctrl_observer &o);
 
-        void load_track(const std::string& path);
-        void save_track(const std::string& path);
-        void clear_track();
-        void goto_cursor();
-        void record_track(bool start);
-        double trip();
-        int mode();
+        // GPSd-layer event handlers
+        bool gpsd_evt_motion(const gpsdlayer::event_motion *e);
+        bool gpsd_evt_status(const gpsdlayer::event_status *e);
 
-        bool selected();
-        point2d<double> selection_pos();
-        void selection_pos(const point2d<double>& p);
-        void selection_delete();
+        // Basemap-layer event handlers
+        bool osm_evt_notify(const osmlayer::event_notify *e);
 
-        double selection_elevation();
-        void selection_elevation(double e);
-    private:
+        // GPX-layer event handlers
+        bool gpx_evt_notify(const gpxlayer::event_notify *e);
+
+        // Layers
         osmlayer *m_basemap;
         gpxlayer *m_gpxlayer;
         gpsdlayer *m_gpsdlayer;
@@ -74,22 +92,17 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         point2d<int> m_mousepos;
         viewport m_viewport;
         canvas m_offscreen;
-
         bool m_recordtrack;
-
-        std::set<mapctrl_observer*> m_observers;
-        void notify_observers();
 
     protected:
         void draw();
 };
 
-class mapctrl_observer
+class mapctrl::event_notify : public event_base
 {
     public:
-        mapctrl_observer() {};
-        virtual ~mapctrl_observer() {};
-        virtual void mapctrl_notify() = 0;
+        event_notify() {};
+        ~event_notify() {};
 };
 
 #endif // MAPCTRL_HPP

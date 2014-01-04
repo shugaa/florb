@@ -19,13 +19,13 @@ gpxlayer::gpxlayer() :
     m_selection.it = m_trkpts.end();
 
     name(std::string("Unnamed GPX layer"));
-    register_event_handler<gpxlayer, layer_mouseevent>(this, &gpxlayer::handle_evt_mouse);
-    register_event_handler<gpxlayer, layer_keyevent>(this, &gpxlayer::handle_evt_key);
+    register_event_handler<gpxlayer, layer::event_mouse>(this, &gpxlayer::handle_evt_mouse);
+    register_event_handler<gpxlayer, layer::event_key>(this, &gpxlayer::handle_evt_key);
 }
 
-bool gpxlayer::key(const layer_keyevent* evt)
+bool gpxlayer::key(const layer::event_key* evt)
 {
-    if (evt->key() != layer_keyevent::KEY_DEL)
+    if (evt->key() != layer::event_key::KEY_DEL)
         return false;
 
     selection_delete();
@@ -71,7 +71,7 @@ void gpxlayer::trip_calcall()
     m_trip = sum;
 }
 
-bool gpxlayer::press(const layer_mouseevent* evt)
+bool gpxlayer::press(const layer::event_mouse* evt)
 {
     // Mouse push outside viewport area
     if ((evt->pos().x() < 0) || (evt->pos().y() < 0))
@@ -117,7 +117,7 @@ bool gpxlayer::press(const layer_mouseevent* evt)
     return true;
 }
 
-bool gpxlayer::drag(const layer_mouseevent* evt)
+bool gpxlayer::drag(const layer::event_mouse* evt)
 {
     // Nothing to drag around
     if (m_selection.it == m_trkpts.end())
@@ -154,7 +154,7 @@ bool gpxlayer::drag(const layer_mouseevent* evt)
     return true;
 }
 
-bool gpxlayer::release(const layer_mouseevent* evt)
+bool gpxlayer::release(const layer::event_mouse* evt)
 {
     // Button release on an existing item
     if (m_selection.it != m_trkpts.end()) 
@@ -396,26 +396,26 @@ gpxlayer::~gpxlayer()
     ;
 };
 
-bool gpxlayer::handle_evt_mouse(const layer_mouseevent* evt)
+bool gpxlayer::handle_evt_mouse(const layer::event_mouse* evt)
 {
     // Only the left mouse button is of interest
-    if (evt->button() != layer_mouseevent::BUTTON_LEFT)
+    if (evt->button() != layer::event_mouse::BUTTON_LEFT)
         return false;
 
     int ret = false;
     switch (evt->action())
     {
-        case layer_mouseevent::ACTION_PRESS:
+        case layer::event_mouse::ACTION_PRESS:
         {
             ret = press(evt); 
             break;
         }
-        case layer_mouseevent::ACTION_RELEASE:
+        case layer::event_mouse::ACTION_RELEASE:
         {
             ret = release(evt); 
             break;
         }
-        case layer_mouseevent::ACTION_DRAG:
+        case layer::event_mouse::ACTION_DRAG:
         {
             ret = drag(evt); 
             break;
@@ -427,18 +427,18 @@ bool gpxlayer::handle_evt_mouse(const layer_mouseevent* evt)
     return ret;
 }
 
-bool gpxlayer::handle_evt_key(const layer_keyevent* evt)
+bool gpxlayer::handle_evt_key(const layer::event_key* evt)
 {
     int ret = false;
 
     switch (evt->action())
     {
-        case layer_keyevent::ACTION_PRESS:
+        case layer::event_key::ACTION_PRESS:
         {
             ret = false; 
             break;
         }
-        case layer_keyevent::ACTION_RELEASE:
+        case layer::event_key::ACTION_RELEASE:
         {
             ret = key(evt); 
             break;

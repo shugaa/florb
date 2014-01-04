@@ -79,7 +79,7 @@ class event_listener
     public:
         event_listener() {};
         virtual ~event_listener(); 
-        bool evthandle(const event_base* evt);
+        bool handle(const event_base* evt);
         bool handle_safe(const event_base* evt);
 
     private:

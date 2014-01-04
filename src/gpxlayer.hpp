@@ -17,8 +17,8 @@ class gpxlayer : public layer
         gpxlayer();
         ~gpxlayer();
 
-        bool handle_evt_mouse(const layer_mouseevent* evt);
-        bool handle_evt_key(const layer_keyevent* evt);
+        bool handle_evt_mouse(const layer::event_mouse* evt);
+        bool handle_evt_key(const layer::event_key* evt);
 
         void draw(const viewport& vp, canvas& os);
         void load_track(const std::string &path);
@@ -54,10 +54,10 @@ class gpxlayer : public layer
 
         void notify();
 
-        bool press(const layer_mouseevent* evt);
-        bool release(const layer_mouseevent* evt);
-        bool drag(const layer_mouseevent* evt);
-        bool key(const layer_keyevent* evt);
+        bool press(const layer::event_mouse* evt);
+        bool release(const layer::event_mouse* evt);
+        bool drag(const layer::event_mouse* evt);
+        bool key(const layer::event_key* evt);
         void trip_update();
         void trip_calcall();
 

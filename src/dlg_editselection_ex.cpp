@@ -5,8 +5,8 @@ void dlg_editselection::show_ex()
 {
     m_window->show();
 
-    point2d<double> pos(m_mapctrl->selection_pos());
-    double ele(m_mapctrl->selection_elevation());
+    point2d<double> pos(m_mapctrl->gpx_wppos());
+    double ele(m_mapctrl->gpx_wpelevation());
 
     std::ostringstream os;
     os.precision(6);
@@ -50,8 +50,8 @@ void dlg_editselection::show_ex()
     is.str(m_txtin_ele->value());
     is >> ele;
 
-    m_mapctrl->selection_pos(pos);
-    m_mapctrl->selection_elevation(ele);
+    m_mapctrl->gpx_wppos(pos);
+    m_mapctrl->gpx_wpelevation(ele);
     
     m_window->hide();
 }

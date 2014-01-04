@@ -3,11 +3,9 @@
 #include <iostream>
 #include <FL/fl_draw.H>
 #include <FL/x.H>
-
 #include "settings.hpp"
 #include "mapctrl.hpp"
 #include "utils.hpp"
-
 
 mapctrl::mapctrl(int x, int y, int w, int h, const char *label) : 
     Fl_Widget(x, y, w, h, label),
@@ -19,25 +17,29 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_offscreen(500,500),
     m_recordtrack(false)
 {
+    // Register event handlers for layer events
+    register_event_handler<mapctrl, gpsdlayer::event_status>(this, &mapctrl::gpsd_evt_status);
+    register_event_handler<mapctrl, gpsdlayer::event_motion>(this, &mapctrl::gpsd_evt_motion);
+    register_event_handler<mapctrl, osmlayer::event_notify>(this, &mapctrl::osm_evt_notify);
+    register_event_handler<mapctrl, gpxlayer::event_notify>(this, &mapctrl::gpx_evt_notify);
+
+    // Add a GPX layer
     m_gpxlayer = new gpxlayer();
+    if (!m_gpxlayer)
+        throw 0;
+
     m_gpxlayer->add_event_listener(this);
     add_event_listener(m_gpxlayer);
-
-    register_event_handler<mapctrl, gpsdlayer::event_status>(this, &mapctrl::handle_evt_status);
-    register_event_handler<mapctrl, gpsdlayer::event_motion>(this, &mapctrl::handle_evt_motion);
-    register_event_handler<mapctrl, osmlayer::event_notify>(this, &mapctrl::handle_evt_notify);
-    register_event_handler<mapctrl, gpxlayer::event_notify>(this, &mapctrl::handle_evt_notify);
 
     // Add a gpsdlayer if enabled
     cfg_gpsd cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
     if (cfggpsd.enabled())
-    {
-        connect(cfggpsd.host(), cfggpsd.port());  
-    }
+        gpsd_connect(cfggpsd.host(), cfggpsd.port());  
 }
 
 mapctrl::~mapctrl()
 {
+    // Delete all layers if active
     if (m_basemap)
         delete m_basemap;
 
@@ -48,7 +50,7 @@ mapctrl::~mapctrl()
         delete m_gpsdlayer;
 }
 
-void mapctrl::load_track(const std::string& path)
+void mapctrl::gpx_loadtrack(const std::string& path)
 {
     if (!m_gpxlayer)
         throw 0;
@@ -56,7 +58,7 @@ void mapctrl::load_track(const std::string& path)
     m_gpxlayer->load_track(path);
 }
 
-void mapctrl::save_track(const std::string& path)
+void mapctrl::gpx_savetrack(const std::string& path)
 {
     if (!m_gpxlayer)
         throw 0;
@@ -64,7 +66,7 @@ void mapctrl::save_track(const std::string& path)
     m_gpxlayer->save_track(path);
 }
 
-void mapctrl::clear_track()
+void mapctrl::gpx_cleartrack()
 {
     if (!m_gpxlayer)
         throw 0;
@@ -72,25 +74,7 @@ void mapctrl::clear_track()
     m_gpxlayer->clear_track();
 }
 
-void mapctrl::goto_cursor()
-{
-    if (!m_gpsdlayer)
-        throw 0;
-
-    if (!m_gpsdlayer->valid())
-        return;
-
-    point2d<unsigned long> ppx(utils::wsg842px(m_viewport.z(), m_gpsdlayer->pos()));
-
-    unsigned long x = (ppx.x() < (m_viewport.w()/2)) ? 0 : ppx.x()-(m_viewport.w()/2);
-    unsigned long y = (ppx.y() < (m_viewport.h()/2)) ? 0 : ppx.y()-(m_viewport.h()/2);
-
-    m_viewport.x(x);
-    m_viewport.y(y);
-    refresh();
-}
-
-bool mapctrl::selected()
+bool mapctrl::gpx_wpselected()
 {
     if (!m_gpxlayer)
         throw 0;
@@ -98,7 +82,7 @@ bool mapctrl::selected()
     return m_gpxlayer->selected();
 }
 
-point2d<double> mapctrl::selection_pos()
+point2d<double> mapctrl::gpx_wppos()
 {
     if (!m_gpxlayer)
         throw 0;
@@ -106,7 +90,7 @@ point2d<double> mapctrl::selection_pos()
     return m_gpxlayer->selection_pos();
 }
 
-void mapctrl::selection_pos(const point2d<double>& p)
+void mapctrl::gpx_wppos(const point2d<double>& p)
 {
     if (!m_gpxlayer)
         throw 0;
@@ -114,7 +98,7 @@ void mapctrl::selection_pos(const point2d<double>& p)
     m_gpxlayer->selection_pos(p);
 }
 
-double mapctrl::selection_elevation()
+double mapctrl::gpx_wpelevation()
 {
     if (!m_gpxlayer)
         throw 0;
@@ -122,7 +106,7 @@ double mapctrl::selection_elevation()
     return m_gpxlayer->selection_elevation();
 }
 
-void mapctrl::selection_elevation(double e)
+void mapctrl::gpx_wpelevation(double e)
 {
     if (!m_gpxlayer)
         throw 0;
@@ -130,7 +114,7 @@ void mapctrl::selection_elevation(double e)
     m_gpxlayer->selection_elevation(e);
 }
 
-void mapctrl::selection_delete()
+void mapctrl::gpx_wpdelete()
 {
     if (!m_gpxlayer)
         throw 0;
@@ -138,40 +122,7 @@ void mapctrl::selection_delete()
     m_gpxlayer->selection_delete();    
 }
 
-bool mapctrl::connected()
-{
-    if (!m_gpsdlayer)
-        return false;
-
-    return m_gpsdlayer->connected();
-}
-
-void mapctrl::connect(const std::string& host, const std::string& port)
-{
-    if (connected())
-        disconnect();
-
-    m_gpsdlayer = new gpsdlayer(host, port);
-    m_gpsdlayer->add_event_listener(this);
-}
-
-void mapctrl::disconnect()
-{
-    if (!m_gpsdlayer)
-        return;
-
-    delete m_gpsdlayer;
-    m_gpsdlayer = NULL;
-    refresh();
-    notify_observers();
-}
-
-void mapctrl::record_track(bool start)
-{
-    m_recordtrack = start;
-}
-
-double mapctrl::trip()
+double mapctrl::gpx_trip()
 {
     if (!m_gpxlayer)
         throw 0;
@@ -179,34 +130,51 @@ double mapctrl::trip()
     return m_gpxlayer->trip();
 }
 
-int mapctrl::mode()
+bool mapctrl::gpsd_connected()
+{
+    if (!m_gpsdlayer)
+        return false;
+
+    return m_gpsdlayer->connected();
+}
+
+void mapctrl::gpsd_connect(const std::string& host, const std::string& port)
+{
+    if (m_gpsdlayer)
+        gpsd_disconnect();
+
+    m_gpsdlayer = new gpsdlayer(host, port);
+    m_gpsdlayer->add_event_listener(this);
+}
+
+void mapctrl::gpsd_disconnect()
+{
+    // Not connected in the first place
+    if (!m_gpsdlayer)
+        return;
+
+    // Disconnect
+    remove_event_listener(m_gpsdlayer);
+    delete m_gpsdlayer;
+    m_gpsdlayer = NULL;
+    
+    // Refresh display and notify
+    refresh();
+    event_notify e;
+    fire(&e);
+}
+
+void mapctrl::gpsd_record(bool start)
+{
+    m_recordtrack = start;
+}
+
+int mapctrl::gpsd_mode()
 {
     if (!m_gpsdlayer)
         throw 0;
 
     return m_gpsdlayer->mode();
-}
-
-void mapctrl::layer_notify()
-{
-    // Quote from the doc The public method Fl_Widget::redraw() simply does
-    // Fl_Widget::damage(FL_DAMAGE_ALL)
-    refresh();
-}
-
-unsigned int mapctrl::zoom()
-{
-    // Return current zoomlevel
-    return m_viewport.z();
-}
-
-void mapctrl::zoom(unsigned int z)
-{
-    // Set tne new zoomlevel
-    m_viewport.z(z, m_viewport.w()/2, m_viewport.h()/2);
-   
-    // Request a redraw
-    refresh();
 }
 
 void mapctrl::basemap(
@@ -226,10 +194,12 @@ void mapctrl::basemap(
     // Create a new basemap layer
     m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
     m_basemap->add_event_listener(this);
+    add_event_listener(m_basemap);
 
     // Destroy the original basemap layer 
     if (tmp)
     {
+        remove_event_listener(tmp);
         delete tmp;
     }
 
@@ -237,7 +207,40 @@ void mapctrl::basemap(
     refresh();
 }
 
-point2d<double> mapctrl::mousegps()
+unsigned int mapctrl::zoom()
+{
+    // Return current zoomlevel
+    return m_viewport.z();
+}
+
+void mapctrl::zoom(unsigned int z)
+{
+    // Set tne new zoomlevel
+    m_viewport.z(z, m_viewport.w()/2, m_viewport.h()/2);
+   
+    // Request a redraw
+    refresh();
+}
+
+void mapctrl::goto_cursor()
+{
+    if (!gpsd_connected())
+        return;
+
+    if (!m_gpsdlayer->valid())
+        return;
+
+    point2d<unsigned long> ppx(utils::wsg842px(m_viewport.z(), m_gpsdlayer->pos()));
+
+    unsigned long x = (ppx.x() < (m_viewport.w()/2)) ? 0 : ppx.x()-(m_viewport.w()/2);
+    unsigned long y = (ppx.y() < (m_viewport.h()/2)) ? 0 : ppx.y()-(m_viewport.h()/2);
+
+    m_viewport.x(x);
+    m_viewport.y(y);
+    refresh();
+}
+
+point2d<double> mapctrl::mousepos()
 {
     // The currently active viewport might be smaller than the current widget
     // size. Calculate the delta first
@@ -277,24 +280,6 @@ void mapctrl::refresh()
     redraw();
 }
 
-
-void mapctrl::addobserver(mapctrl_observer &o)
-{
-    m_observers.insert(&o);
-}
-
-void mapctrl::removeobserver(mapctrl_observer &o)
-{
-    m_observers.erase(&o);
-}
-
-void mapctrl::notify_observers()
-{
-    std::set<mapctrl_observer*>::iterator it;
-    for (it = m_observers.begin(); it != m_observers.end(); it++)
-        (*it)->mapctrl_notify();
-}
-
 point2d<int> mapctrl::vp_relative(const point2d<int>& pos)
 {
     // Convert to widget-relative coordinates first
@@ -326,184 +311,256 @@ bool mapctrl::vp_inside(const point2d<int>& pos)
     return true;
 }
 
-bool mapctrl::handle_evt_motion(const gpsdlayer::event_motion *e)
+bool mapctrl::gpsd_evt_motion(const gpsdlayer::event_motion *e)
 {
     if (m_recordtrack)
         m_gpxlayer->add_trackpoint(e->pos());
     else 
         refresh();
 
-    notify_observers();
+    event_notify en;
+    fire(&en);
 
     return true;
 }
 
-bool mapctrl::handle_evt_status(const gpsdlayer::event_status *e)
+bool mapctrl::gpsd_evt_status(const gpsdlayer::event_status *e)
 {
-    notify_observers();
+    event_notify en;
+    fire(&en);
     return true;
 }
 
-bool mapctrl::handle_evt_notify(const osmlayer::event_notify *e)
+bool mapctrl::osm_evt_notify(const osmlayer::event_notify *e)
+{
+    refresh();
+    return true;
+}
+
+bool mapctrl::gpx_evt_notify(const gpxlayer::event_notify *e)
 {
     refresh();
     return true;
 }
 
-bool mapctrl::handle_evt_notify(const gpxlayer::event_notify *e)
+int mapctrl::handle_move(int event)
 {
+    // Save the current mouse position
+    m_mousepos.x(Fl::event_x()-x());
+    m_mousepos.y(Fl::event_y()-y());
+
+    // Fire notification event
+    event_notify en;
+    fire(&en);
+
+    return 1;
+}
+
+int mapctrl::handle_enter(int event)
+{
+    fl_cursor(FL_CURSOR_CROSS);
+    return 1;
+}
+
+int mapctrl::handle_leave(int event)
+{
+    fl_cursor(FL_CURSOR_DEFAULT);
+    return 1;
+}
+
+int mapctrl::handle_push(int event)
+{
+    // Focus this widget when pushed
+    take_focus();
+
+    // Drag-mode (right mouse button)? Change mouse cursor
+    if (Fl::event_state(FL_BUTTON3) != 0)
+        fl_cursor(FL_CURSOR_MOVE);
+
+    // fire mouse event for the layers
+    int button = layer::event_mouse::BUTTON_MIDDLE;
+    if (Fl::event_button() == FL_LEFT_MOUSE)
+        button = layer::event_mouse::BUTTON_LEFT;
+    else if (Fl::event_button() == FL_RIGHT_MOUSE)
+        button = layer::event_mouse::BUTTON_RIGHT;
+
+    layer::event_mouse me(
+            m_viewport, 
+            layer::event_mouse::ACTION_PRESS,
+            button, 
+            vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
+
+    fire(&me);
+
+    return 1;
+}
+
+int mapctrl::handle_release(int event)
+{
+    // Cursor reset
+    fl_cursor(FL_CURSOR_CROSS);
+
+    // Mouse event for the layers
+    int button = layer::event_mouse::BUTTON_MIDDLE;
+    if (Fl::event_button() == FL_LEFT_MOUSE)
+        button = layer::event_mouse::BUTTON_LEFT;
+    else if (Fl::event_button() == FL_RIGHT_MOUSE)
+        button = layer::event_mouse::BUTTON_RIGHT;
+
+    layer::event_mouse me(
+            m_viewport, 
+            layer::event_mouse::ACTION_RELEASE,
+            button, 
+            vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
+
+    fire(&me);
+
+    return 1;
+}
+
+int mapctrl::handle_drag(int event)
+{
+    // Move the viewport
+    if (Fl::event_state(FL_BUTTON3) != 0)
+    {
+        // Calculate the delta with the last mouse position and save the
+        // current mouse position
+        int dx = m_mousepos.x() - (Fl::event_x()-x());
+        int dy = m_mousepos.y() - (Fl::event_y()-y());
+
+        m_mousepos.x(Fl::event_x()-x());
+        m_mousepos.y(Fl::event_y()-y());
+
+        // Move the viewport accordingly and redraw
+        m_viewport.move((long)dx, (long)dy); 
+        refresh();
+    }
+    // Drag event for the layers
+    else
+    {
+        int button = layer::event_mouse::BUTTON_MIDDLE;
+        if (Fl::event_state(FL_BUTTON1) != 0)
+            button = layer::event_mouse::BUTTON_LEFT;
+        else if (Fl::event_state(FL_BUTTON3) != 0)
+            button = layer::event_mouse::BUTTON_RIGHT;
+
+        layer::event_mouse me(
+                m_viewport,
+                layer::event_mouse::ACTION_DRAG,
+                button,
+                vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
+
+        fire(&me);
+    }
+
+    return 1;
+}
+
+int mapctrl::handle_mousewheel(int event)
+{
+    // Outside this widget
+    if (!Fl::event_inside(this))
+        return 0;
+
+    // No negative zoomlevel allowed
+    if ((Fl::event_dy() > 0) && (m_viewport.z() == 0))
+        return 1;
+
+    // The image of the viewport might be smaller then our current
+    // client area. We need to take this delta into account.
+    int dpx = 0, dpy = 0;
+    if (w() > (int)m_viewport.w())
+        dpx = (w() - (int)m_viewport.w())/2;
+    if (h() > (int)m_viewport.h())
+        dpy = (h() - (int)m_viewport.h())/2;
+
+    int px = 0, py = 0;
+    if ((Fl::event_x() - x()) > dpx)
+        px = Fl::event_x() - x() - dpx;
+    if ((Fl::event_y() - y()) > dpy)
+        py = Fl::event_y() - y() - dpy;
+
+    // Zoom the viewport with (px,py) as origin
+    m_viewport.z(m_viewport.z()-Fl::event_dy(), px, py);
+    
+    // Refresh and notify
     refresh();
-    return true;
+    event_notify e;
+    fire(&e);
+
+    return 1;
+}
+
+int mapctrl::handle_keyboard(int event)
+{
+    if (!Fl::event_key(FL_Delete))      
+        return 0;
+
+    if (!gpx_wpselected())
+        return 0;
+
+    gpx_wpdelete();
+    return 1;
 }
 
 int mapctrl::handle(int event) 
 {
+    int ret = 0;
+
     switch (event) {
         case FL_MOVE:
-            // Save the current mouse position
-            m_mousepos.x(Fl::event_x()-x());
-            m_mousepos.y(Fl::event_y()-y());
-            notify_observers();
-            return 1;
+            {
+                ret = handle_move(event);
+                break;
+            }
         case FL_ENTER:
-            fl_cursor(FL_CURSOR_CROSS);
-            return 1;
+            {
+                ret = handle_enter(event);
+                break;
+            }
         case FL_LEAVE:
-            fl_cursor(FL_CURSOR_DEFAULT);
-            return 1;
+            {
+                ret = handle_leave(event);
+                break;
+            }
         case FL_PUSH:
             {
-                take_focus();
-
-                if (Fl::event_state(FL_BUTTON3) != 0)
-                {
-                    fl_cursor(FL_CURSOR_MOVE);
-                }
-
-                // Mouse event for the layers
-                int button = layer_mouseevent::BUTTON_MIDDLE;
-                if (Fl::event_button() == FL_LEFT_MOUSE)
-                    button = layer_mouseevent::BUTTON_LEFT;
-                else if (Fl::event_button() == FL_RIGHT_MOUSE)
-                    button = layer_mouseevent::BUTTON_RIGHT;
-
-                layer_mouseevent me(
-                        m_viewport, 
-                        layer_mouseevent::ACTION_PRESS,
-                        button, 
-                        vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
-                
-                fire(&me);
+                handle_push(event); 
 
                 // The push event always needs to return 1, otherwise dragging
                 // will not work
-                return 1;
+                ret = 1;
+                break;
             }
         case FL_RELEASE:
             {
-                fl_cursor(FL_CURSOR_CROSS);
-
-                // Mouse event for the layers
-                int button = layer_mouseevent::BUTTON_MIDDLE;
-                if (Fl::event_button() == FL_LEFT_MOUSE)
-                    button = layer_mouseevent::BUTTON_LEFT;
-                else if (Fl::event_button() == FL_RIGHT_MOUSE)
-                    button = layer_mouseevent::BUTTON_RIGHT;
-
-                layer_mouseevent me(
-                        m_viewport, 
-                        layer_mouseevent::ACTION_RELEASE,
-                        button, 
-                        vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
-                
-                return (fire(&me) ? 1 : 0);
+                ret = handle_release(event);
+                break;
             }
         case FL_DRAG: 
             {
-                //if (!Fl::event_inside(this))
-                //    break;
-
-                // Mouse event for the layers
-                int button = layer_mouseevent::BUTTON_MIDDLE;
-                if (Fl::event_button() == FL_LEFT_MOUSE)
-                    button = layer_mouseevent::BUTTON_LEFT;
-                else if (Fl::event_button() == FL_RIGHT_MOUSE)
-                    button = layer_mouseevent::BUTTON_RIGHT;
-
-                layer_mouseevent me(
-                        m_viewport, 
-                        layer_mouseevent::ACTION_DRAG,
-                        button, 
-                        vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
-                
-                int ret = (fire(&me) ? 1 : 0);
- 
-                if (Fl::event_state(FL_BUTTON3) != 0)
-                {
-                    // Calculate the delta with the last mouse position and save the
-                    // current mouse position
-                    int dx = m_mousepos.x() - (Fl::event_x()-x());
-                    int dy = m_mousepos.y() - (Fl::event_y()-y());
-                
-                    m_mousepos.x(Fl::event_x()-x());
-                    m_mousepos.y(Fl::event_y()-y());
-
-                    // Move the viewport accordingly and redraw
-                    m_viewport.move((long)dx, (long)dy); 
-                    refresh();
-
-                    ret = 1;
-                }
-
-                return ret;
+                ret = handle_drag(event);
+                break;
             }
         case FL_MOUSEWHEEL:
             {
-                if (!Fl::event_inside(this))
-                    break;
-
-                // Prevent integer underflow
-                if ((Fl::event_dy() > 0) && (m_viewport.z() == 0))
-                    return 1;
-
-                // The image of the viewport might be smaller then our current
-                // client area. We need to take this delta into account.
-                int dpx = 0, dpy = 0;
-                if (w() > (int)m_viewport.w())
-                    dpx = (w() - (int)m_viewport.w())/2;
-                if (h() > (int)m_viewport.h())
-                    dpy = (h() - (int)m_viewport.h())/2;
-
-                int px = 0, py = 0;
-                if ((Fl::event_x() - x()) > dpx)
-                    px = Fl::event_x() - x() - dpx;
-                if ((Fl::event_y() - y()) > dpy)
-                    py = Fl::event_y() - y() - dpy;
-
-                // Zoom the viewport with (px,py) as origin
-                m_viewport.z(m_viewport.z()-Fl::event_dy(), px, py);
-                refresh();
-
-                notify_observers();
-                return 1;
+                ret = handle_mousewheel(event);
+                break;
             }
         case FL_FOCUS:
-            return 1;
+            {
+                // Focus is accepted
+                ret = 1;
+                break;
+            }
         case FL_KEYBOARD:
             {
-                if (!Fl::event_key(FL_Delete))
-                    return 0;      
-
-                layer_keyevent ke(
-                        layer_keyevent::ACTION_RELEASE, 
-                        layer_keyevent::KEY_DEL);
-                
-                return (fire(&ke) ? 1 : 0);
+                ret = handle_keyboard(event);
+                break;
             }
     }
 
-    // Event unhandled
-    return 0;
+    return ret;
 }
 
 void mapctrl::draw() 
@@ -551,3 +608,4 @@ void mapctrl::draw()
     fl_end_offscreen();
     fl_copy_offscreen(x()+dpx, y()+dpy, m_viewport.w(), m_viewport.h(), m_offscreen.buf(), 0, 0);
 }
+

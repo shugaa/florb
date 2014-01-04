@@ -10,14 +10,14 @@
 #include "fluid/dlg_editselection.hpp"
 #include "fluid/dlg_gpsd.hpp"
 
-void dlg_ui::mapctrl_notify()
+bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
 {
     std::ostringstream ss; 
 
     ss << "Zoom: " << m_mapctrl->zoom();
     m_txtout_zoom->value(ss.str().c_str());
 
-    point2d<double> pos = m_mapctrl->mousegps();
+    point2d<double> pos = m_mapctrl->mousepos();
     ss.precision(5);
     ss.setf(std::ios::fixed, std::ios::floatfield);
 
@@ -32,14 +32,14 @@ void dlg_ui::mapctrl_notify()
     ss.precision(2);
     ss.setf(std::ios::fixed, std::ios::floatfield);
     ss.str("");
-    ss << "Trip: " << m_mapctrl->trip() << "km";
+    ss << "Trip: " << m_mapctrl->gpx_trip() << "km";
     m_txtout_trip->value(ss.str().c_str());
 
-    if (m_mapctrl->connected())
+    if (m_mapctrl->gpsd_connected())
     {
         m_box_fix->color(FL_YELLOW);
 
-        switch(m_mapctrl->mode())
+        switch(m_mapctrl->gpsd_mode())
         {
             case (gpsdclient::FIX_NONE):
                 m_box_fix->label("?");
@@ -58,6 +58,8 @@ void dlg_ui::mapctrl_notify()
         m_box_fix->color(FL_RED);
         m_box_fix->label("GPS");
     }
+
+    return true;
 }
 
 void dlg_ui::create_ex(void)
@@ -90,7 +92,9 @@ void dlg_ui::create_ex(void)
         m_mapctrl->take_focus();
     }
 
-    m_mapctrl->addobserver(*this);
+    // Start listening to mapctrl events
+    register_event_handler<dlg_ui, mapctrl::event_notify>(this, &dlg_ui::mapctrl_evt_notify_ex);
+    m_mapctrl->add_event_listener(this);
 }
 
 void dlg_ui::destroy_ex(void)
@@ -129,7 +133,7 @@ void dlg_ui::loadtrack_ex()
         return;
 
     // Load the track
-    m_mapctrl->load_track(std::string(fc.value()));
+    m_mapctrl->gpx_loadtrack(std::string(fc.value()));
 }
 
 void dlg_ui::savetrack_ex()
@@ -148,31 +152,28 @@ void dlg_ui::savetrack_ex()
         return;
 
     // Load the track
-    m_mapctrl->save_track(std::string(fc.value()));
+    m_mapctrl->gpx_savetrack(std::string(fc.value()));
 }
 
 void dlg_ui::cleartrack_ex()
 {
-    m_mapctrl->clear_track();
+    m_mapctrl->gpx_cleartrack();
 }
 
 void dlg_ui::gotocursor_ex()
 {
-    if (!m_mapctrl->connected())
-        return;
-
     m_mapctrl->goto_cursor();
 }
 
 void dlg_ui::recordtrack_ex()
 {
     bool start = (m_btn_recordtrack->value() == 1) ? true : false;
-    m_mapctrl->record_track(start);
+    m_mapctrl->gpsd_record(start);
 }
 
 void dlg_ui::editselection_ex()
 {
-    if (!m_mapctrl->selected())
+    if (!m_mapctrl->gpx_wpselected())
         return;
 
     dlg_editselection es(m_mapctrl);
@@ -181,10 +182,10 @@ void dlg_ui::editselection_ex()
 
 void dlg_ui::deleteselection_ex()
 {
-    if (!m_mapctrl->selected())
+    if (!m_mapctrl->gpx_wpselected())
         return;
 
-    m_mapctrl->selection_delete();
+    m_mapctrl->gpx_wpdelete();
 }
 
 void dlg_ui::gpsdsettings_ex()
@@ -299,7 +300,7 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
         m_dlg_about->show();
     }
 
-    m_mapctrl->refresh();
+    //m_mapctrl->refresh();
 }
 
 void dlg_ui::cb_close_ex(Fl_Widget *widget)
