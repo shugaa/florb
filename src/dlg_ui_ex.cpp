@@ -165,6 +165,12 @@ void dlg_ui::gotocursor_ex()
     m_mapctrl->goto_cursor();
 }
 
+void dlg_ui::lockcursor_ex()
+{
+    bool start = (m_btn_lockcursor->value() == 1) ? true : false;
+    m_mapctrl->gpsd_lock(start);
+}
+
 void dlg_ui::recordtrack_ex()
 {
     bool start = (m_btn_recordtrack->value() == 1) ? true : false;
@@ -215,6 +221,17 @@ void dlg_ui::cb_btn_cleartrack_ex(Fl_Widget *widget)
 void dlg_ui::cb_btn_gotocursor_ex(Fl_Widget *widget)
 {
     gotocursor_ex();
+    m_mapctrl->take_focus();
+}
+
+void dlg_ui::cb_btn_lockcursor_ex(Fl_Widget *widget)
+{
+    if (m_btn_lockcursor->value() != 0)
+        m_menuitem_gpsd_lockcursor->set();
+    else
+        m_menuitem_gpsd_lockcursor->clear();
+
+    lockcursor_ex();
     m_mapctrl->take_focus();
 }
 
@@ -301,6 +318,10 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
     else if (strcmp(picked, "GPSd/&Record track") == 0) {
         m_btn_recordtrack->value(m_menuitem_gpsd_recordtrack->value());
         recordtrack_ex();
+    }
+    else if (strcmp(picked, "GPSd/&Lock to cursor") == 0) {
+        m_btn_lockcursor->value(m_menuitem_gpsd_lockcursor->value());
+        lockcursor_ex();
     }
 
     // Help submenu

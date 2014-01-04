@@ -35,6 +35,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         bool gpsd_connected();
         void gpsd_connect(const std::string& host, const std::string& port);
         void gpsd_disconnect();
+        void gpsd_lock(bool start);
         void gpsd_record(bool start);
         int gpsd_mode();
 
@@ -95,6 +96,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         point2d<int> m_mousepos;
         viewport m_viewport;
         canvas m_offscreen;
+        bool m_lockcursor;
         bool m_recordtrack;
 
     protected:

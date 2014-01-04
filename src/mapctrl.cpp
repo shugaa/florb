@@ -15,6 +15,7 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_mousepos(0, 0),
     m_viewport((unsigned long)w, (unsigned long)h),
     m_offscreen(w,h),
+    m_lockcursor(false),
     m_recordtrack(false)
 {
     // Register event handlers for layer events
@@ -169,6 +170,13 @@ void mapctrl::gpsd_record(bool start)
     m_recordtrack = start;
 }
 
+void mapctrl::gpsd_lock(bool start)
+{
+    m_lockcursor = start;
+    if (m_lockcursor)
+        goto_cursor();
+}
+
 int mapctrl::gpsd_mode()
 {
     if (!m_gpsdlayer)
@@ -315,6 +323,9 @@ bool mapctrl::gpsd_evt_motion(const gpsdlayer::event_motion *e)
 {
     if (m_recordtrack)
         m_gpxlayer->add_trackpoint(e->pos());
+    
+    if (m_lockcursor)
+        goto_cursor();
     else 
         refresh();
 

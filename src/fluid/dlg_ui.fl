@@ -32,6 +32,8 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void gotocursor_ex(void);} {private local
   }
+  decl {void lockcursor_ex(void);} {private local
+  }
   decl {void recordtrack_ex(void);} {private local
   }
   decl {void editselection_ex(void);} {private local
@@ -54,6 +56,8 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void cb_btn_recordtrack_ex(Fl_Widget *widget);} {private local
   }
+  decl {void cb_btn_lockcursor_ex(Fl_Widget *widget);} {private local
+  }
   decl {void cb_btn_editselection_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_btn_gpsd_ex(Fl_Widget *widget);} {private local
@@ -68,7 +72,7 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void cb_close_ex(Fl_Widget *widget);} {private local
   }
-  decl {bool mapctrl_evt_notify_ex(const mapctrl::event_notify *e);} {selected private local
+  decl {bool mapctrl_evt_notify_ex(const mapctrl::event_notify *e);} {private local
   }
   decl {dlg_about *m_dlg_about;} {private local
   }
@@ -107,6 +111,11 @@ ui->cb_btn_gotocursor_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_recordtrack_ex(widget);} {}
   }
+  Function {cb_btn_lockcursor(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_btn_lockcursor_ex(widget);} {}
+  }
   Function {cb_btn_editselection(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
@@ -131,7 +140,7 @@ ui->cb_choice_basemap_ex(widget);} {}
   } {
     Fl_Window m_window {
       label florb open
-      private xywh {550 255 805 565} type Double align 80 resizable visible
+      private xywh {527 125 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
@@ -190,6 +199,10 @@ ui->cb_choice_basemap_ex(widget);} {}
             MenuItem m_menuitem_gpsd_recordtrack {
               label {&Record track}
               private xywh {30 30 100 20} type Toggle shortcut 0x40072
+            }
+            MenuItem m_menuitem_gpsd_lockcursor {
+              label {&Lock to cursor}
+              private xywh {40 40 100 20} type Toggle shortcut 0x4006c
             }
           }
           Submenu {} {
@@ -279,24 +292,32 @@ ui->cb_choice_basemap_ex(widget);} {}
           Fl_Box {} {
             private xywh {224 29 5 25} box FLAT_BOX
           }
-          Fl_Button m_btn_recordtrack {
+          Fl_Button m_btn_lockcursor {
             user_data this
-            callback cb_btn_recordtrack
-            private tooltip {Record track} image {../res/audio-input-microphone.png} xywh {229 29 25 25} type Toggle box NO_BOX down_box DOWN_BOX
+            callback cb_btn_lockcursor
+            private tooltip {Lock to cursor} image {../res/start-here.png} xywh {229 29 25 25} type Toggle box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {254 29 5 25} box FLAT_BOX
           }
-          Fl_Box {} {
-            private xywh {259 29 2 25} box ENGRAVED_BOX
+          Fl_Button m_btn_recordtrack {
+            user_data this
+            callback cb_btn_recordtrack selected
+            private tooltip {Record track} image {../res/audio-input-microphone.png} xywh {259 29 25 25} type Toggle box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
-            private xywh {261 29 5 25} box FLAT_BOX
+            private xywh {284 29 5 25} box FLAT_BOX
+          }
+          Fl_Box {} {
+            private xywh {289 29 2 25} box ENGRAVED_BOX
+          }
+          Fl_Box {} {
+            private xywh {291 29 5 25} box FLAT_BOX
           }
           Fl_Choice m_choice_basemap {
             user_data this
             callback cb_choice_basemap open
-            private xywh {266 29 534 26} down_box BORDER_BOX resizable
+            private xywh {296 29 504 26} down_box BORDER_BOX resizable
           } {}
           Fl_Box {} {
             private xywh {800 29 5 25}
