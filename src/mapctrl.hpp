@@ -59,6 +59,9 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         // Event classes
         class event_notify;
     private:
+        // Pixel delta for keyborad map motion commands
+        static const int PXMOTION = 15;
+
         // Utility methods
         void refresh();
 

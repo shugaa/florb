@@ -14,7 +14,7 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_gpsdlayer(NULL),
     m_mousepos(0, 0),
     m_viewport((unsigned long)w, (unsigned long)h),
-    m_offscreen(500,500),
+    m_offscreen(w,h),
     m_recordtrack(false)
 {
     // Register event handlers for layer events
@@ -493,14 +493,69 @@ int mapctrl::handle_mousewheel(int event)
 
 int mapctrl::handle_keyboard(int event)
 {
-    if (!Fl::event_key(FL_Delete))      
-        return 0;
+    int ret = 0;
 
-    if (!gpx_wpselected())
-        return 0;
+    if (std::string(Fl::event_text()) == "-")
+    {
+        if (m_viewport.z() != 0)
+        {
+            m_viewport.z(
+                    m_viewport.z()-1,
+                    m_viewport.w()/2,
+                    m_viewport.h()/2);
 
-    gpx_wpdelete();
-    return 1;
+            refresh();
+            event_notify e;
+            fire(&e);
+            ret = 1;
+        }
+    }
+    else if (std::string(Fl::event_text()) == "+")
+    {
+        m_viewport.z(
+                m_viewport.z()+1,
+                m_viewport.w()/2,
+                m_viewport.h()/2);
+
+        refresh();
+        event_notify e;
+        fire(&e);
+        ret = 1;
+    }
+    else if (Fl::event_key(FL_Delete))
+    {
+        if (gpx_wpselected())
+        {
+            gpx_wpdelete();
+            ret = 1;
+        }
+    }
+    else if (Fl::event_key(FL_Left))
+    {
+        m_viewport.move(-PXMOTION, 0);
+        refresh();
+        ret = 1;
+    }
+    else if (Fl::event_key(FL_Right))
+    {
+        m_viewport.move(PXMOTION, 0);
+        refresh();
+        ret = 1;
+    }
+    else if (Fl::event_key(FL_Up))
+    {
+        m_viewport.move(0, -PXMOTION);
+        refresh();
+        ret = 1;
+    }
+    else if (Fl::event_key(FL_Down))
+    {
+        m_viewport.move(0, PXMOTION);
+        refresh();
+        ret = 1;
+    }
+
+    return ret;
 }
 
 int mapctrl::handle(int event) 

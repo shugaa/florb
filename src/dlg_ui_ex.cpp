@@ -197,21 +197,25 @@ void dlg_ui::gpsdsettings_ex()
 void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
 {
     loadtrack_ex();
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_btn_savetrack_ex(Fl_Widget *widget)
 {
     savetrack_ex();
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_btn_cleartrack_ex(Fl_Widget *widget)
 {
     cleartrack_ex();
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_btn_gotocursor_ex(Fl_Widget *widget)
 {
     gotocursor_ex();
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_btn_recordtrack_ex(Fl_Widget *widget)
@@ -222,21 +226,25 @@ void dlg_ui::cb_btn_recordtrack_ex(Fl_Widget *widget)
         m_menuitem_gpsd_recordtrack->clear();
 
     recordtrack_ex();
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_btn_editselection_ex(Fl_Widget *widget)
 {
     editselection_ex();
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_btn_gpsd_ex(Fl_Widget *widget)
 {
     gpsdsettings_ex(); 
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_btn_deleteselection_ex(Fl_Widget *widget)
 {
     deleteselection_ex(); 
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
@@ -300,7 +308,7 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
         m_dlg_about->show();
     }
 
-    //m_mapctrl->refresh();
+    m_mapctrl->take_focus();
 }
 
 void dlg_ui::cb_close_ex(Fl_Widget *widget)
