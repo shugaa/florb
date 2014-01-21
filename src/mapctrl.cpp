@@ -547,6 +547,8 @@ int mapctrl::handle_keyboard(int event)
         if (gpx_wpselected())
         {
             gpx_wpdelete();
+            event_notify e;
+            fire(&e);
             ret = 1;
         }
     }
