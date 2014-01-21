@@ -136,8 +136,10 @@ void dlg_ui::loadtrack_ex()
     if (fc.value() == NULL)
         return;
 
-    // Load the track
-    m_mapctrl->gpx_loadtrack(std::string(fc.value()));
+    // Try to load the track
+    try {
+        m_mapctrl->gpx_loadtrack(std::string(fc.value()));
+    } catch (...) {}
 }
 
 void dlg_ui::savetrack_ex()
