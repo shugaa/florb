@@ -388,9 +388,15 @@ void gpxlayer::selection_delete()
     if (!selected())
         throw 0;
 
-    m_trkpts.erase(m_selection.it);
-    m_selection.it = m_trkpts.end();
+    // Delete the currently highlighted waypoint and highlight the next in line
+    // (only if the last waypoint was deleted)
+    std::vector<gpx_trkpt>::iterator del(m_selection.it); 
+    m_selection.it--;
+    m_trkpts.erase(del);
 
+    if (m_selection.it != (m_trkpts.end()-1))
+        m_selection.it = m_trkpts.end();
+    
     // Recalculate trip for the entire track
     trip_calcall();
 
