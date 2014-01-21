@@ -384,8 +384,15 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {
-              download_qtile(vp.z(), tx, ty);
-              ret = false;
+              // TODO: Although we are capable of multiple simultaneous
+              // downloads, at this point only one download at a time is
+              // requested. This keeps the UI responsive on slow-storage
+              // hardware. We need to rethink this, others can do it, too.
+              if (ret)
+              {
+                  download_qtile(vp.z(), tx, ty);
+                  ret = false;
+              }
           }
        }
     }

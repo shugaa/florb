@@ -10,7 +10,6 @@ downloader::downloader(int nthreads) :
     m_threadblock(0),
     m_exit(false)
 {
-    //nthreads=1;
     for (int i=0;i<nthreads;i++)
     {
         workerinfo *ti = new workerinfo(
@@ -18,7 +17,7 @@ downloader::downloader(int nthreads) :
 
 #if 0
         struct sched_param param;
-        param.sched_priority = 99;
+        param.sched_priority = 0;
         pthread_setschedparam(ti->t()->native_handle(), SCHED_RR, &param);
 #endif
 

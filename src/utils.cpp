@@ -11,13 +11,13 @@
 
 point2d<double> utils::wsg842merc(const point2d<double> &wsg84)
 {
-    // Todo check for input latitude > 85°?
     if ((wsg84.x() > 180.0) || (wsg84.x() < -180.0))
         throw std::out_of_range("Invalid longitude");
     if ((wsg84.y() > 90.0) || (wsg84.y() < -90.0))
         throw std::out_of_range("Invalid latitude");
 
-    // Anything above 85 degrees N or S is infinity in the mercator projection
+    // Anything above 85 degrees N or S is infinity in the mercator projection,
+    // clip here.
     double lat = wsg84.y();
     if (lat > 85.0)
         lat = 85.0;
