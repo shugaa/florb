@@ -131,6 +131,14 @@ double mapctrl::gpx_trip()
     return m_gpxlayer->trip();
 }
 
+void mapctrl::gpx_showwpmarkers(bool s)
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    m_gpxlayer->showwpmarkers(s);
+}
+
 bool mapctrl::gpsd_connected()
 {
     if (!m_gpsdlayer)

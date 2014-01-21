@@ -326,6 +326,12 @@ double gpxlayer::trip()
     return m_trip;
 }
 
+void gpxlayer::showwpmarkers(bool s)
+{
+    m_showwpmarkers = s;
+    notify();
+}
+
 void gpxlayer::notify()
 {
     event_notify e;
@@ -621,30 +627,31 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
             ppx[1] -= vp.y();
         }
 
-        // Draw crosshairs _above_ the connecting lines
-#if 1
-        if (((m_trkpts.size() == 1) || (it == (m_trkpts.end()-1))) && (!curclip))
+        // Draw crosshairs _above_ the connecting lines if requested
+        if (m_showwpmarkers) 
         {
-            if ((m_selection.it == it) && m_selection.highlight)
-                os.fgcolor(color_point_hl);
-            else
-                os.fgcolor(color_point);
+            if (((m_trkpts.size() == 1) || (it == (m_trkpts.end()-1))) && (!curclip))
+            {
+                if ((m_selection.it == it) && m_selection.highlight)
+                    os.fgcolor(color_point_hl);
+                else
+                    os.fgcolor(color_point);
 
-            os.line(ppx.x()-6, ppx.y(), ppx.x()+6, ppx.y(), 1);
-            os.line(ppx.x(), ppx.y()-6, ppx.x(), ppx.y()+6, 1);
+                os.line(ppx.x()-6, ppx.y(), ppx.x()+6, ppx.y(), 1);
+                os.line(ppx.x(), ppx.y()-6, ppx.x(), ppx.y()+6, 1);
+            }
+
+            if ((it != m_trkpts.begin()) && (!lastclip))
+            {
+                if ((m_selection.it == (it-1)) && m_selection.highlight)
+                    os.fgcolor(color_point_hl);
+                else
+                    os.fgcolor(color_point);
+
+                os.line(ppx_last.x()-6, ppx_last.y(), ppx_last.x()+6, ppx_last.y(), 1);
+                os.line(ppx_last.x(), ppx_last.y()-6, ppx_last.x(), ppx_last.y()+6, 1);
+            }
         }
-
-        if ((it != m_trkpts.begin()) && (!lastclip))
-        {
-            if ((m_selection.it == (it-1)) && m_selection.highlight)
-                os.fgcolor(color_point_hl);
-            else
-                os.fgcolor(color_point);
-
-            os.line(ppx_last.x()-6, ppx_last.y(), ppx_last.x()+6, ppx_last.y(), 1);
-            os.line(ppx_last.x(), ppx_last.y()-6, ppx_last.x(), ppx_last.y()+6, 1);
-        }
-#endif
 
         pmerc_last = point2d<double>((*it).lon, (*it).lat);
     }
@@ -657,7 +664,7 @@ void gpxlayer::parsetree(tinyxml2::XMLNode *parent)
 
     for (;;)
     {
-        // Not an XML element by something else
+        // Not an XML element but something else
         if (etmp == NULL) 
         {
             break;

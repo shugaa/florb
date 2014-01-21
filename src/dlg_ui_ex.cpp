@@ -92,6 +92,10 @@ void dlg_ui::create_ex(void)
         m_mapctrl->take_focus();
     }
 
+    // Show waypoint markers by default
+    m_menuitem_edit_showwpmarkers->set(); 
+    m_mapctrl->gpx_showwpmarkers(true);
+
     // Start listening to mapctrl events
     register_event_handler<dlg_ui, mapctrl::event_notify>(this, &dlg_ui::mapctrl_evt_notify_ex);
     m_mapctrl->add_event_listener(this);
@@ -192,6 +196,12 @@ void dlg_ui::deleteselection_ex()
         return;
 
     m_mapctrl->gpx_wpdelete();
+}
+
+void dlg_ui::showwpmarkers_ex()
+{
+    bool b = (m_menuitem_edit_showwpmarkers->value() == 0) ? false : true; 
+    m_mapctrl->gpx_showwpmarkers(b);
 }
 
 void dlg_ui::gpsdsettings_ex()
@@ -306,6 +316,9 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
     }
     else if (strcmp(picked, "Edit/&Delete waypoint") == 0) {
         deleteselection_ex();
+    }
+    else if (strcmp(picked, "Edit/Show waypoint &markers") == 0) {
+        showwpmarkers_ex();
     }
 
     // GPSd submenu

@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0300 
+version 1.0302 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <signal.h>} {private global
@@ -43,6 +43,8 @@ class dlg_ui {open : {public event_listener}
   decl {void cleartrack_ex(void);} {private local
   }
   decl {void gpsdsettings_ex(void);} {private local
+  }
+  decl {void showwpmarkers_ex(void);} {private local
   }
   decl {void show_ex(int argc, char *argv[]);} {private local
   }
@@ -136,8 +138,7 @@ ui->cb_btn_deleteselection_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
-  Function {dlg_ui()} {open
-  } {
+  Function {dlg_ui()} {} {
     Fl_Window m_window {
       label florb open
       private xywh {527 125 805 565} type Double align 80 resizable visible
@@ -182,6 +183,10 @@ ui->cb_choice_basemap_ex(widget);} {}
             MenuItem {} {
               label {&Delete waypoint}
               private xywh {10 10 100 20} shortcut 0x40064
+            }
+            MenuItem m_menuitem_edit_showwpmarkers {
+              label {Show waypoint &markers} selected
+              private xywh {50 50 100 20} type Toggle shortcut 0x4006d
             }
           }
           Submenu {} {
@@ -302,7 +307,7 @@ ui->cb_choice_basemap_ex(widget);} {}
           }
           Fl_Button m_btn_recordtrack {
             user_data this
-            callback cb_btn_recordtrack selected
+            callback cb_btn_recordtrack
             private tooltip {Record track} image {../res/audio-input-microphone.png} xywh {259 29 25 25} type Toggle box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {

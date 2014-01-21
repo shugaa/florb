@@ -50,6 +50,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         point2d<double> gpx_wppos();
         void gpx_wppos(const point2d<double>& p);
         double gpx_trip();
+        void gpx_showwpmarkers(bool s);
         
         // Viewport control
         unsigned int zoom();

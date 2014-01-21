@@ -36,6 +36,7 @@ class gpxlayer : public layer
         void selection_delete();
     
         double trip();
+        void showwpmarkers(bool s);
 
         class event_notify;
 
@@ -68,6 +69,7 @@ class gpxlayer : public layer
         std::vector<gpx_trkpt> m_trkpts;
         selection m_selection;
         long double m_trip;
+        bool m_showwpmarkers;
 };
 
 class gpxlayer::event_notify : public event_base
