@@ -27,15 +27,9 @@ class utils
         static std::string appdir();
         static void mkdir(const std::string& path);
         static bool exists(const std::string& path);
+        static std::string filestem(const std::string& path);
 
         static void set_window_icon(Fl_Window *w);
-
-#if 0
-        static bool on_segment(point2d<double> pi, point2d<double> pj, point2d<double> pk);
-        static char orientation(point2d<double> pi, point2d<double> pj, point2d<double> pk);
-        static bool intersect(point2d<double> p1, point2d<double> p2, point2d<double> p3, point2d<double> p4);
-        static bool is_inside(point2d<unsigned long> p1, point2d<unsigned long> p2, point2d<unsigned long> ptest);
-#endif
 
     private:
 };

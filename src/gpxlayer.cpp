@@ -266,7 +266,7 @@ void gpxlayer::save_track(const std::string &path)
 
     // Track name child
     e2 = doc.NewElement("name");
-    t1 = doc.NewText(name().c_str());
+    t1 = doc.NewText(utils::filestem(path).c_str());
     e2->InsertEndChild(t1);
     e1->InsertEndChild(e2);
 

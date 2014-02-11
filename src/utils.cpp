@@ -162,6 +162,11 @@ bool utils::exists(const std::string& path)
     return boost::filesystem::exists(path);
 }
 
+std::string utils::filestem(const std::string& path)
+{
+    return boost::filesystem::path(path).stem().string();
+}
+
 void utils::set_window_icon(Fl_Window *w)
 {
     fl_open_display();
