@@ -17,8 +17,6 @@ gpxlayer::gpxlayer() :
     layer(),
     m_trip(0.0)
 {
-    m_selection.waypoints.clear();
-
     name(std::string("Unnamed GPX layer"));
     register_event_handler<gpxlayer, layer::event_mouse>(this, &gpxlayer::handle_evt_mouse);
     register_event_handler<gpxlayer, layer::event_key>(this, &gpxlayer::handle_evt_key);
@@ -112,11 +110,9 @@ bool gpxlayer::press(const layer::event_mouse* evt)
     m_selection.multiselect = false;
     m_selection.dragorigin = utils::px2merc(evt->vp().z(), pxabs);
 
-    // New selection, turn highlighting off, it will be toggled on mouse button
-    // release
+    // New selection
     if (it != m_trkpts.end())
     {
-        //m_selection.highlight = false;
         m_selection.waypoints.push_back(it);
         notify();
     }
@@ -306,6 +302,7 @@ void gpxlayer::load_track(const std::string &path)
         throw 0;
 
     m_trkpts.clear();
+    m_selection.waypoints.clear();
     parsetree(doc.RootElement());
     notify();
 };
