@@ -3,26 +3,36 @@
 
 void dlg_editselection::show_ex()
 {
-    m_window->show();
-
-    point2d<double> pos(m_mapctrl->gpx_wppos());
-    double ele(m_mapctrl->gpx_wpelevation());
+    std::vector<gpxlayer::waypoint> waypoints;
+    m_mapctrl->gpx_selection_get(waypoints);
 
     std::ostringstream os;
     os.precision(6);
     os.setf(std::ios::fixed, std::ios::floatfield);
 
     os.str("");
-    os << pos.x();
+    os << waypoints[0].lon();
     m_txtin_lon->value(os.str().c_str());
 
     os.str("");
-    os << pos.y();
+    os << waypoints[0].lat();
     m_txtin_lat->value(os.str().c_str());
 
     os.str("");
-    os << ele;
+    os << waypoints[0].elevation();
     m_txtin_ele->value(os.str().c_str());
+
+    if (waypoints.size() > 1)
+    {
+        m_txtin_lon->value("-");
+        m_txtin_lat->value("-");
+        m_txtin_lon->deactivate();
+        m_txtin_lat->deactivate();
+        m_box_lon->deactivate();
+        m_box_lat->deactivate();
+    }
+
+    m_window->show();
 
     int r = 0;
     for (;;) {
@@ -41,18 +51,41 @@ void dlg_editselection::show_ex()
     // OK, store
     std::istringstream is;
 
-    is.str(m_txtin_lon->value());
-    is >> pos[0];
-    is.clear();
-    is.str(m_txtin_lat->value());
-    is >> pos[1];
-    is.clear();
-    is.str(m_txtin_ele->value());
-    is >> ele;
+    if (waypoints.size() > 1)
+    {
+        // Update elevation only, common for every selected
+        // waypoint
+        std::vector<gpxlayer::waypoint>::iterator it;
+        for (it=waypoints.begin();it!=waypoints.end();++it)
+        {
+            double ele;
 
-    m_mapctrl->gpx_wppos(pos);
-    m_mapctrl->gpx_wpelevation(ele);
-    
+            is.str(m_txtin_ele->value());
+            is >> ele;
+            is.clear();
+
+            (*it).elevation(ele);
+        }
+    }
+    else
+    {
+        double lat, lon, ele;
+        is.str(m_txtin_lon->value());
+        is >> lon;
+        is.clear();
+        is.str(m_txtin_lat->value());
+        is >> lat;
+        is.clear();
+        is.str(m_txtin_ele->value());
+        is >> ele;
+
+        waypoints[0].lon(lon);
+        waypoints[0].lat(lat);
+        waypoints[0].elevation(ele);
+    }
+
+    m_mapctrl->gpx_selection_set(waypoints);
+
     m_window->hide();
 }
 

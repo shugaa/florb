@@ -1,5 +1,6 @@
 #include <cmath>
 #include <sstream>
+#include <algorithm>
 #include <FL/x.H>
 #include <FL/fl_draw.H>
 #include "utils.hpp"
@@ -16,7 +17,7 @@ gpxlayer::gpxlayer() :
     layer(),
     m_trip(0.0)
 {
-    m_selection.it = m_trkpts.end();
+    m_selection.waypoints.clear();
 
     name(std::string("Unnamed GPX layer"));
     register_event_handler<gpxlayer, layer::event_mouse>(this, &gpxlayer::handle_evt_mouse);
@@ -79,10 +80,13 @@ bool gpxlayer::press(const layer::event_mouse* evt)
     if ((evt->pos().x() >= (int)evt->vp().w()) || (evt->pos().y() >= (int)evt->vp().h()))
         return false;
 
-    // Convert absolute map coordinate
+    // Convert to absolute map coordinate
     point2d<unsigned long> pxabs;
     pxabs.x(evt->pos().x() + evt->vp().x());
     pxabs.y(evt->pos().y() + evt->vp().y());
+
+    // Clear current selection
+    m_selection.waypoints.clear();
 
     // Find an existing item for this mouse position
     std::vector<gpx_trkpt>::iterator it;
@@ -103,26 +107,25 @@ bool gpxlayer::press(const layer::event_mouse* evt)
         break;
     }
 
+    // Not dragging (yet)
     m_selection.dragging = false;
+    m_selection.multiselect = false;
+    m_selection.dragorigin = utils::px2merc(evt->vp().z(), pxabs);
 
     // New selection, turn highlighting off, it will be toggled on mouse button
     // release
-    if ((m_selection.it != it))
-        m_selection.highlight = false;
-    
-    // Either we have a valid iterator position or end() which is later on used
-    // to tell whether we are actually dragging something around or not
-    m_selection.it = it;
+    if (it != m_trkpts.end())
+    {
+        //m_selection.highlight = false;
+        m_selection.waypoints.push_back(it);
+        notify();
+    }
 
     return true;
 }
 
 bool gpxlayer::drag(const layer::event_mouse* evt)
 {
-    // Nothing to drag around
-    if (m_selection.it == m_trkpts.end())
-        return false;
-
     m_selection.dragging = true;
 
     // Viewport-relative to absolute coordinate
@@ -142,11 +145,63 @@ bool gpxlayer::drag(const layer::event_mouse* evt)
 
     // Convert position to mercator
     point2d<double> merc = utils::px2merc(evt->vp().z(), px);
-    (*(m_selection.it)).lon = merc.x();
-    (*(m_selection.it)).lat = merc.y();
 
-    // Make sure item remains highlighted when mouse is released
-    m_selection.highlight = false;
+    // Dragging a single active waypoint around
+    if ((m_selection.waypoints.size() == 1) && (m_selection.multiselect == false))
+    { 
+        (*(m_selection.waypoints[0])).lon = merc.x();
+        (*(m_selection.waypoints[0])).lat = merc.y();
+    }
+    // Selecting multiple waypoints
+    else
+    {
+        m_selection.dragcurrent = merc;
+        m_selection.multiselect = true;
+
+        m_selection.waypoints.clear();
+
+        // Check for each waypoint whether it is within the selection rectangle
+        double top, bottom, left, right;
+        if (m_selection.dragorigin.y() < m_selection.dragcurrent.y())
+        {
+            top = m_selection.dragorigin.y();
+            bottom = m_selection.dragcurrent.y();
+        }
+        else
+        {
+            top = m_selection.dragcurrent.y();
+            bottom = m_selection.dragorigin.y(); 
+        }
+
+        if (m_selection.dragorigin.x() < m_selection.dragcurrent.x())
+        {
+            left = m_selection.dragorigin.x();
+            right = m_selection.dragcurrent.x();
+        }
+        else
+        {
+            left = m_selection.dragcurrent.x();
+            right = m_selection.dragorigin.x(); 
+        }
+
+        std::vector<gpx_trkpt>::iterator it;
+        for (it=m_trkpts.begin();it!=m_trkpts.end();++it)
+        {
+            point2d<double> cmp((*it).lon, (*it).lat); 
+
+            // Check whether the point is inside the selection rectangle
+            if (cmp.x() < left)
+                continue;
+            if (cmp.x() > right)
+                continue;
+            if (cmp.y() < top)
+                continue;
+            if (cmp.y() > bottom)
+                continue;
+
+            m_selection.waypoints.push_back(it);
+        }
+    }
 
     // Trigger redraw
     notify();
@@ -157,10 +212,10 @@ bool gpxlayer::drag(const layer::event_mouse* evt)
 bool gpxlayer::release(const layer::event_mouse* evt)
 {
     // Button release on an existing item
-    if (m_selection.it != m_trkpts.end()) 
+    if ((m_selection.waypoints.size() == 1) && (m_selection.multiselect == false))
     {
         // Toggle highlight status
-        m_selection.highlight = !m_selection.highlight;
+        //m_selection.highlight = !m_selection.highlight;
 
         // Item has been dragged, recalculate trip
         if (m_selection.dragging)
@@ -170,7 +225,20 @@ bool gpxlayer::release(const layer::event_mouse* evt)
         return true;
     };
 
-    // Add a new item
+    // Button release for multiple selection
+    if (m_selection.multiselect)
+    {
+        m_selection.multiselect = false;
+    }
+
+    // Do not add a new waypoint, this is the end of a drag operation
+    if (m_selection.dragging)
+    {
+        notify();
+        return true;
+    }
+
+    // Add a new waypoint
 
     // Viewport-relative to absolute map coordinate
     point2d<unsigned long> px(
@@ -198,8 +266,8 @@ bool gpxlayer::release(const layer::event_mouse* evt)
     trip_update();
 
     // Select the newly added item
-    m_selection.it = m_trkpts.end()-1;
-    m_selection.highlight = true;
+    m_selection.waypoints.clear();
+    m_selection.waypoints.push_back(m_trkpts.end()-1);
 
     // Indicate that this layer has changed
     notify();
@@ -223,8 +291,8 @@ void gpxlayer::add_trackpoint(const point2d<double>& p)
     trip_update();
 
     // Select the newly added item
-    m_selection.it = m_trkpts.end()-1;
-    m_selection.highlight = true;
+    m_selection.waypoints.clear();
+    m_selection.waypoints.push_back(m_trkpts.end()-1);
 
     // Indicate that this layer has changed
     notify(); 
@@ -316,7 +384,7 @@ void gpxlayer::clear_track()
 {
    name(std::string("Unnamed GPX layer"));
    m_trkpts.clear();
-   m_selection.it = m_trkpts.end();
+   m_selection.waypoints.clear();
    trip_calcall();
    notify();
 }
@@ -338,71 +406,62 @@ void gpxlayer::notify()
     fire(&e);
 }
 
-bool gpxlayer::selected()
+size_t gpxlayer::selected()
 {
-    return ((m_selection.it != m_trkpts.end()) && (m_selection.highlight));
+    return m_selection.waypoints.size();
 }
 
-point2d<double> gpxlayer::selection_pos()
+void gpxlayer::selection_get(std::vector<waypoint>& waypoints)
 {
-    if (!selected())
-        throw 0;
+    waypoints.clear();
 
-    double lonmerc = (*(m_selection.it)).lon;
-    double latmerc = (*(m_selection.it)).lat;
-
-    return utils::merc2wsg84(point2d<double>(lonmerc, latmerc));
+    std::vector< std::vector<gpx_trkpt>::iterator >::iterator it;
+    for(it=m_selection.waypoints.begin();it!=m_selection.waypoints.end();++it)
+    {
+        waypoint tmp((*(*it)).lon, (*(*it)).lat, (*(*it)).ele, (*(*it)).time);
+        waypoints.push_back(tmp);
+    }
 }
 
-void gpxlayer::selection_pos(const point2d<double>& p)
+void gpxlayer::selection_set(const std::vector<waypoint>& waypoints)
 {
-    if (!selected())
+    if (waypoints.size() != m_selection.waypoints.size())
         throw 0;
 
-    point2d<double> pmerc(utils::wsg842merc(p));
-    
-    (*(m_selection.it)).lon = pmerc.x();
-    (*(m_selection.it)).lat = pmerc.y();
-    notify();
-}
-
-double gpxlayer::selection_elevation()
-{
-    if (!selected())
-        throw 0;
-
-    return (*(m_selection.it)).ele;
-}
-
-void gpxlayer::selection_elevation(double e)
-{
-    if (!selected())
-        throw 0;
-
-    (*(m_selection.it)).ele = e;    
-    notify();
+    std::vector< std::vector<gpx_trkpt>::iterator >::iterator it;
+    size_t i;
+    for(it=m_selection.waypoints.begin(), i=0;it!=m_selection.waypoints.end();++it,i++)
+    {
+        (*(*it)).lon = waypoints[i].lon();
+        (*(*it)).lat = waypoints[i].lat();
+        (*(*it)).ele = waypoints[i].elevation();
+        (*(*it)).time = waypoints[i].time();
+    }
 }
 
 void gpxlayer::selection_delete()
 {
-    if (!selected())
+    if (selected() == 0)
         throw 0;
 
-    // Delete the currently highlighted waypoint and highlight the next in line
-    std::vector<gpx_trkpt>::iterator del(m_selection.it); 
-    m_selection.it--;
-    m_trkpts.erase(del);
- 
-    // Highlight the next-in-line waypoint only if the deleted waypoint was the
-    // last in the track
-    if ((m_trkpts.size() == 0) || (m_selection.it != (m_trkpts.end()-1)))
+    if (m_trkpts.size() == 0)
+        throw 0;
+
+    std::vector< std::vector<gpx_trkpt>::iterator >::iterator it = m_selection.waypoints.end();
+    do
     {
-        m_selection.it = m_trkpts.end();
-    }
+        --it;
+        m_trkpts.erase(*it);
 
-    // Recalculate trip for the entire track
+    } while (it != m_selection.waypoints.begin());
+
+    m_selection.waypoints.clear();
+
+    if (m_trkpts.size() > 0)
+        m_selection.waypoints.push_back(m_trkpts.end()-1);
+
+    // Recalculate trip for the entire track and update the display
     trip_calcall();
-
     notify();
 }
 
@@ -586,6 +645,7 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
     color color_track(0xff0000);
     color color_point(0x0000ff);
     color color_point_hl(0x00ff00);
+    color color_selector(0xff00b4);
 
     point2d<double> pmerc_last;
     point2d<double> pmerc_r1(utils::px2merc(vp.z(), point2d<unsigned long>(vp.x(), vp.y())));
@@ -641,7 +701,7 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
         {
             if (((m_trkpts.size() == 1) || (it == (m_trkpts.end()-1))) && (!curclip))
             {
-                if ((m_selection.it == it) && m_selection.highlight)
+                if (std::find(m_selection.waypoints.begin(), m_selection.waypoints.end(), it) != m_selection.waypoints.end())
                     os.fgcolor(color_point_hl);
                 else
                     os.fgcolor(color_point);
@@ -652,7 +712,7 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
 
             if ((it != m_trkpts.begin()) && (!lastclip))
             {
-                if ((m_selection.it == (it-1)) && m_selection.highlight)
+                if (std::find(m_selection.waypoints.begin(), m_selection.waypoints.end(), (it-1)) != m_selection.waypoints.end())
                     os.fgcolor(color_point_hl);
                 else
                     os.fgcolor(color_point);
@@ -663,6 +723,24 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
         }
 
         pmerc_last = point2d<double>((*it).lon, (*it).lat);
+    }
+
+    // Draw selection rectangle
+    if (m_selection.multiselect)
+    {
+        point2d<unsigned long> ppx_origin = utils::merc2px(vp.z(), m_selection.dragorigin);
+        point2d<unsigned long> ppx_current = utils::merc2px(vp.z(), m_selection.dragcurrent);
+
+        ppx_origin[0] -= vp.x();
+        ppx_origin[1] -= vp.y();
+        ppx_current[0] -= vp.x();
+        ppx_current[1] -= vp.y();
+
+        os.fgcolor(color_selector);
+        os.line(ppx_origin.x(), ppx_origin.y(), ppx_origin.x(), ppx_current.y(), 1);
+        os.line(ppx_origin.x(), ppx_origin.y(), ppx_current.x(), ppx_origin.y(), 1);
+        os.line(ppx_current.x(), ppx_current.y(), ppx_current.x(), ppx_origin.y(), 1);
+        os.line(ppx_current.x(), ppx_current.y(), ppx_origin.x(), ppx_current.y(), 1);
     }
 }
 

@@ -17,6 +17,9 @@ class gpxlayer : public layer
         gpxlayer();
         ~gpxlayer();
 
+        class event_notify;
+        class waypoint;
+
         bool handle_evt_mouse(const layer::event_mouse* evt);
         bool handle_evt_key(const layer::event_key* evt);
 
@@ -27,18 +30,14 @@ class gpxlayer : public layer
         void add_trackpoint(const point2d<double>& p);
 
 
-        bool selected();
-        point2d<double> selection_pos();
-        void selection_pos(const point2d<double>& p);
+        size_t selected();
 
-        double selection_elevation();
-        void selection_elevation(double e);
+        void selection_get(std::vector<waypoint>& waypoints);
+        void selection_set(const std::vector<waypoint>& waypoints);
         void selection_delete();
     
         double trip();
         void showwpmarkers(bool s);
-
-        class event_notify;
 
     private:
         struct gpx_trkpt {
@@ -48,9 +47,15 @@ class gpxlayer : public layer
             time_t time;
         };
         struct selection {
-            bool highlight;
+            // Multiselect
+            bool multiselect;
+
+            // Dragging
             bool dragging;
-            std::vector<gpx_trkpt>::iterator it;
+            point2d<double> dragorigin;
+            point2d<double> dragcurrent;
+
+            std::vector< std::vector<gpx_trkpt>::iterator > waypoints;
         };
 
         void notify();
@@ -77,6 +82,35 @@ class gpxlayer::event_notify : public event_base
     public:
         event_notify() {};
         ~event_notify() {};
+};
+
+class gpxlayer::waypoint
+{
+    public:
+        waypoint(double lon, double lat, double ele, time_t ti) :
+            m_lon(lon),
+            m_lat(lat),
+            m_ele(ele),
+            m_time(ti) {};
+        ~waypoint() {};
+
+        double lon() const { return m_lon; };
+        void lon(double l) { m_lon = l; };
+
+        double lat() const { return m_lat; };
+        void lat(double l) { m_lat = l; };
+
+        double elevation() const { return m_ele; };
+        void elevation(double ele) { m_ele = ele; };
+
+        time_t time() const { return m_time; };
+        void time(double t) { m_time = t; };
+
+    private:
+        double m_lon;
+        double m_lat;
+        double m_ele;
+        time_t m_time;
 };
 
 #endif // GPXLAYER_HPP

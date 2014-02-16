@@ -313,10 +313,10 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
     else if (strcmp(picked, "Edit/&Clear track") == 0) {
         cleartrack_ex();
     }
-    else if (strcmp(picked, "Edit/&Edit waypoint") == 0) {
+    else if (strcmp(picked, "Edit/&Edit waypoints") == 0) {
         editselection_ex();
     }
-    else if (strcmp(picked, "Edit/&Delete waypoint") == 0) {
+    else if (strcmp(picked, "Edit/&Delete waypoints") == 0) {
         deleteselection_ex();
     }
     else if (strcmp(picked, "Edit/Show waypoint &markers") == 0) {

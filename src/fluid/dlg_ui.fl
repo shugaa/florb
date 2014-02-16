@@ -138,7 +138,8 @@ ui->cb_btn_deleteselection_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
-  Function {dlg_ui()} {} {
+  Function {dlg_ui()} {open
+  } {
     Fl_Window m_window {
       label florb open
       private xywh {527 125 805 565} type Double align 80 resizable visible
@@ -177,15 +178,15 @@ ui->cb_choice_basemap_ex(widget);} {}
               private xywh {0 0 100 20} shortcut 0x40063
             }
             MenuItem {} {
-              label {&Edit waypoint}
+              label {&Edit waypoints} selected
               private xywh {0 0 100 20} shortcut 0x40065
             }
             MenuItem {} {
-              label {&Delete waypoint}
+              label {&Delete waypoints}
               private xywh {10 10 100 20} shortcut 0x40064
             }
             MenuItem m_menuitem_edit_showwpmarkers {
-              label {Show waypoint &markers} selected
+              label {Show waypoint &markers}
               private xywh {50 50 100 20} type Toggle shortcut 0x4006d
             }
           }
@@ -262,7 +263,7 @@ ui->cb_choice_basemap_ex(widget);} {}
           Fl_Button m_btn_editselection {
             user_data this
             callback cb_btn_editselection
-            private tooltip {Edit Waypoint} image {../res/preferences-system.png} xywh {102 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+            private tooltip {Edit Waypoints} image {../res/preferences-system.png} xywh {102 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {127 29 5 25} box FLAT_BOX
@@ -270,7 +271,7 @@ ui->cb_choice_basemap_ex(widget);} {}
           Fl_Button m_btn_deletewaypoint {
             user_data this
             callback cb_btn_deleteselection
-            private tooltip {Delete Waypoint} image {../res/edit-delete.png} xywh {132 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+            private tooltip {Delete Waypoints} image {../res/edit-delete.png} xywh {132 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {157 29 5 25} box FLAT_BOX

@@ -80,39 +80,23 @@ bool mapctrl::gpx_wpselected()
     if (!m_gpxlayer)
         throw 0;
 
-    return m_gpxlayer->selected();
+    return (m_gpxlayer->selected() > 0);
 }
 
-point2d<double> mapctrl::gpx_wppos()
+void mapctrl::gpx_selection_get(std::vector<gpxlayer::waypoint>& waypoints)
 {
     if (!m_gpxlayer)
         throw 0;
 
-    return m_gpxlayer->selection_pos();
+    m_gpxlayer->selection_get(waypoints);
 }
-
-void mapctrl::gpx_wppos(const point2d<double>& p)
+        
+void mapctrl::gpx_selection_set(const std::vector<gpxlayer::waypoint>& waypoints)
 {
     if (!m_gpxlayer)
         throw 0;
 
-    m_gpxlayer->selection_pos(p);
-}
-
-double mapctrl::gpx_wpelevation()
-{
-    if (!m_gpxlayer)
-        throw 0;
-
-    return m_gpxlayer->selection_elevation();
-}
-
-void mapctrl::gpx_wpelevation(double e)
-{
-    if (!m_gpxlayer)
-        throw 0;
-
-    m_gpxlayer->selection_elevation(e);
+    m_gpxlayer->selection_set(waypoints);
 }
 
 void mapctrl::gpx_wpdelete()

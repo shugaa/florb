@@ -1,11 +1,11 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0300 
+version 1.0302 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include "mapctrl.hpp"} {public global
 } 
 
-decl {\#include "utils.hpp"} {selected private global
+decl {\#include "utils.hpp"} {private global
 } 
 
 class dlg_editselection {open
@@ -35,7 +35,7 @@ class dlg_editselection {open
           Fl_Pack {} {open
             private xywh {5 5 210 135}
           } {
-            Fl_Box {} {
+            Fl_Box m_box_lon {
               label {Longitude [°]}
               private xywh {5 5 210 20} labelsize 12 align 20
             }
@@ -43,8 +43,8 @@ class dlg_editselection {open
               label Longitude
               private xywh {5 25 210 25} type Float labeltype NO_LABEL labelsize 12 align 5
             }
-            Fl_Box {} {
-              label {Latitude [°]}
+            Fl_Box m_box_lat {
+              label {Latitude [°]} selected
               private xywh {5 50 210 20} labelsize 12 align 20
             }
             Fl_Input m_txtin_lat {

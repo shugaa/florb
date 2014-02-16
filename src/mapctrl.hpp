@@ -45,10 +45,8 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         void gpx_cleartrack();
         bool gpx_wpselected();
         void gpx_wpdelete();
-        double gpx_wpelevation();
-        void gpx_wpelevation(double e);
-        point2d<double> gpx_wppos();
-        void gpx_wppos(const point2d<double>& p);
+        void gpx_selection_get(std::vector<gpxlayer::waypoint>& waypoints);
+        void gpx_selection_set(const std::vector<gpxlayer::waypoint>& waypoints); 
         double gpx_trip();
         void gpx_showwpmarkers(bool s);
         
