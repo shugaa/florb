@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <FL/x.H>
 #include <FL/fl_draw.H>
+#include <clocale>
 #include "utils.hpp"
 #include "settings.hpp"
 #include "point.hpp"
@@ -303,12 +304,28 @@ void gpxlayer::load_track(const std::string &path)
 
     m_trkpts.clear();
     m_selection.waypoints.clear();
+
+
+    // TinyXML's number parsing is locale dependent
+    char * oldlc;
+    oldlc = setlocale(LC_ALL, 0);
+    setlocale(LC_ALL, "C");
+
     parsetree(doc.RootElement());
+
+    setlocale(LC_ALL, oldlc); 
+
     notify();
 };
 
 void gpxlayer::save_track(const std::string &path)
 {
+
+    // TinyXML's number parsing is locale dependent
+    char * oldlc;
+    oldlc = setlocale(LC_ALL, 0);
+    setlocale(LC_ALL, "C");
+
     tinyxml2::XMLDocument doc;
     
     // XML standard declaration
@@ -375,6 +392,8 @@ void gpxlayer::save_track(const std::string &path)
     }
 
     doc.SaveFile(path.c_str()); 
+
+    setlocale(LC_ALL, oldlc);
 }
 
 void gpxlayer::clear_track()
@@ -758,7 +777,8 @@ void gpxlayer::parsetree(tinyxml2::XMLNode *parent)
         std::string val(parent->Value());
 
         // Handle trackpoint
-        if (val.compare("trkpt") == 0) {
+        if (val.compare("trkpt") == 0) 
+        {
             double lat = 1234.5, lon = 1234.5;
             etmp->QueryDoubleAttribute("lat", &lat);
             etmp->QueryDoubleAttribute("lon", &lon);
