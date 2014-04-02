@@ -44,7 +44,11 @@ LDFLAGS = \
 OBJS_FLUID = $(rootname $(find . -name *.fl))
 OBJS_CPP   = $(rootname $(find . -name *.cpp))
 OBJS       = $(set $(OBJS_FLUID) $(OBJS_CPP))
-#TRANSLATIONS = $(find ./i18n/ -name *.mo)
+
+# Find all translations
+TRANSLATIONS =
+    foreach(d => ..., $(find ./i18n/ -regex [a-z]{2\,2}_[A-Z]{2\,2}))
+		value $(d)
 
 # Generate version string (version.hpp) from repository information
 version.hpp: ../.git/HEAD ../.git/index ./mkversionhpp.sh
@@ -71,11 +75,6 @@ CXXProgram($(PROGRAM), $(OBJS))
 if $(not $(defined PREFIX))
     PREFIX = /usr/local
     export
-
-# Find all translations
-TRANSLATIONS =
-    foreach(d => ..., $(find ./i18n/ -regex [a-z]{2\,2}_[A-Z]{2\,2}))
-		value $(d)
 
 # install target
 install:
