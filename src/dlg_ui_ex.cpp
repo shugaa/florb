@@ -1,6 +1,7 @@
 #include <sstream>
 #include <Fl/Fl_File_Chooser.H>
 #include <curl/curl.h>
+#include <locale.h>
 #include "gpxlayer.hpp"
 #include "mapctrl.hpp"
 #include "settings.hpp"
@@ -9,6 +10,44 @@
 #include "fluid/dlg_ui.hpp"
 #include "fluid/dlg_editselection.hpp"
 #include "fluid/dlg_gpsd.hpp"
+
+#define MOFILES PREFIX "/share/locale/"
+
+static dlg_ui *ui;
+
+int main_ex(int argc, char* argv[])
+{
+    signal(SIGABRT, &sighandler);
+    signal(SIGTERM, &sighandler);
+    signal(SIGINT, &sighandler);
+
+    // Setup gettext
+    setlocale(LC_ALL, "");
+    bindtextdomain("florb", MOFILES);
+    textdomain("florb");
+
+    // Init CURL
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    // Start the application
+    Fl::lock();
+    ui = new dlg_ui();
+    ui->show(argc, argv);
+
+    int ret = Fl::run();
+
+    delete ui;
+
+    // Deinit CURL
+    curl_global_cleanup();
+
+    return ret;
+}
+
+void sighandler_ex(int sig)
+{
+    ui->hide();
+}
 
 bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
 {
@@ -64,6 +103,18 @@ bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
 
 void dlg_ui::create_ex(void)
 {
+    // Fluid 1.3 does not gettext the menuitems, do it manually here
+    m_menuitem_file->label(_("File"));
+    m_menuitem_file_opengpx->label(_("Open GPX"));
+    m_menuitem_file_savegpx->label(_("Save GPX as"));
+    m_menuitem_file_quit->label(_("Quit"));
+
+    m_menuitem_edit->label(_("Edit"));
+    m_menuitem_edit_cleartrack->label(_("Clear track"));
+    m_menuitem_edit_editwaypoint->label(_("Edit waypoints"));
+    m_menuitem_edit_deletewaypoints->label(_("Delete waypoints"));
+    m_menuitem_edit_showwpmarkers->label(_("Show waypoint markers"));
+
     // Set the window icon
     utils::set_window_icon(m_window);
 
@@ -299,27 +350,27 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
         return;
 
     // File submenu
-    if (strcmp(picked, "File/&Quit") == 0) {
+    if (strcmp(picked, _("File/Quit")) == 0) {
         m_window->hide();
     }
-    else if (strcmp(picked, "File/&Open GPX") == 0) { 
+    else if (strcmp(picked, _("File/Open GPX")) == 0) { 
         loadtrack_ex();
     }
-    else if (strcmp(picked, "File/&Save GPX as") == 0) { 
+    else if (strcmp(picked, _("File/Save GPX as")) == 0) { 
         savetrack_ex();
     } 
 
     // Edit submenu
-    else if (strcmp(picked, "Edit/&Clear track") == 0) {
+    else if (strcmp(picked, _("Edit/Clear track")) == 0) {
         cleartrack_ex();
     }
-    else if (strcmp(picked, "Edit/&Edit waypoints") == 0) {
+    else if (strcmp(picked, _("Edit/Edit waypoints")) == 0) {
         editselection_ex();
     }
-    else if (strcmp(picked, "Edit/&Delete waypoints") == 0) {
+    else if (strcmp(picked, _("Edit/Delete waypoints")) == 0) {
         deleteselection_ex();
     }
-    else if (strcmp(picked, "Edit/Show waypoint &markers") == 0) {
+    else if (strcmp(picked, _("Edit/Show waypoint markers")) == 0) {
         showwpmarkers_ex();
     }
 

@@ -1,5 +1,8 @@
 # data file for the Fltk User Interface Designer (fluid)
 version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <signal.h>} {private global
@@ -18,6 +21,12 @@ decl {\#include "mapctrl.hpp"} {public global
 } 
 
 decl {\#include "event.hpp"} {public global
+} 
+
+decl {int main_ex(int argc, char* argv[]);} {private global
+} 
+
+decl {void sighandler_ex(int sig);} {private global
 } 
 
 class dlg_ui {open : {public event_listener}
@@ -142,51 +151,52 @@ ui->cb_choice_basemap_ex(widget);} {}
   } {
     Fl_Window m_window {
       label florb open
-      private xywh {527 125 805 565} type Double align 80 resizable visible
+      private xywh {1745 120 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
       } {
         Fl_Menu_Bar m_menubar {
+          label test
           user_data this
           callback cb_menu open
           private xywh {0 0 805 25} box FLAT_BOX
         } {
-          Submenu {} {
+          Submenu m_menuitem_file {
             label File open
             private xywh {0 0 100 20}
           } {
-            MenuItem {} {
-              label {&Open GPX}
+            MenuItem m_menuitem_file_opengpx {
+              label {Open GPX}
               private xywh {0 0 100 20} shortcut 0x4006f
             }
-            MenuItem {} {
-              label {&Save GPX as}
+            MenuItem m_menuitem_file_savegpx {
+              label {Save GPX as}
               private xywh {10 10 100 20} shortcut 0x40073
             }
-            MenuItem {} {
-              label {&Quit}
+            MenuItem m_menuitem_file_quit {
+              label Quit
               private xywh {20 20 100 20} shortcut 0x40071
             }
           }
-          Submenu {} {
-            label Edit open
+          Submenu m_menuitem_edit {
+            label Edit open selected
             private xywh {0 0 100 20}
           } {
-            MenuItem {} {
-              label {&Clear track}
+            MenuItem m_menuitem_edit_cleartrack {
+              label {Clear track}
               private xywh {0 0 100 20} shortcut 0x40063
             }
-            MenuItem {} {
-              label {&Edit waypoints} selected
+            MenuItem m_menuitem_edit_editwaypoint {
+              label {Edit waypoints}
               private xywh {0 0 100 20} shortcut 0x40065
             }
-            MenuItem {} {
-              label {&Delete waypoints}
+            MenuItem m_menuitem_edit_deletewaypoints {
+              label {Delete waypoints}
               private xywh {10 10 100 20} shortcut 0x40064
             }
             MenuItem m_menuitem_edit_showwpmarkers {
-              label {Show waypoint &markers}
+              label {Show waypoint markers}
               private xywh {50 50 100 20} type Toggle shortcut 0x4006d
             }
           }
@@ -379,7 +389,7 @@ ui->cb_choice_basemap_ex(widget);} {}
   Function {~dlg_ui()} {} {
     code {destroy_ex();} {}
   }
-  Function {show(int argc, char *argv[])} {return_type void
+  Function {show(int argc, char *argv[])} {open return_type void
   } {
     code {show_ex(argc, argv);} {}
   }
@@ -387,32 +397,16 @@ ui->cb_choice_basemap_ex(widget);} {}
   } {
     code {hide_ex();} {}
   }
-} 
-
-decl {dlg_ui *ui;} {private local
+  decl {int main_ex(int argc, char* argv[]);} {private global
+  }
 } 
 
 Function {} {return_type int
 } {
-  code {signal(SIGABRT, &sighandler);
-signal(SIGTERM, &sighandler);
-signal(SIGINT, &sighandler);
-
-// Init CURL
-curl_global_init(CURL_GLOBAL_ALL);
-
-// Start the application
-Fl::lock();
-ui = new dlg_ui();
-ui->show(argc, argv);
-
-int ret = Fl::run();
-
-delete ui;
-return ret;} {}
+  code {return main_ex(argc, argv);} {}
 } 
 
 Function {sighandler(int sig)} {return_type void
 } {
-  code {ui->hide();} {}
+  code {sighandler_ex(sig);} {}
 } 

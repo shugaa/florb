@@ -1,0 +1,163 @@
+# German translations for PACKAGE package
+# German messages for PACKAGE.
+# Copyright (C) 2014 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-04-02 23:14+0200\n"
+"PO-Revision-Date: 2014-04-02 21:27+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: fluid/dlg_editselection.cpp:80
+msgid "Cancel"
+msgstr ""
+
+#: fluid/dlg_ui.cpp:916
+msgid "Clear current track"
+msgstr ""
+
+#: dlg_ui_ex.cpp:113
+msgid "Clear track"
+msgstr "Track löschen"
+
+#: fluid/dlg_ui.cpp:936
+msgid "Delete Waypoints"
+msgstr "Wegpunkte lschen"
+
+#: dlg_ui_ex.cpp:115
+msgid "Delete waypoints"
+msgstr "Wegpunkte löschen"
+
+#: dlg_ui_ex.cpp:112
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: fluid/dlg_ui.cpp:926
+msgid "Edit Waypoints"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:8
+msgid "Edit waypoint"
+msgstr ""
+
+#: dlg_ui_ex.cpp:114
+msgid "Edit waypoints"
+msgstr "Wegpunkte bearbeiten"
+
+#: dlg_ui_ex.cpp:367
+msgid "Edit/Clear track"
+msgstr "Bearbeiten/Track löschen"
+
+#: dlg_ui_ex.cpp:373
+msgid "Edit/Delete waypoints"
+msgstr "Bearbeiten/Wegpunkte löschen"
+
+#: dlg_ui_ex.cpp:370
+msgid "Edit/Edit waypoints"
+msgstr "Bearbeiten/Wegpunkte bearbeiten"
+
+#: dlg_ui_ex.cpp:376
+msgid "Edit/Show waypoint markers"
+msgstr "Bearbeiten/Zeige Wegpunktmarkierungen"
+
+#: fluid/dlg_editselection.cpp:42
+msgid "Elevation"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:38
+msgid "Elevation [m]"
+msgstr ""
+
+#: dlg_ui_ex.cpp:107
+msgid "File"
+msgstr "Datei"
+
+#: dlg_ui_ex.cpp:359
+msgid "File/Open GPX"
+msgstr "Datei/GPX laden"
+
+#: dlg_ui_ex.cpp:362
+msgid "File/Save GPX as"
+msgstr "Datei/GPX speichern unter"
+
+#: fluid/dlg_ui.cpp:952
+msgid "GPSD"
+msgstr ""
+
+#: fluid/dlg_ui.cpp:962
+msgid "Go to cursor"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:32
+msgid "Latitude"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:28
+msgid "Latitude [°]"
+msgstr ""
+
+#: fluid/dlg_ui.cpp:890
+msgid "Load GPX file"
+msgstr ""
+
+#: fluid/dlg_ui.cpp:972
+msgid "Lock to cursor"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:22
+msgid "Longitude"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:18
+msgid "Longitude [°]"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:76
+msgid "OK"
+msgstr ""
+
+#: dlg_ui_ex.cpp:108
+msgid "Open GPX"
+msgstr "GPX laden"
+
+#: dlg_ui_ex.cpp:110
+msgid "Quit"
+msgstr "Beenden"
+
+#: fluid/dlg_ui.cpp:983
+msgid "Record track"
+msgstr ""
+
+#: dlg_ui_ex.cpp:109
+msgid "Save GPX as"
+msgstr "GPX speichern unter"
+
+#: fluid/dlg_ui.cpp:900
+msgid "Save current track"
+msgstr ""
+
+#: dlg_ui_ex.cpp:116
+msgid "Show waypoint markers"
+msgstr "Zeige Wegpunktmarkierungen"
+
+#: fluid/dlg_ui.cpp:1015
+msgid "Slippy Map"
+msgstr ""
+
+#: fluid/dlg_ui.cpp:866
+msgid "florb"
+msgstr ""
+
+#: fluid/dlg_ui.cpp:870
+msgid "test"
+msgstr ""

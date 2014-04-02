@@ -5,6 +5,8 @@
 #include <FL/Fl_Window.H>
 #include "point.hpp"
 
+#define _(STRING) gettext(STRING)
+
 class utils
 {
     public:

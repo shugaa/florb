@@ -1,9 +1,17 @@
 # Program name
 PROGRAM = florb
 
+# Check if prefix is defined
+if $(not $(defined PREFIX))
+	PREFIX = /usr
+	export
+
+# Absolute path for prefix
+PREFIX = $(absname $(PREFIX))
+
 # Compiler and linker flags
 CXX = $(shell fltk-config --cxx)
-CXXFLAGS = -g -Wall -O2 -funroll-loops \
+CXXFLAGS = -g -Wall -O2 -funroll-loops -DPREFIX=\"$(PREFIX)\" \
     $(shell fltk-config --use-images --cxxflags) \
 	$(shell curl-config --cflags) \
 	$(shell pkg-config --cflags sqlite3) \
@@ -28,7 +36,7 @@ LDFLAGS = \
     -lboost_thread
 
 # Phony targets
-.PHONY: clean install
+.PHONY: clean install i18nupdate i18ncompile
 
 # Object files to be combined into the program binary. The last line combines
 # fluid and regular source objects and eliminates duplicates for when fluid has
@@ -36,6 +44,7 @@ LDFLAGS = \
 OBJS_FLUID = $(rootname $(find . -name *.fl))
 OBJS_CPP   = $(rootname $(find . -name *.cpp))
 OBJS       = $(set $(OBJS_FLUID) $(OBJS_CPP))
+#TRANSLATIONS = $(find ./i18n/ -name *.mo)
 
 # Generate version string (version.hpp) from repository information
 version.hpp: ../.git/HEAD ../.git/index ./mkversionhpp.sh
@@ -58,15 +67,38 @@ CGeneratedFiles($(addsuffix .cpp, $(OBJS_FLUID)) version.hpp)
 CXXProgram($(PROGRAM), $(OBJS))
 .DEFAULT: $(PROGRAM)$(EXE)
 
-#install target
+# install target
 if $(not $(defined PREFIX))
     PREFIX = /usr/local
     export
 
+# Find all translations
+TRANSLATIONS =
+    foreach(d => ..., $(find ./i18n/ -regex [a-z]{2\,2}_[A-Z]{2\,2}))
+		value $(d)
+
+# install target
 install:
 	mkdir($(PREFIX)/bin/ -p)
 	install $(PROGRAM) $(PREFIX)/bin/
+	foreach(t => ..., $(basename $(TRANSLATIONS)))
+		mkdir -p $(PREFIX)/share/locale/$(t)/LC_MESSAGES/
+		install ./i18n/$(t)/florb.mo $(PREFIX)/share/locale/$(t)/LC_MESSAGES/
 
 # clean target
 clean:
 	$(rm -f $(PROGRAM) $(addsuffix .cpp, $(OBJS_FLUID)) $(addsuffix .hpp, $(OBJS_FLUID)) $(addsuffix .o, $(OBJS)) version.hpp OMakefile.omc OMakeroot.omc)
+
+# update translation files
+i18nupdate:
+	xgettext -d florb -s -o i18n/florb.pot --keyword=_ --from-code=utf-8  $(find ./ -name *.cpp) $(find ./ -name *.hpp)
+	foreach(t => ..., $(basename $(TRANSLATIONS)))
+	    if $(file-exists ./i18n/$(t)/florb.po)
+			msgmerge -U ./i18n/$(t)/florb.po i18n/florb.pot
+	    else
+			msginit --no-translator -l $(t).utf8 -o ./i18n/$(t)/florb.po -i i18n/florb.pot
+		
+# compile translations
+i18ncompile:
+	foreach(t => ..., $(basename $(TRANSLATIONS)))
+		msgfmt -c -o ./i18n/$(t)/florb.mo ./i18n/$(t)/florb.po

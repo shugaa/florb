@@ -1,5 +1,8 @@
 # data file for the Fltk User Interface Designer (fluid)
 version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include "mapctrl.hpp"} {public global
@@ -17,7 +20,7 @@ class dlg_editselection {open
   Function {dlg_editselection(mapctrl *m)} {open
   } {
     Fl_Window m_window {
-      label {Edit waypoint} open
+      label {Edit waypoint}
       private xywh {720 307 220 180} type Double modal visible
     } {
       Fl_Pack {} {open
@@ -44,7 +47,7 @@ class dlg_editselection {open
               private xywh {5 25 210 25} type Float labeltype NO_LABEL labelsize 12 align 5
             }
             Fl_Box m_box_lat {
-              label {Latitude [°]} selected
+              label {Latitude [°]}
               private xywh {5 50 210 20} labelsize 12 align 20
             }
             Fl_Input m_txtin_lat {

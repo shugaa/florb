@@ -9,3 +9,4 @@ build/*.hpp
 */fluid/*.cpp
 */fluid/*.hpp
 *.omakedb
+install
