@@ -87,6 +87,16 @@ bool downloader::queue(const std::string& url, void* userdata)
     return newitem;
 }
 
+size_t downloader::qsize()
+{
+    size_t ret;
+    m_mutex.lock();
+    ret = m_queue.size();
+    m_mutex.unlock();
+
+    return ret;
+}
+
 bool downloader::get(download& dl)
 {
     bool ret = false;

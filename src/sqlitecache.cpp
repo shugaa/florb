@@ -1,8 +1,10 @@
 #include <sstream>
 #include <cstring>
 #include <iostream>
+#include <fstream>
 #include "settings.hpp"
 #include "sqlitecache.hpp"
+#include "utils.hpp"
 
 const std::string sqlitecache::stmt_checknew = "\
     SELECT name FROM sqlite_master \
@@ -14,7 +16,6 @@ const std::string sqlitecache::stmt_createschema = "\
       z INTEGER, \
       x INTEGER, \
       y INTEGER, \
-      data BLOB, \
       expires INTEGER, \
       PRIMARY KEY (sid, z, x, y) \
     );\
@@ -30,10 +31,10 @@ const std::string sqlitecache::stmt_sidcreate = "\
     INSERT INTO sessions (sid, url) \
     VALUES (NULL, ?1);";
 const std::string sqlitecache::stmt_insert = "\
-    INSERT INTO tiles (sid, z, x, y, data, expires) \
-    VALUES (?1, ?2, ?3, ?4, ?5, ?6);";
+    INSERT INTO tiles (sid, z, x, y, expires) \
+    VALUES (?1, ?2, ?3, ?4, ?5);";
 const std::string sqlitecache::stmt_get = "\
-    SELECT data,expires FROM tiles \
+    SELECT expires FROM tiles \
     WHERE sid = '%d' AND z = '%d' AND x = '%d' AND y = '%d';";
 const std::string sqlitecache::stmt_exists = "\
     SELECT expires FROM tiles \
@@ -223,12 +224,38 @@ void sqlitecache::put(int z, int x, int y, time_t expires, const std::vector<cha
    
     for (;;) 
     {
+        // Create the storage directory
+        std::ostringstream oss;
+        
+        oss << utils::appdir() << "/tiles"; 
+        if (!utils::exists(oss.str()))
+            utils::mkdir(oss.str());
+
+        oss << "/" << m_sid; 
+        if (!utils::exists(oss.str()))
+            utils::mkdir(oss.str());
+
+        oss << "/" << z;
+        if (!utils::exists(oss.str()))
+            utils::mkdir(oss.str());
+
+        oss << "/" << x;
+        if (!utils::exists(oss.str()))
+            utils::mkdir(oss.str());
+
         query = sqlite3_mprintf(stmt_delete.c_str(), m_sid, z, x, y);
         if (!query)
         {
             rc = -1;
             break;
         }
+
+        // Store tile in filesystem
+        oss << "/" << y;
+        std::ofstream of;
+        of.open(oss.str().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+        of.write(&(buf[0]), buf.size());
+        of.close();
 
         // Drop the tile if it already exists
         rc = sqlite3_prepare(m_db, query, strlen(query), &stmt, NULL);
@@ -279,14 +306,7 @@ void sqlitecache::put(int z, int x, int y, time_t expires, const std::vector<cha
             rc =-1;
             break;
         }
-        rc = sqlite3_bind_blob(stmt, 5, &buf[0], (int)buf.size(), SQLITE_STATIC);
-        if (rc != SQLITE_OK) 
-        {
-            rc =-1;
-            break;
-        }
-
-        rc = sqlite3_bind_int(stmt, 6, expires);
+        rc = sqlite3_bind_int(stmt, 5, expires);
         if (rc != SQLITE_OK) 
         {
             rc =-1;
@@ -409,10 +429,21 @@ int sqlitecache::get(int z, int x, int y, std::vector<char> &buf)
         }
 
         // Return the data
-        size_t msize = (size_t)sqlite3_column_bytes(stmt, 0);
+        std::ostringstream oss;
+        oss << utils::appdir() << "/tiles/" << m_sid << "/" << z << "/" << x << "/" << y; 
+
+        std::ifstream tf;
+        tf.open(oss.str().c_str(), std::ios::in | std::ios::binary);
+
+        tf.seekg(0, tf.end);
+        size_t msize = tf.tellg();
+        tf.seekg(0, tf.beg);
+        
         buf.resize(msize);
-        memcpy(&buf[0], sqlite3_column_blob(stmt, 0), msize);
-        time_t expires = sqlite3_column_int64(stmt, 1);
+        tf.read(&(buf[0]), msize);
+        tf.close();
+        
+        time_t expires = sqlite3_column_int64(stmt, 0);
 
         // Tile found
         rc = FOUND;

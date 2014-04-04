@@ -40,7 +40,8 @@ osmlayer::osmlayer(
     m_zmin(zmin),                   // Min. zoomlevel supported by server
     m_zmax(zmax),                   // Max. zoomlevel supported by server
     m_parallel(parallel),           // Number of simultaneous downloads
-    m_type(imgtype)                 // Tile image data type    
+    m_type(imgtype),                // Tile image data type
+    m_dlenable(true)                // Allow tile downloading
 {
     // Set map layer name
     name(m_name);
@@ -84,6 +85,10 @@ void osmlayer::process_downloads()
 {
     bool ret = false; 
 
+    // Only update if the last requested batch of tiles is complete
+    if (m_downloader->qsize() > 0)
+        return;
+
     // Cache all downloaded tiles
     downloader::download dtmp;
     while (m_downloader->get(dtmp))
@@ -124,6 +129,17 @@ void osmlayer::process_downloads()
     }
 }
 
+void osmlayer::dlenable(bool e)
+{
+    m_dlenable = e;
+    if (e)
+    {
+        //Kickstart the downloader
+        event_notify e;
+        fire(&e);
+    }
+}
+
 void osmlayer::cb_download(void *userdata)
 {
     layer *l = static_cast<layer*>(userdata);
@@ -145,6 +161,11 @@ bool osmlayer::evt_downloadcomplete(const downloader::event_complete *e)
 
 void osmlayer::download_qtile(int z, int x, int y)
 {
+    if (!m_dlenable)
+        return;
+    if (m_downloader->qsize() >= m_parallel)
+        return;
+
     // Check whether the requested tile is already being processed
     std::vector<tileinfo*>::iterator it;
     for (it=m_tileinfos.begin();it!=m_tileinfos.end();++it)
@@ -346,6 +367,7 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
 {
     // Return whether the map images has tiles missing (false) or not (true)
     bool ret = true;
+    unsigned int parallel = 0;
 
     // Get the x and y start tile index
     unsigned int tstartx = vp.x() / TILE_W;
@@ -384,15 +406,12 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {
-              // TODO: Although we are capable of multiple simultaneous
-              // downloads, at this point only one download at a time is
-              // requested. This keeps the UI responsive on slow-storage
-              // hardware. We need to rethink this, others can do it, too.
-              if (ret)
+              if (parallel < m_parallel)
               {
                   download_qtile(vp.z(), tx, ty);
-                  ret = false;
+                  parallel++;
               }
+              ret = false;
           }
        }
     }

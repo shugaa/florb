@@ -25,6 +25,8 @@ class osmlayer : public layer
         int zoom_min() { return m_zmin; };
         int zoom_max() { return m_zmax; };
 
+        void dlenable(bool e);
+
         class event_notify;
 
     private:
@@ -50,6 +52,7 @@ class osmlayer : public layer
         void process_downloads();
 
         downloader* m_downloader;
+        bool m_dlenable;
 
         bool drawvp(const viewport &viewport, canvas &c);
         void update_map(const viewport &vp);
@@ -58,7 +61,6 @@ class osmlayer : public layer
 
         bool evt_downloadcomplete(const downloader::event_complete *e);
 
-        bool m_test;
         static void testcb(void *ud);
 };
 

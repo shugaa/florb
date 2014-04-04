@@ -401,6 +401,9 @@ int mapctrl::handle_push(int event)
 
 int mapctrl::handle_release(int event)
 {
+    // End of drag mode, allow downloading of tiles
+    m_basemap->dlenable(true);
+
     // Cursor reset
     fl_cursor(FL_CURSOR_CROSS);
 
@@ -409,7 +412,9 @@ int mapctrl::handle_release(int event)
     if (Fl::event_button() == FL_LEFT_MOUSE)
         button = layer::event_mouse::BUTTON_LEFT;
     else if (Fl::event_button() == FL_RIGHT_MOUSE)
+    {
         button = layer::event_mouse::BUTTON_RIGHT;
+    }
 
     layer::event_mouse me(
             m_viewport, 
@@ -437,6 +442,7 @@ int mapctrl::handle_drag(int event)
 
         // Move the viewport accordingly and redraw
         m_viewport.move((long)dx, (long)dy); 
+        m_basemap->dlenable(false);
         refresh();
     }
     // Drag event for the layers

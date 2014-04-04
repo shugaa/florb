@@ -16,6 +16,7 @@ class downloader : public event_generator
         ~downloader();
 
         bool queue(const std::string& url, void* userdata);
+        size_t qsize();
 
         class event_complete;
 
