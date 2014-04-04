@@ -97,6 +97,7 @@ void mapctrl::gpx_selection_set(const std::vector<gpxlayer::waypoint>& waypoints
         throw 0;
 
     m_gpxlayer->selection_set(waypoints);
+    refresh();
 }
 
 void mapctrl::gpx_wpdelete()
