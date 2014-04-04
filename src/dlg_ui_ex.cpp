@@ -353,53 +353,51 @@ void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
 
 void dlg_ui::cb_menu_ex(Fl_Widget *widget)
 {
-    char picked[200];
-    if (m_menubar->item_pathname(picked, sizeof(picked)-1) != 0)
-        return;
+    const Fl_Menu_Item *mit = m_menubar->mvalue();
 
     // File submenu
-    if (strcmp(picked, _("File/Quit")) == 0) {
+    if (mit == m_menuitem_file_quit) {
         m_window->hide();
     }
-    else if (strcmp(picked, _("File/Open GPX")) == 0) { 
+    else if (mit == m_menuitem_file_opengpx) { 
         loadtrack_ex();
     }
-    else if (strcmp(picked, _("File/Save GPX as")) == 0) { 
+    else if (mit == m_menuitem_file_savegpx) { 
         savetrack_ex();
     } 
 
     // Edit submenu
-    else if (strcmp(picked, _("Edit/Clear track")) == 0) {
+    else if (mit == m_menuitem_edit_cleartrack) {
         cleartrack_ex();
     }
-    else if (strcmp(picked, _("Edit/Edit waypoints")) == 0) {
+    else if (mit == m_menuitem_edit_editwaypoint) {
         editselection_ex();
     }
-    else if (strcmp(picked, _("Edit/Delete waypoints")) == 0) {
+    else if (mit == m_menuitem_edit_deletewaypoints) {
         deleteselection_ex();
     }
-    else if (strcmp(picked, _("Edit/Show waypoint markers")) == 0) {
+    else if (mit == m_menuitem_edit_showwpmarkers) {
         showwpmarkers_ex();
     }
 
     // GPSd submenu
-    else if (strcmp(picked, _("GPSd/Settings")) == 0) {
+    else if (mit == m_menuitem_gpsd_settings) {
         gpsdsettings_ex();
     }
-    else if (strcmp(picked, _("GPSd/Go to cursor")) == 0) {
+    else if (mit == m_menuitem_gpsd_gotocursor) {
         gotocursor_ex();
     }
-    else if (strcmp(picked, _("GPSd/Record track")) == 0) {
+    else if (mit == m_menuitem_gpsd_recordtrack) {
         m_btn_recordtrack->value(m_menuitem_gpsd_recordtrack->value());
         recordtrack_ex();
     }
-    else if (strcmp(picked, _("GPSd/Lock to cursor")) == 0) {
+    else if (mit == m_menuitem_gpsd_lockcursor) {
         m_btn_lockcursor->value(m_menuitem_gpsd_lockcursor->value());
         lockcursor_ex();
     }
 
     // Help submenu
-    else if (strcmp(picked, _("Help/About")) == 0) { 
+    else if (mit == m_menuitem_help_about) { 
         m_dlg_about->show();
     }
 

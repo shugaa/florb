@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-04 10:33+0200\n"
+"POT-Creation-Date: 2014-04-04 11:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,22 +49,6 @@ msgstr ""
 msgid "Edit waypoints"
 msgstr ""
 
-#: dlg_ui_ex.cpp:372
-msgid "Edit/Clear track"
-msgstr ""
-
-#: dlg_ui_ex.cpp:378
-msgid "Edit/Delete waypoints"
-msgstr ""
-
-#: dlg_ui_ex.cpp:375
-msgid "Edit/Edit waypoints"
-msgstr ""
-
-#: dlg_ui_ex.cpp:381
-msgid "Edit/Show waypoint markers"
-msgstr ""
-
 #: fluid/dlg_editselection.cpp:42 fluid/dlg_gpsd.cpp:39
 msgid "Elevation"
 msgstr ""
@@ -81,36 +65,8 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: dlg_ui_ex.cpp:364
-msgid "File/Open GPX"
-msgstr ""
-
-#: dlg_ui_ex.cpp:361
-msgid "File/Quit"
-msgstr ""
-
-#: dlg_ui_ex.cpp:367
-msgid "File/Save GPX as"
-msgstr ""
-
 #: dlg_ui_ex.cpp:117 fluid/dlg_ui.cpp:962 fluid/dlg_gpsd.cpp:12
 msgid "GPSd"
-msgstr ""
-
-#: dlg_ui_ex.cpp:389
-msgid "GPSd/Go to cursor"
-msgstr ""
-
-#: dlg_ui_ex.cpp:396
-msgid "GPSd/Lock to cursor"
-msgstr ""
-
-#: dlg_ui_ex.cpp:392
-msgid "GPSd/Record track"
-msgstr ""
-
-#: dlg_ui_ex.cpp:386
-msgid "GPSd/Settings"
 msgstr ""
 
 #: dlg_ui_ex.cpp:119 fluid/dlg_ui.cpp:972
@@ -119,10 +75,6 @@ msgstr ""
 
 #: dlg_ui_ex.cpp:123
 msgid "Help"
-msgstr ""
-
-#: dlg_ui_ex.cpp:402
-msgid "Help/About"
 msgstr ""
 
 #: fluid/dlg_editselection.cpp:32 fluid/dlg_gpsd.cpp:30
