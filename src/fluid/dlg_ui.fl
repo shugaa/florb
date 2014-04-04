@@ -151,15 +151,15 @@ ui->cb_choice_basemap_ex(widget);} {}
   } {
     Fl_Window m_window {
       label florb open
-      private xywh {1745 120 805 565} type Double align 80 resizable visible
+      private xywh {1745 120 805 565} type Double align 80 hide resizable
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
       } {
         Fl_Menu_Bar m_menubar {
-          label test
+          label Menu
           user_data this
-          callback cb_menu open
+          callback cb_menu open selected
           private xywh {0 0 805 25} box FLAT_BOX
         } {
           Submenu m_menuitem_file {
@@ -180,7 +180,7 @@ ui->cb_choice_basemap_ex(widget);} {}
             }
           }
           Submenu m_menuitem_edit {
-            label Edit open selected
+            label Edit open
             private xywh {0 0 100 20}
           } {
             MenuItem m_menuitem_edit_cleartrack {
@@ -200,32 +200,32 @@ ui->cb_choice_basemap_ex(widget);} {}
               private xywh {50 50 100 20} type Toggle shortcut 0x4006d
             }
           }
-          Submenu {} {
+          Submenu m_menuitem_gpsd {
             label GPSd open
             private xywh {20 20 100 20}
           } {
-            MenuItem {} {
+            MenuItem m_menuitem_gpsd_settings {
               label Settings
               private xywh {20 20 100 20}
             }
-            MenuItem {} {
-              label {&Go to cursor}
+            MenuItem m_menuitem_gpsd_gotocursor {
+              label {Go to cursor}
               private xywh {20 20 100 20} shortcut 0x40067
             }
             MenuItem m_menuitem_gpsd_recordtrack {
-              label {&Record track}
+              label {Record track}
               private xywh {30 30 100 20} type Toggle shortcut 0x40072
             }
             MenuItem m_menuitem_gpsd_lockcursor {
-              label {&Lock to cursor}
+              label {Lock to cursor}
               private xywh {40 40 100 20} type Toggle shortcut 0x4006c
             }
           }
-          Submenu {} {
+          Submenu m_menuitem_help {
             label Help open
             private xywh {0 0 100 20}
           } {
-            MenuItem {} {
+            MenuItem m_menuitem_help_about {
               label About
               private xywh {0 0 100 20}
             }
@@ -273,7 +273,7 @@ ui->cb_choice_basemap_ex(widget);} {}
           Fl_Button m_btn_editselection {
             user_data this
             callback cb_btn_editselection
-            private tooltip {Edit Waypoints} image {../res/preferences-system.png} xywh {102 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+            private tooltip {Edit waypoints} image {../res/preferences-system.png} xywh {102 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {127 29 5 25} box FLAT_BOX
@@ -281,7 +281,7 @@ ui->cb_choice_basemap_ex(widget);} {}
           Fl_Button m_btn_deletewaypoint {
             user_data this
             callback cb_btn_deleteselection
-            private tooltip {Delete Waypoints} image {../res/edit-delete.png} xywh {132 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+            private tooltip {Delete waypoints} image {../res/edit-delete.png} xywh {132 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {157 29 5 25} box FLAT_BOX
@@ -295,7 +295,7 @@ ui->cb_choice_basemap_ex(widget);} {}
           Fl_Button m_btn_gpsd {
             user_data this
             callback cb_btn_gpsd
-            private tooltip GPSD image {../res/network-wired.png} xywh {169 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+            private tooltip GPSd image {../res/network-wired.png} xywh {169 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {194 29 5 25} box FLAT_BOX

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-02 23:14+0200\n"
+"POT-Creation-Date: 2014-04-04 10:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,59 +17,55 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: fluid/dlg_editselection.cpp:80
+#: dlg_ui_ex.cpp:124
+msgid "About"
+msgstr ""
+
+#: fluid/dlg_about.cpp:10
+msgid "About / License"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:80 fluid/dlg_gpsd.cpp:77
 msgid "Cancel"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:916
+#: fluid/dlg_ui.cpp:926
 msgid "Clear current track"
 msgstr ""
 
-#: dlg_ui_ex.cpp:113
+#: dlg_ui_ex.cpp:112
 msgid "Clear track"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:936
-msgid "Delete Waypoints"
-msgstr ""
-
-#: dlg_ui_ex.cpp:115
+#: dlg_ui_ex.cpp:114 fluid/dlg_ui.cpp:946
 msgid "Delete waypoints"
 msgstr ""
 
-#: dlg_ui_ex.cpp:112
+#: dlg_ui_ex.cpp:111
 msgid "Edit"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:926
-msgid "Edit Waypoints"
-msgstr ""
-
-#: fluid/dlg_editselection.cpp:8
-msgid "Edit waypoint"
-msgstr ""
-
-#: dlg_ui_ex.cpp:114
+#: dlg_ui_ex.cpp:113 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:936
 msgid "Edit waypoints"
 msgstr ""
 
-#: dlg_ui_ex.cpp:367
+#: dlg_ui_ex.cpp:372
 msgid "Edit/Clear track"
 msgstr ""
 
-#: dlg_ui_ex.cpp:373
+#: dlg_ui_ex.cpp:378
 msgid "Edit/Delete waypoints"
 msgstr ""
 
-#: dlg_ui_ex.cpp:370
+#: dlg_ui_ex.cpp:375
 msgid "Edit/Edit waypoints"
 msgstr ""
 
-#: dlg_ui_ex.cpp:376
+#: dlg_ui_ex.cpp:381
 msgid "Edit/Show waypoint markers"
 msgstr ""
 
-#: fluid/dlg_editselection.cpp:42
+#: fluid/dlg_editselection.cpp:42 fluid/dlg_gpsd.cpp:39
 msgid "Elevation"
 msgstr ""
 
@@ -77,27 +73,59 @@ msgstr ""
 msgid "Elevation [m]"
 msgstr ""
 
-#: dlg_ui_ex.cpp:107
+#: fluid/dlg_gpsd.cpp:22
+msgid "Enable GPSd"
+msgstr ""
+
+#: dlg_ui_ex.cpp:106
 msgid "File"
 msgstr ""
 
-#: dlg_ui_ex.cpp:359
-msgid "File/&Open GPX"
+#: dlg_ui_ex.cpp:364
+msgid "File/Open GPX"
 msgstr ""
 
-#: dlg_ui_ex.cpp:362
-msgid "File/&Save GPX as"
+#: dlg_ui_ex.cpp:361
+msgid "File/Quit"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:952
-msgid "GPSD"
+#: dlg_ui_ex.cpp:367
+msgid "File/Save GPX as"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:962
+#: dlg_ui_ex.cpp:117 fluid/dlg_ui.cpp:962 fluid/dlg_gpsd.cpp:12
+msgid "GPSd"
+msgstr ""
+
+#: dlg_ui_ex.cpp:389
+msgid "GPSd/Go to cursor"
+msgstr ""
+
+#: dlg_ui_ex.cpp:396
+msgid "GPSd/Lock to cursor"
+msgstr ""
+
+#: dlg_ui_ex.cpp:392
+msgid "GPSd/Record track"
+msgstr ""
+
+#: dlg_ui_ex.cpp:386
+msgid "GPSd/Settings"
+msgstr ""
+
+#: dlg_ui_ex.cpp:119 fluid/dlg_ui.cpp:972
 msgid "Go to cursor"
 msgstr ""
 
-#: fluid/dlg_editselection.cpp:32
+#: dlg_ui_ex.cpp:123
+msgid "Help"
+msgstr ""
+
+#: dlg_ui_ex.cpp:402
+msgid "Help/About"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:32 fluid/dlg_gpsd.cpp:30
 msgid "Latitude"
 msgstr ""
 
@@ -105,11 +133,11 @@ msgstr ""
 msgid "Latitude [°]"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:890
+#: fluid/dlg_ui.cpp:900
 msgid "Load GPX file"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:972
+#: dlg_ui_ex.cpp:121 fluid/dlg_ui.cpp:982
 msgid "Lock to cursor"
 msgstr ""
 
@@ -121,42 +149,54 @@ msgstr ""
 msgid "Longitude [°]"
 msgstr ""
 
-#: fluid/dlg_editselection.cpp:76
+#: fluid/dlg_ui.cpp:880
+msgid "Menu"
+msgstr ""
+
+#: fluid/dlg_editselection.cpp:76 fluid/dlg_about.cpp:48 fluid/dlg_gpsd.cpp:73
 msgid "OK"
 msgstr ""
 
-#: dlg_ui_ex.cpp:108
+#: dlg_ui_ex.cpp:107
 msgid "Open GPX"
 msgstr ""
 
-#: dlg_ui_ex.cpp:110
-msgid "Quit"
-msgstr ""
-
-#: fluid/dlg_ui.cpp:983
-msgid "Record track"
+#: fluid/dlg_gpsd.cpp:35
+msgid "Port"
 msgstr ""
 
 #: dlg_ui_ex.cpp:109
+msgid "Quit"
+msgstr ""
+
+#: dlg_ui_ex.cpp:120 fluid/dlg_ui.cpp:993
+msgid "Record track"
+msgstr ""
+
+#: dlg_ui_ex.cpp:108
 msgid "Save GPX as"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:900
+#: fluid/dlg_ui.cpp:910
 msgid "Save current track"
 msgstr ""
 
-#: dlg_ui_ex.cpp:116
+#: fluid/dlg_gpsd.cpp:26
+msgid "Server"
+msgstr ""
+
+#: dlg_ui_ex.cpp:118
+msgid "Settings"
+msgstr ""
+
+#: dlg_ui_ex.cpp:115
 msgid "Show waypoint markers"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:1015
+#: fluid/dlg_ui.cpp:1025
 msgid "Slippy Map"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:866
+#: fluid/dlg_ui.cpp:876
 msgid "florb"
-msgstr ""
-
-#: fluid/dlg_ui.cpp:870
-msgid "test"
 msgstr ""

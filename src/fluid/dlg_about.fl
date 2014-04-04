@@ -1,5 +1,8 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0300 
+version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include <FL/Fl_Text_Buffer.H>} {public global
@@ -21,7 +24,7 @@ class dlg_about {open
   Function {dlg_about()} {open
   } {
     Fl_Window m_window {
-      label {About / License} open
+      label {About / License} open selected
       private xywh {554 188 500 295} type Double resizable modal visible
     } {
       Fl_Pack {} {open
@@ -113,8 +116,7 @@ m_buf->append("THE SOFTWARE.");
 m_display->buffer(m_buf);
 
 // Set the window icon
-utils::set_window_icon(m_window);} {selected
-    }
+utils::set_window_icon(m_window);} {}
   }
   Function {~dlg_about()} {open
   } {

@@ -11,8 +11,6 @@
 #include "fluid/dlg_editselection.hpp"
 #include "fluid/dlg_gpsd.hpp"
 
-#define MOFILES PREFIX "/share/locale/"
-
 static dlg_ui *ui;
 
 int main_ex(int argc, char* argv[])
@@ -23,7 +21,7 @@ int main_ex(int argc, char* argv[])
 
     // Setup gettext
     setlocale(LC_ALL, "");
-    bindtextdomain("florb", MOFILES);
+    bindtextdomain("florb", LOCALEDIR);
     textdomain("florb");
 
     // Init CURL
@@ -104,16 +102,26 @@ bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
 void dlg_ui::create_ex(void)
 {
     // Fluid 1.3 does not gettext the menuitems, do it manually here
+    // File
     m_menuitem_file->label(_("File"));
     m_menuitem_file_opengpx->label(_("Open GPX"));
     m_menuitem_file_savegpx->label(_("Save GPX as"));
     m_menuitem_file_quit->label(_("Quit"));
-
+    // Edit
     m_menuitem_edit->label(_("Edit"));
     m_menuitem_edit_cleartrack->label(_("Clear track"));
     m_menuitem_edit_editwaypoint->label(_("Edit waypoints"));
     m_menuitem_edit_deletewaypoints->label(_("Delete waypoints"));
     m_menuitem_edit_showwpmarkers->label(_("Show waypoint markers"));
+    // GPSs
+    m_menuitem_gpsd->label(_("GPSd"));
+    m_menuitem_gpsd_settings->label(_("Settings"));
+    m_menuitem_gpsd_gotocursor->label(_("Go to cursor"));
+    m_menuitem_gpsd_recordtrack->label(_("Record track"));
+    m_menuitem_gpsd_lockcursor->label(_("Lock to cursor"));
+    // Help
+    m_menuitem_help->label(_("Help"));
+    m_menuitem_help_about->label(_("About"));
 
     // Set the window icon
     utils::set_window_icon(m_window);
@@ -375,23 +383,23 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
     }
 
     // GPSd submenu
-    else if (strcmp(picked, "GPSd/Settings") == 0) {
+    else if (strcmp(picked, _("GPSd/Settings")) == 0) {
         gpsdsettings_ex();
     }
-    else if (strcmp(picked, "GPSd/&Go to cursor") == 0) {
+    else if (strcmp(picked, _("GPSd/Go to cursor")) == 0) {
         gotocursor_ex();
     }
-    else if (strcmp(picked, "GPSd/&Record track") == 0) {
+    else if (strcmp(picked, _("GPSd/Record track")) == 0) {
         m_btn_recordtrack->value(m_menuitem_gpsd_recordtrack->value());
         recordtrack_ex();
     }
-    else if (strcmp(picked, "GPSd/&Lock to cursor") == 0) {
+    else if (strcmp(picked, _("GPSd/Lock to cursor")) == 0) {
         m_btn_lockcursor->value(m_menuitem_gpsd_lockcursor->value());
         lockcursor_ex();
     }
 
     // Help submenu
-    else if (strcmp(picked, "Help/About") == 0) { 
+    else if (strcmp(picked, _("Help/About")) == 0) { 
         m_dlg_about->show();
     }
 

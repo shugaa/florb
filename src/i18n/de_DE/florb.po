@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-02 23:14+0200\n"
+"POT-Creation-Date: 2014-04-04 10:33+0200\n"
 "PO-Revision-Date: 2014-04-02 21:27+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,146 +18,186 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: fluid/dlg_editselection.cpp:80
+#: dlg_ui_ex.cpp:124
+msgid "About"
+msgstr "Über florb"
+
+#: fluid/dlg_about.cpp:10
+msgid "About / License"
+msgstr "Über florb / Lizenz"
+
+#: fluid/dlg_editselection.cpp:80 fluid/dlg_gpsd.cpp:77
 msgid "Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
-#: fluid/dlg_ui.cpp:916
+#: fluid/dlg_ui.cpp:926
 msgid "Clear current track"
-msgstr ""
+msgstr "Track löschen"
 
-#: dlg_ui_ex.cpp:113
+#: dlg_ui_ex.cpp:112
 msgid "Clear track"
 msgstr "Track löschen"
 
-#: fluid/dlg_ui.cpp:936
-msgid "Delete Waypoints"
-msgstr "Wegpunkte lschen"
-
-#: dlg_ui_ex.cpp:115
+#: dlg_ui_ex.cpp:114 fluid/dlg_ui.cpp:946
 msgid "Delete waypoints"
 msgstr "Wegpunkte löschen"
 
-#: dlg_ui_ex.cpp:112
+#: dlg_ui_ex.cpp:111
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: fluid/dlg_ui.cpp:926
-msgid "Edit Waypoints"
-msgstr ""
-
-#: fluid/dlg_editselection.cpp:8
-msgid "Edit waypoint"
-msgstr ""
-
-#: dlg_ui_ex.cpp:114
+#: dlg_ui_ex.cpp:113 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:936
 msgid "Edit waypoints"
 msgstr "Wegpunkte bearbeiten"
 
-#: dlg_ui_ex.cpp:367
+#: dlg_ui_ex.cpp:372
 msgid "Edit/Clear track"
 msgstr "Bearbeiten/Track löschen"
 
-#: dlg_ui_ex.cpp:373
+#: dlg_ui_ex.cpp:378
 msgid "Edit/Delete waypoints"
 msgstr "Bearbeiten/Wegpunkte löschen"
 
-#: dlg_ui_ex.cpp:370
+#: dlg_ui_ex.cpp:375
 msgid "Edit/Edit waypoints"
 msgstr "Bearbeiten/Wegpunkte bearbeiten"
 
-#: dlg_ui_ex.cpp:376
+#: dlg_ui_ex.cpp:381
 msgid "Edit/Show waypoint markers"
 msgstr "Bearbeiten/Zeige Wegpunktmarkierungen"
 
-#: fluid/dlg_editselection.cpp:42
+#: fluid/dlg_editselection.cpp:42 fluid/dlg_gpsd.cpp:39
 msgid "Elevation"
-msgstr ""
+msgstr "Höhe"
 
 #: fluid/dlg_editselection.cpp:38
 msgid "Elevation [m]"
-msgstr ""
+msgstr "Höhe [m]"
 
-#: dlg_ui_ex.cpp:107
+#: fluid/dlg_gpsd.cpp:22
+msgid "Enable GPSd"
+msgstr "GPSd aktivieren"
+
+#: dlg_ui_ex.cpp:106
 msgid "File"
 msgstr "Datei"
 
-#: dlg_ui_ex.cpp:359
+#: dlg_ui_ex.cpp:364
 msgid "File/Open GPX"
 msgstr "Datei/GPX laden"
 
-#: dlg_ui_ex.cpp:362
+#: dlg_ui_ex.cpp:361
+msgid "File/Quit"
+msgstr "Datei/Beenden"
+
+#: dlg_ui_ex.cpp:367
 msgid "File/Save GPX as"
 msgstr "Datei/GPX speichern unter"
 
-#: fluid/dlg_ui.cpp:952
-msgid "GPSD"
-msgstr ""
+#: dlg_ui_ex.cpp:117 fluid/dlg_ui.cpp:962 fluid/dlg_gpsd.cpp:12
+msgid "GPSd"
+msgstr "GPSd"
 
-#: fluid/dlg_ui.cpp:962
+#: dlg_ui_ex.cpp:389
+msgid "GPSd/Go to cursor"
+msgstr "GPSd/Gehe zu Position"
+
+#: dlg_ui_ex.cpp:396
+msgid "GPSd/Lock to cursor"
+msgstr "GPSd/Position folgen"
+
+#: dlg_ui_ex.cpp:392
+msgid "GPSd/Record track"
+msgstr "Bearbeiten/Track löschen"
+
+#: dlg_ui_ex.cpp:386
+msgid "GPSd/Settings"
+msgstr "GPSd/Konfiguration"
+
+#: dlg_ui_ex.cpp:119 fluid/dlg_ui.cpp:972
 msgid "Go to cursor"
-msgstr ""
+msgstr "Gehe zu Position"
 
-#: fluid/dlg_editselection.cpp:32
+#: dlg_ui_ex.cpp:123
+msgid "Help"
+msgstr "Hilfe"
+
+#: dlg_ui_ex.cpp:402
+msgid "Help/About"
+msgstr "Hilfe/Über florb"
+
+#: fluid/dlg_editselection.cpp:32 fluid/dlg_gpsd.cpp:30
 msgid "Latitude"
-msgstr ""
+msgstr "Breite"
 
 #: fluid/dlg_editselection.cpp:28
 msgid "Latitude [°]"
-msgstr ""
+msgstr "Breite [°]"
 
-#: fluid/dlg_ui.cpp:890
+#: fluid/dlg_ui.cpp:900
 msgid "Load GPX file"
-msgstr ""
+msgstr "GPX laden"
 
-#: fluid/dlg_ui.cpp:972
+#: dlg_ui_ex.cpp:121 fluid/dlg_ui.cpp:982
 msgid "Lock to cursor"
-msgstr ""
+msgstr "Position folgen"
 
 #: fluid/dlg_editselection.cpp:22
 msgid "Longitude"
-msgstr ""
+msgstr "Länge"
 
 #: fluid/dlg_editselection.cpp:18
 msgid "Longitude [°]"
-msgstr ""
+msgstr "Länge [°]"
 
-#: fluid/dlg_editselection.cpp:76
+#: fluid/dlg_ui.cpp:880
+msgid "Menu"
+msgstr "Menü"
+
+#: fluid/dlg_editselection.cpp:76 fluid/dlg_about.cpp:48 fluid/dlg_gpsd.cpp:73
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
-#: dlg_ui_ex.cpp:108
+#: dlg_ui_ex.cpp:107
 msgid "Open GPX"
 msgstr "GPX laden"
 
-#: dlg_ui_ex.cpp:110
+#: fluid/dlg_gpsd.cpp:35
+msgid "Port"
+msgstr "Port"
+
+#: dlg_ui_ex.cpp:109
 msgid "Quit"
 msgstr "Beenden"
 
-#: fluid/dlg_ui.cpp:983
+#: dlg_ui_ex.cpp:120 fluid/dlg_ui.cpp:993
 msgid "Record track"
-msgstr ""
+msgstr "Track aufzeichnen"
 
-#: dlg_ui_ex.cpp:109
+#: dlg_ui_ex.cpp:108
 msgid "Save GPX as"
 msgstr "GPX speichern unter"
 
-#: fluid/dlg_ui.cpp:900
+#: fluid/dlg_ui.cpp:910
 msgid "Save current track"
-msgstr ""
+msgstr "GPX speichern unter"
 
-#: dlg_ui_ex.cpp:116
+#: fluid/dlg_gpsd.cpp:26
+msgid "Server"
+msgstr "Server"
+
+#: dlg_ui_ex.cpp:118
+msgid "Settings"
+msgstr "Konfiguration"
+
+#: dlg_ui_ex.cpp:115
 msgid "Show waypoint markers"
 msgstr "Zeige Wegpunktmarkierungen"
 
-#: fluid/dlg_ui.cpp:1015
+#: fluid/dlg_ui.cpp:1025
 msgid "Slippy Map"
-msgstr ""
+msgstr "Kartenansicht"
 
-#: fluid/dlg_ui.cpp:866
+#: fluid/dlg_ui.cpp:876
 msgid "florb"
-msgstr ""
-
-#: fluid/dlg_ui.cpp:870
-msgid "test"
-msgstr ""
+msgstr "florb"

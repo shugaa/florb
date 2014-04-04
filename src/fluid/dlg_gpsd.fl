@@ -1,5 +1,8 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0300 
+version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
 header_name {.h} 
 code_name {.cxx}
 decl {\#include "mapctrl.hpp"} {public global
@@ -25,8 +28,8 @@ dlg->cb_chkbtn_enable_ex(widget);} {}
   Function {dlg_gpsd(mapctrl *m)} {open
   } {
     Fl_Window m_window {
-      label GPSD open
-      private xywh {697 219 220 160} type Double modal visible
+      label GPSd open
+      private xywh {1633 272 220 160} type Double modal visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 220 163}
@@ -44,9 +47,9 @@ dlg->cb_chkbtn_enable_ex(widget);} {}
             private xywh {5 5 210 115}
           } {
             Fl_Check_Button m_chkbtn_enable {
-              label {Enable GPSD}
+              label {Enable GPSd}
               user_data this
-              callback cb_chkbtn_enable
+              callback cb_chkbtn_enable selected
               private xywh {5 5 210 25} down_box DOWN_BOX
             }
             Fl_Box m_box_server {
@@ -103,7 +106,7 @@ dlg->cb_chkbtn_enable_ex(widget);} {}
             private xywh {105 132 10 25}
           }
           Fl_Button m_btn_cancel {
-            label Cancel selected
+            label Cancel
             private xywh {115 132 100 25}
           }
           Fl_Box {} {

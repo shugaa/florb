@@ -20,8 +20,8 @@ class dlg_editselection {open
   Function {dlg_editselection(mapctrl *m)} {open
   } {
     Fl_Window m_window {
-      label {Edit waypoint}
-      private xywh {720 307 220 180} type Double modal visible
+      label {Edit waypoints}
+      private xywh {1631 297 220 180} type Double modal visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 220 183}

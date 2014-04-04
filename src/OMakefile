@@ -4,14 +4,18 @@ PROGRAM = florb
 # Check if prefix is defined
 if $(not $(defined PREFIX))
 	PREFIX = /usr
+	LOCALEDIR = $(PREFIX)/share/locale
+	export
+else
+	LOCALEDIR = $(PREFIX)/share/locale
 	export
 
 # Absolute path for prefix
-PREFIX = $(absname $(PREFIX))
+LOCALEDIR = $(absname $(LOCALEDIR))
 
 # Compiler and linker flags
 CXX = $(shell fltk-config --cxx)
-CXXFLAGS = -g -Wall -O2 -funroll-loops -DPREFIX=\"$(PREFIX)\" \
+CXXFLAGS = -g -Wall -O2 -funroll-loops -DLOCALEDIR=\"$(LOCALEDIR)\" \
     $(shell fltk-config --use-images --cxxflags) \
 	$(shell curl-config --cflags) \
 	$(shell pkg-config --cflags sqlite3) \
@@ -81,8 +85,8 @@ install:
 	mkdir($(PREFIX)/bin/ -p)
 	install $(PROGRAM) $(PREFIX)/bin/
 	foreach(t => ..., $(basename $(TRANSLATIONS)))
-		mkdir -p $(PREFIX)/share/locale/$(t)/LC_MESSAGES/
-		install ./i18n/$(t)/florb.mo $(PREFIX)/share/locale/$(t)/LC_MESSAGES/
+		mkdir -p $(LOCALEDIR)/$(t)/LC_MESSAGES/
+		install ./i18n/$(t)/florb.mo $(LOCALEDIR)/$(t)/LC_MESSAGES/
 
 # clean target
 clean:

@@ -10,3 +10,5 @@ build/*.hpp
 */fluid/*.hpp
 *.omakedb
 install
+*.po~
+src/version.hpp
