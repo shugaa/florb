@@ -1,0 +1,15 @@
+florb uses OMake (http://omake.metaprl.org) for a build system.
+
+To build florb simply change into the 'src' directory and run
+
+    omake
+
+You can change the default installation prefix (/usr) by specifying a custom prefix like so:
+
+    omake PREFIX=/usr/local
+
+If you have all the required dependencies installed, this will build florb. Install like this:
+
+    omake install
+
+And you're done...
