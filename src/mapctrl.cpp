@@ -440,9 +440,11 @@ int mapctrl::handle_drag(int event)
         m_mousepos.x(Fl::event_x()-x());
         m_mousepos.y(Fl::event_y()-y());
 
+        // No tile downloading when dragging
+        m_basemap->dlenable(false);
+
         // Move the viewport accordingly and redraw
         m_viewport.move((long)dx, (long)dy); 
-        m_basemap->dlenable(false);
         refresh();
     }
     // Drag event for the layers
