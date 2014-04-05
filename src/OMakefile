@@ -6,6 +6,7 @@ if $(not $(defined PREFIX))
 	PREFIX = /usr
 	LOCALEDIR = $(PREFIX)/share/locale
 	export
+	echo $(PREFIX)
 else
 	LOCALEDIR = $(PREFIX)/share/locale
 	export
@@ -74,11 +75,6 @@ version.hpp: ../.git/HEAD ../.git/index ./mkversionhpp.sh
 CGeneratedFiles($(addsuffix .cpp, $(OBJS_FLUID)) version.hpp)
 CXXProgram($(PROGRAM), $(OBJS))
 .DEFAULT: $(PROGRAM)$(EXE)
-
-# install target
-if $(not $(defined PREFIX))
-    PREFIX = /usr/local
-    export
 
 # install target
 install:
