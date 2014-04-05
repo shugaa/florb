@@ -84,7 +84,7 @@ point2d<double> utils::px2merc(unsigned int z, const point2d<unsigned long> &px)
     }
 
     double x = (px.x() == 0) ? 0.0 : (360.0/((double)(dimxy-1)/(double)px.x()));
-    double y = (px.x() == 0) ? 0.0 : (360.0/((double)(dimxy-1)/(double)px.y()));
+    double y = (px.y() == 0) ? 0.0 : (360.0/((double)(dimxy-1)/(double)px.y()));
     return point2d<double>(x,y);
 }
 
