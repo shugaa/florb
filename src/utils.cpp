@@ -4,10 +4,16 @@
 #include <boost/filesystem.hpp>
 #include <sstream>
 #include <cstdlib>
+#include <fstream>
 #include <X11/xpm.h>
 #include <FL/x.H>
 #include "utils.hpp"
 #include "florb.xpm"
+
+#define CLIPLEFT   (1)  // 0001
+#define CLIPRIGHT  (2)  // 0010
+#define CLIPBOTTOM (4)  // 0100
+#define CLIPTOP    (8)  // 1000
 
 point2d<double> utils::wsg842merc(const point2d<double> &wsg84)
 {
@@ -167,11 +173,135 @@ std::string utils::filestem(const std::string& path)
     return boost::filesystem::path(path).stem().string();
 }
 
+void utils::touch(const std::string& path)
+{
+    std::fstream f(path, std::ios::out|std::ios::app);
+	f.close();
+}
+
 void utils::set_window_icon(Fl_Window *w)
 {
     fl_open_display();
     Pixmap p, mask;
     XpmCreatePixmapFromData(fl_display, DefaultRootWindow(fl_display), const_cast<char**>(florb_xpm), &p, &mask, NULL);
     w->icon((char *)p);
+}
+
+// Cohen–Sutherland clipping algorithm
+bool utils::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r1, point2d<double> r2, bool &p1clip, bool &p2clip)
+{
+    bool ret = false;
+    double xmin, xmax, ymin, ymax;
+    p1clip = false;
+    p2clip = false;
+
+    if (r1.x() > r2.x())
+    {
+        xmin = r2.x();
+        xmax = r1.x();
+    }
+    else
+    {
+        xmin = r1.x();
+        xmax = r2.x();
+    }
+
+    if (r1.y() > r2.y())
+    {
+        ymin = r2.y();
+        ymax = r1.y();
+    }
+    else
+    {
+        ymin = r1.y();
+        ymax = r2.y();
+    } 
+
+    // Calculate m and n for this line
+    double m = (p2.y() - p1.y()) / (p2.x() - p1.x());
+    double n = p1.y() - m * p1.x();
+
+    // Max 2 clipping operations per point and one last check operation. The
+    // number of iterations is limited because for very large m and n the
+    // datatype might overflow and create an endless loop. In this case the
+    // loop exits and the line is simply not drawn.
+    for (int i=0;i<5;i++)
+    {
+        // Compute code for both points
+        int code1 = 0, code2 = 0;
+        
+        if (p1.x() < xmin)
+            code1 |= CLIPLEFT;
+        if (p1.x() > xmax)
+            code1 |= CLIPRIGHT;
+        if (p1.y() < ymin)
+            code1 |= CLIPTOP;
+        if (p1.y() > ymax)
+            code1 |= CLIPBOTTOM;
+
+        if (p2.x() < xmin)
+            code2 |= CLIPLEFT;
+        if (p2.x() > xmax)
+            code2 |= CLIPRIGHT;
+        if (p2.y() < ymin)
+            code2 |= CLIPTOP;
+        if (p2.y() > ymax)
+            code2 |= CLIPBOTTOM;
+
+        // Both inside, draw line
+        if ((code1 | code2) == 0)
+        {
+            ret = true;
+            break;
+        }
+
+        // Both top, bottom, left or right outside, line need not be drawn
+        if ((code1 & code2) != 0)
+        {
+            ret = false;
+            break;
+        }
+
+        // Pick an endpoint for clipping
+        point2d<double> &ptmp = (code1 != 0) ? p1 : p2;
+        int codetmp;
+        if (code1 != 0)
+        {
+            codetmp = code1;
+            p1clip = true;
+        }
+        else
+        {
+            codetmp = code2;
+            p2clip = true;
+        }
+
+        // Clip top
+        if (codetmp & CLIPTOP)
+        {
+            ptmp[0] = (ymin - n) / m; 
+            ptmp[1] = ymin;
+        }
+        // Clip Bottom
+        else if (codetmp & CLIPBOTTOM)
+        {
+            ptmp[0] = (ymax - n) / m; 
+            ptmp[1] = ymax;
+        }
+        // Clip Left
+        else if (codetmp & CLIPLEFT)
+        {
+            ptmp[0] = xmin; 
+            ptmp[1] = m * xmin + n;
+        }
+        // Clip Right
+        else if (codetmp & CLIPRIGHT)
+        {
+            ptmp[0] = xmax; 
+            ptmp[1] = m * xmax + n;
+        }
+    }
+
+    return ret;
 }
 

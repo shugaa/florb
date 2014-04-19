@@ -52,6 +52,7 @@ sqlite3* sqlitecache::m_db = NULL;
 unsigned int sqlitecache::m_refcount = 0;
 
 sqlitecache::sqlitecache(const std::string& url) :
+    m_url(url),
     m_sid(-1)
 {
     int rc;
@@ -59,7 +60,10 @@ sqlitecache::sqlitecache(const std::string& url) :
     // Create/open the database if necessary
     if (m_db == NULL) 
     {
-        rc = sqlite3_open(url.c_str(), &m_db);
+        // Create the tiles directory first if necessary
+        utils::mkdir(url);
+
+        rc = sqlite3_open((url+"/db").c_str(), &m_db);
         if (rc != SQLITE_OK)
         {
             m_db = NULL;
@@ -227,7 +231,7 @@ void sqlitecache::put(int z, int x, int y, time_t expires, const std::vector<cha
         // Create the storage directory for the tile if not already present
         std::ostringstream oss;
         
-        oss << utils::appdir() << "/tiles"; 
+        oss << m_url; 
         if (!utils::exists(oss.str()))
             utils::mkdir(oss.str());
 

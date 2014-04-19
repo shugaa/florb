@@ -1,0 +1,383 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include "mapctrl.hpp"} {public global
+} 
+
+decl {\#include "gfx.hpp"} {public global
+} 
+
+class dlg_settings {open
+} {
+  decl {mapctrl *m_mapctrl;} {private local
+  }
+  decl {cfg_ui m_cfgui;} {private local
+  }
+  decl {cfg_gpsd m_cfggpsd;} {private local
+  }
+  decl {void show_ex();} {private local
+  }
+  decl {void create_ex();} {private local
+  }
+  decl {void cb_btn_markercolor_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_markercolorselected_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_trackcolor_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_selectioncolor_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_gpscursorcolor_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_inp_trackwidth_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_chkbtn_enable_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_inp_server_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_inp_port_ex(Fl_Widget *widget);} {private local
+  }
+  decl {color colorchooser_ex(color c);} {private local
+  }
+  decl {void tab_ui_setup_ex();} {private local
+  }
+  decl {void tab_gpsd_setup_ex();} {private local
+  }
+  Function {dlg_settings(mapctrl *m)} {open
+  } {
+    Fl_Window m_window {
+      label Settings open
+      private xywh {2225 177 500 295} type Double resizable modal visible
+    } {
+      Fl_Pack {} {open
+        private xywh {0 0 500 297} resizable
+      } {
+        Fl_Box {} {
+          private xywh {0 0 500 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 5 500 250} type HORIZONTAL resizable
+        } {
+          Fl_Box {} {
+            private xywh {0 5 5 250}
+          }
+          Fl_Tabs {} {open
+            private xywh {5 5 490 250} resizable
+          } {
+            Fl_Group {} {
+              label Interface selected
+              private xywh {10 25 480 225} resizable
+            } {
+              Fl_Pack {} {open
+                private xywh {10 25 480 225}
+              } {
+                Fl_Box {} {
+                  private xywh {10 25 480 5}
+                }
+                Fl_Pack {} {
+                  private xywh {10 30 480 25} type HORIZONTAL
+                } {
+                  Fl_Box {} {
+                    label {Marker color}
+                    private xywh {10 30 245 25} align 20 resizable
+                  }
+                  Fl_Box m_box_markercolor {
+                    private xywh {255 30 115 25} box BORDER_BOX color 80 align 52
+                  }
+                  Fl_Box {} {
+                    private xywh {370 30 5 25}
+                  }
+                  Fl_Button {} {
+                    label Pick
+                    user_data this
+                    callback cb_btn_markercolor
+                    private xywh {375 30 115 25}
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 55 480 5}
+                }
+                Fl_Pack {} {
+                  private xywh {10 60 480 25} type HORIZONTAL
+                } {
+                  Fl_Box {} {
+                    label {Marker color (selected)}
+                    private xywh {10 60 245 25} align 20 resizable
+                  }
+                  Fl_Box m_box_markercolorselected {
+                    private xywh {255 60 115 25} box BORDER_BOX color 80 align 52
+                  }
+                  Fl_Box {} {
+                    private xywh {370 60 5 25}
+                  }
+                  Fl_Button {} {
+                    label Pick
+                    user_data this
+                    callback cb_btn_markercolorselected
+                    private xywh {375 60 115 25}
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 85 480 5}
+                }
+                Fl_Pack {} {
+                  private xywh {10 90 480 25} type HORIZONTAL
+                } {
+                  Fl_Box {} {
+                    label {Track color}
+                    private xywh {10 90 245 25} align 20 resizable
+                  }
+                  Fl_Box m_box_trackcolor {
+                    private xywh {255 90 115 25} box BORDER_BOX color 80 align 52
+                  }
+                  Fl_Box {} {
+                    private xywh {370 90 5 25}
+                  }
+                  Fl_Button {} {
+                    label Pick
+                    user_data this
+                    callback cb_btn_trackcolor
+                    private xywh {375 90 115 25}
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 115 480 5}
+                }
+                Fl_Pack {} {
+                  private xywh {10 120 480 25} type HORIZONTAL
+                } {
+                  Fl_Box {} {
+                    label {Selection color}
+                    private xywh {10 120 245 25} align 20 resizable
+                  }
+                  Fl_Box m_box_selectioncolor {
+                    private xywh {255 120 115 25} box BORDER_BOX color 80 align 52
+                  }
+                  Fl_Box {} {
+                    private xywh {370 120 5 25}
+                  }
+                  Fl_Button {} {
+                    label Pick
+                    user_data this
+                    callback cb_btn_selectioncolor
+                    private xywh {375 120 115 25}
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 145 480 5}
+                }
+                Fl_Pack {} {
+                  private xywh {10 150 480 25} type HORIZONTAL
+                } {
+                  Fl_Box {} {
+                    label {GPS cursor color}
+                    private xywh {10 150 245 25} align 20 resizable
+                  }
+                  Fl_Box m_box_gpscursorcolor {
+                    private xywh {255 150 115 25} box BORDER_BOX color 80 align 52
+                  }
+                  Fl_Box {} {
+                    private xywh {370 150 5 25}
+                  }
+                  Fl_Button {} {
+                    label Pick
+                    user_data this
+                    callback cb_btn_gpscursorcolor
+                    private xywh {375 150 115 25}
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 175 480 5}
+                }
+                Fl_Pack {} {
+                  private xywh {10 180 480 25} type HORIZONTAL
+                } {
+                  Fl_Box {} {
+                    label {Track line width}
+                    private xywh {10 180 245 25} align 20 resizable
+                  }
+                  Fl_Input m_input_trackwidth {
+                    user_data this
+                    callback cb_inp_trackwidth
+                    private xywh {255 180 115 25} type Int when 1
+                  }
+                  Fl_Box {} {
+                    private xywh {370 180 5 25}
+                  }
+                  Fl_Box {} {
+                    label pixels
+                    private xywh {375 180 115 25} align 20
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 205 480 45} resizable
+                }
+              }
+            }
+            Fl_Group {} {
+              label GPSd open
+              private xywh {10 25 480 225} hide
+            } {
+              Fl_Pack {} {open
+                private xywh {10 25 480 225}
+              } {
+                Fl_Box {} {
+                  private xywh {10 25 480 5}
+                }
+                Fl_Pack {} {open
+                  private xywh {10 30 480 25} type HORIZONTAL
+                } {
+                  Fl_Check_Button m_chkbtn_enable {
+                    label {Enable GPSd}
+                    user_data this
+                    callback cb_chkbtn_enable
+                    private xywh {10 30 480 25} down_box DOWN_BOX resizable
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 55 480 5}
+                }
+                Fl_Pack {} {open
+                  private xywh {10 60 480 25} type HORIZONTAL
+                } {
+                  Fl_Box m_box_server {
+                    label Server
+                    private xywh {10 60 245 25} align 20 resizable
+                  }
+                  Fl_Input m_input_server {
+                    user_data this
+                    callback cb_inp_server
+                    private xywh {255 60 235 25} when 1
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 85 480 5}
+                }
+                Fl_Pack {} {open
+                  private xywh {10 90 480 25} type HORIZONTAL
+                } {
+                  Fl_Box m_box_port {
+                    label Port
+                    private xywh {10 90 245 25} align 20 resizable
+                  }
+                  Fl_Input m_input_port {
+                    user_data this
+                    callback cb_inp_port
+                    private xywh {255 90 235 25} type Int when 1
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 115 480 135} resizable
+                }
+              }
+            }
+          }
+          Fl_Box {} {
+            private xywh {495 5 5 250}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 255 500 5}
+        }
+        Fl_Pack {} {
+          private xywh {0 260 500 2} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            xywh {0 260 5 2}
+          }
+          Fl_Box {} {
+            xywh {5 260 490 2} box ENGRAVED_BOX resizable
+          }
+          Fl_Box {} {
+            xywh {495 260 5 2}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 262 500 5}
+        }
+        Fl_Pack {} {
+          private xywh {0 267 500 25} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 267 280 25} resizable
+          }
+          Fl_Button m_btn_cancel {
+            label Cancel
+            private xywh {280 267 105 25}
+          }
+          Fl_Box {} {
+            private xywh {385 267 5 25}
+          }
+          Fl_Button m_btn_ok {
+            label OK
+            private xywh {390 267 105 25}
+          }
+          Fl_Box {} {
+            private xywh {495 267 5 25}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 292 500 5}
+        }
+      }
+    }
+    code {m_mapctrl = m;
+create_ex();} {}
+  }
+  Function {~dlg_settings()} {} {
+    code {} {}
+  }
+  Function {show()} {return_type void
+  } {
+    code {show_ex();} {}
+  }
+  Function {cb_btn_markercolor(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_btn_markercolor_ex(widget);} {}
+  }
+  Function {cb_btn_markercolorselected(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_btn_markercolorselected_ex(widget);} {}
+  }
+  Function {cb_btn_trackcolor(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_btn_trackcolor_ex(widget);} {}
+  }
+  Function {cb_btn_selectioncolor(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_btn_selectioncolor_ex(widget);} {}
+  }
+  Function {cb_btn_gpscursorcolor(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_btn_gpscursorcolor_ex(widget);} {}
+  }
+  Function {cb_inp_trackwidth(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_inp_trackwidth_ex(widget);} {}
+  }
+  Function {cb_chkbtn_enable(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_chkbtn_enable_ex(widget);} {}
+  }
+  Function {cb_inp_server(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_inp_server_ex(widget);} {}
+  }
+  Function {cb_inp_port(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_inp_port_ex(widget);} {}
+  }
+} 

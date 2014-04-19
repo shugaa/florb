@@ -33,6 +33,7 @@ class sqlitecache
         static const std::string stmt_exists;
         static const std::string stmt_delete;
         static const std::string stmt_index;
+        std::string m_url;
         unsigned long int m_sid;
 
         // Class wide sqlite handle and instance reference count

@@ -1,8 +1,6 @@
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 #include "settings.hpp"
-#include "gfx.hpp"
-#include "utils.hpp"
 
 namespace YAML {
     template<>
@@ -24,22 +22,35 @@ namespace YAML {
                 return node;
             }
 
-            static bool decode(const Node& node, cfg_tileserver& rhs) {
-                if(!node.IsMap() || node.size() != 6)
-                    return false;
+            static bool decode(const Node& node, cfg_tileserver& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                    return true;
+                
+                if (node["name"])
+                    rhs.name(node["name"].as<std::string>());
 
-                rhs.name(node["name"].as<std::string>());
-                rhs.url(node["url"].as<std::string>());
-                rhs.zmin(node["zmin"].as<int>());
-                rhs.zmax(node["zmax"].as<int>());
-                rhs.parallel(node["parallel"].as<int>());
+                if (node["url"])
+                    rhs.url(node["url"].as<std::string>());
 
-                rhs.type(image::PNG);
-                std::string imgtype = node["type"].as<std::string>();
-                if      (imgtype.compare("PNG") == 0)
+                if (node["zmin"])
+                    rhs.zmin(node["zmin"].as<int>());
+                
+                if (node["zmax"])
+                    rhs.zmax(node["zmax"].as<int>());
+                
+                if (node["parallel"])
+                    rhs.parallel(node["parallel"].as<int>());
+
+                if (node["type"])
+                {
                     rhs.type(image::PNG);
-                else if (imgtype.compare("JPG") == 0)
-                    rhs.type(image::JPG);
+                    std::string imgtype = node["type"].as<std::string>();
+                    if      (imgtype.compare("PNG") == 0)
+                        rhs.type(image::PNG);
+                    else if (imgtype.compare("JPG") == 0)
+                        rhs.type(image::JPG);
+                }
 
                 return true;
             }
@@ -53,11 +64,14 @@ namespace YAML {
                 return node;
             }
 
-            static bool decode(const Node& node, cfg_cache& rhs) {
-                if(!node.IsMap() || node.size() != 1)
-                    return false;
+            static bool decode(const Node& node, cfg_cache& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                    return true;
 
-                rhs.location(node["location"].as<std::string>());
+                if (node["location"])
+                    rhs.location(node["location"].as<std::string>());
+                
                 return true;
             }
         };
@@ -72,13 +86,63 @@ namespace YAML {
                 return node;
             }
 
-            static bool decode(const Node& node, cfg_gpsd& rhs) {
-                if(!node.IsMap() || node.size() != 3)
-                    return false;
+            static bool decode(const Node& node, cfg_gpsd& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                    return true;
 
-                rhs.enabled(node["enabled"].as<bool>());
-                rhs.host(node["host"].as<std::string>());
-                rhs.port(node["port"].as<std::string>());
+                if (node["enabled"])
+                    rhs.enabled(node["enabled"].as<bool>());
+                
+                if (node["host"])
+                    rhs.host(node["host"].as<std::string>());
+                
+                if (node["port"])
+                    rhs.port(node["port"].as<std::string>());
+                
+                return true;
+            }
+        };
+
+    template<>
+        struct convert<cfg_ui> {
+            static Node encode(const cfg_ui& rhs) {
+                Node node;
+                node["markercolor"] = rhs.markercolor().rgb();
+                node["markercolorselected"] = rhs.markercolorselected().rgb();
+                node["trackcolor"] = rhs.trackcolor().rgb();
+                node["selectioncolor"] = rhs.selectioncolor().rgb();
+                node["gpscursorcolor"] = rhs.gpscursorcolor().rgb();
+                node["tracklinewidth"] = rhs.tracklinewidth();
+                return node;
+            }
+
+            static bool decode(const Node& node, cfg_ui& rhs) 
+            {
+                // Use defaults
+                if((!node.IsMap()) || (node.size() == 0))
+                {
+                    return true;
+                }
+
+                if (node["markercolor"])
+                    rhs.markercolor(color(node["markercolor"].as<unsigned int>()));
+                
+                if (node["markercolorselected"])
+                    rhs.markercolorselected(color(node["markercolorselected"].as<unsigned int>()));
+
+                if (node["trackcolor"])
+                    rhs.trackcolor(color(node["trackcolor"].as<unsigned int>()));
+
+                if (node["selectioncolor"])
+                    rhs.selectioncolor(color(node["selectioncolor"].as<unsigned int>()));
+
+                if (node["gpscursorcolor"])
+                    rhs.gpscursorcolor(color(node["gpscursorcolor"].as<unsigned int>()));
+                
+                if (node["tracklinewidth"])
+                    rhs.tracklinewidth(node["tracklinewidth"].as<unsigned int>());
+                
                 return true;
             }
         };
@@ -90,6 +154,8 @@ class yaml_node
         yaml_node(YAML::Node n) : m_node(n) {};
         yaml_node(const std::string& path)
         {
+            // Touch cfgfile in case it doesn't exist
+            utils::touch(path);
             m_node = YAML::LoadFile(path);
         }
         ~yaml_node() {};
@@ -174,10 +240,8 @@ settings::settings()
     m_cfgfile = ad+"/config";
     utils::mkdir(ad);
 
-    if (!utils::exists(m_cfgfile))
-        defaults(m_cfgfile);
-
     m_rootnode = node(m_cfgfile);
+    defaults(m_cfgfile);
 }
 
 settings::~settings()
@@ -193,24 +257,27 @@ settings& settings::get_instance()
 
 void settings::defaults(const std::string& path)
 {
-    node rn;
-
     // Tileserver default configuration
-    cfg_tileserver cfgtileserver(
-        "OpenStreetMap",
-        "http://tile.openstreetmap.org/$FLORBZ$/$FLORBX$/$FLORBY$.png",
-        0, 18, 2, image::PNG);
-    rn["tileservers"].push_back(cfgtileserver);
+    cfg_tileserver cfgtileserver;
+    if((!m_rootnode["tileservers"]) || (!m_rootnode["tileservers"].is_sequence()))
+    {
+        std::vector<cfg_tileserver> v;
+        v.push_back(cfgtileserver);
+
+        m_rootnode["tileservers"] = v;
+    }
 
     // GPSd default configuration
-    cfg_gpsd cfggpsd(false, "localhost", "2947");
-    rn["gpsd"] = cfggpsd;
+    cfg_gpsd cfggpsd = m_rootnode["gpsd"].as<cfg_gpsd>();
+    m_rootnode["gpsd"] = cfggpsd;
 
     // Cache default configuration
-    cfg_cache cfgcache(utils::appdir() + "/cache.db");
-    rn["cache"] = cfgcache;
+    cfg_cache cfgcache = m_rootnode["cache"].as<cfg_cache>();
+    m_rootnode["cache"] = cfgcache;
 
-    rn.serialize(path);
+    // UI default configuration
+    cfg_ui cfgui = m_rootnode["ui"].as<cfg_ui>();
+    m_rootnode["ui"] = cfgui;
 }
 
 node::node(const std::string& path)
@@ -232,6 +299,11 @@ node::~node()
 {
     if (m_ref)
         delete m_ref;
+}
+
+bool node::is_sequence()
+{
+    return m_ref->get().IsSequence();
 }
 
 node node::operator[] (const int idx)
@@ -258,6 +330,11 @@ template<typename T> node& node::operator= (const T& rhs)
 {
     m_ref->get() = rhs;
     return *this;
+}
+
+node::operator bool() const 
+{
+    return m_ref->get();
 }
 
 template<typename T> T node::as() const
@@ -295,6 +372,7 @@ template std::vector< cfg_tileserver > node::as< std::vector<cfg_tileserver> >()
 template bool node::as<bool>() const;
 template cfg_cache node::as<cfg_cache>() const;
 template cfg_gpsd node::as<cfg_gpsd>() const;
+template cfg_ui node::as<cfg_ui>() const;
 
 template void node::push_back<int>(const int& rhs);
 template void node::push_back<std::string>(const std::string& rhs);
@@ -307,4 +385,5 @@ template node& node::operator=< std::vector<cfg_tileserver> > (const std::vector
 template node& node::operator=<cfg_tileserver> (const cfg_tileserver& rhs);
 template node& node::operator=<bool> (const bool& rhs);
 template node& node::operator=<cfg_gpsd> (const cfg_gpsd& rhs);
+template node& node::operator=<cfg_ui> (const cfg_ui& rhs);
 

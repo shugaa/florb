@@ -29,7 +29,7 @@ decl {int main_ex(int argc, char* argv[]);} {private global
 decl {void sighandler_ex(int sig);} {private global
 } 
 
-class dlg_ui {open : {public event_listener}
+class dlg_ui {open selected : {public event_listener}
 } {
   decl {void create_ex(void);} {private local
   }
@@ -51,7 +51,7 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void cleartrack_ex(void);} {private local
   }
-  decl {void gpsdsettings_ex(void);} {private local
+  decl {void settings_ex(void);} {private local
   }
   decl {void showwpmarkers_ex(void);} {private local
   }
@@ -70,8 +70,6 @@ class dlg_ui {open : {public event_listener}
   decl {void cb_btn_lockcursor_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_btn_editselection_ex(Fl_Widget *widget);} {private local
-  }
-  decl {void cb_btn_gpsd_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_btn_gotocursor_ex(Fl_Widget *widget);} {private local
   }
@@ -132,11 +130,6 @@ ui->cb_btn_lockcursor_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_btn_editselection_ex(widget);} {}
   }
-  Function {cb_btn_gpsd(Fl_Widget *widget, void *userdata)} {private return_type {static void}
-  } {
-    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
-ui->cb_btn_gpsd_ex(widget);} {}
-  }
   Function {cb_btn_deleteselection(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
@@ -147,11 +140,10 @@ ui->cb_btn_deleteselection_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
-  Function {dlg_ui()} {open
-  } {
+  Function {dlg_ui()} {} {
     Fl_Window m_window {
       label florb open
-      private xywh {1745 120 805 565} type Double align 80 hide resizable
+      private xywh {1976 180 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
@@ -159,7 +151,7 @@ ui->cb_choice_basemap_ex(widget);} {}
         Fl_Menu_Bar m_menubar {
           label Menu
           user_data this
-          callback cb_menu open selected
+          callback cb_menu open
           private xywh {0 0 805 25} box FLAT_BOX
         } {
           Submenu m_menuitem_file {
@@ -181,21 +173,30 @@ ui->cb_choice_basemap_ex(widget);} {}
           }
           Submenu m_menuitem_edit {
             label Edit open
+            xywh {0 0 70 20}
+          } {
+            MenuItem m_menuitem_edit_settings {
+              label Settings
+              private xywh {5 5 100 20}
+            }
+          }
+          Submenu m_menuitem_track {
+            label Track open
             private xywh {0 0 100 20}
           } {
-            MenuItem m_menuitem_edit_cleartrack {
+            MenuItem m_menuitem_track_clear {
               label {Clear track}
               private xywh {0 0 100 20} shortcut 0x40063
             }
-            MenuItem m_menuitem_edit_editwaypoint {
+            MenuItem m_menuitem_track_editwaypoint {
               label {Edit waypoints}
               private xywh {0 0 100 20} shortcut 0x40065
             }
-            MenuItem m_menuitem_edit_deletewaypoints {
+            MenuItem m_menuitem_track_deletewaypoints {
               label {Delete waypoints}
               private xywh {10 10 100 20} shortcut 0x40064
             }
-            MenuItem m_menuitem_edit_showwpmarkers {
+            MenuItem m_menuitem_track_showwpmarkers {
               label {Show waypoint markers}
               private xywh {50 50 100 20} type Toggle shortcut 0x4006d
             }
@@ -204,10 +205,6 @@ ui->cb_choice_basemap_ex(widget);} {}
             label GPSd open
             private xywh {20 20 100 20}
           } {
-            MenuItem m_menuitem_gpsd_settings {
-              label Settings
-              private xywh {20 20 100 20}
-            }
             MenuItem m_menuitem_gpsd_gotocursor {
               label {Go to cursor}
               private xywh {20 20 100 20} shortcut 0x40067
@@ -234,7 +231,7 @@ ui->cb_choice_basemap_ex(widget);} {}
         Fl_Box {} {
           private xywh {0 25 805 4}
         }
-        Fl_Pack {} {open
+        Fl_Pack {} {
           private xywh {0 29 805 26} type HORIZONTAL
         } {
           Fl_Box {} {
@@ -292,48 +289,40 @@ ui->cb_choice_basemap_ex(widget);} {}
           Fl_Box {} {
             private xywh {164 29 5 25} box FLAT_BOX
           }
-          Fl_Button m_btn_gpsd {
+          Fl_Button m_btn_gotocursor {
             user_data this
-            callback cb_btn_gpsd
-            private tooltip GPSd image {../res/network-wired.png} xywh {169 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+            callback cb_btn_gotocursor
+            private tooltip {Go to cursor} image {../res/go-home.png} xywh {169 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {194 29 5 25} box FLAT_BOX
           }
-          Fl_Button m_btn_gotocursor {
+          Fl_Button m_btn_lockcursor {
             user_data this
-            callback cb_btn_gotocursor
-            private tooltip {Go to cursor} image {../res/go-home.png} xywh {199 29 25 25} box NO_BOX down_box THIN_DOWN_BOX
+            callback cb_btn_lockcursor
+            private tooltip {Lock to cursor} image {../res/start-here.png} xywh {199 29 25 25} type Toggle box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {224 29 5 25} box FLAT_BOX
           }
-          Fl_Button m_btn_lockcursor {
+          Fl_Button m_btn_recordtrack {
             user_data this
-            callback cb_btn_lockcursor
-            private tooltip {Lock to cursor} image {../res/start-here.png} xywh {229 29 25 25} type Toggle box NO_BOX down_box THIN_DOWN_BOX
+            callback cb_btn_recordtrack
+            private tooltip {Record track} image {../res/audio-input-microphone.png} xywh {229 29 25 25} type Toggle box NO_BOX down_box THIN_DOWN_BOX
           }
           Fl_Box {} {
             private xywh {254 29 5 25} box FLAT_BOX
           }
-          Fl_Button m_btn_recordtrack {
-            user_data this
-            callback cb_btn_recordtrack
-            private tooltip {Record track} image {../res/audio-input-microphone.png} xywh {259 29 25 25} type Toggle box NO_BOX down_box THIN_DOWN_BOX
+          Fl_Box {} {
+            private xywh {259 29 2 25} box ENGRAVED_BOX
           }
           Fl_Box {} {
-            private xywh {284 29 5 25} box FLAT_BOX
-          }
-          Fl_Box {} {
-            private xywh {289 29 2 25} box ENGRAVED_BOX
-          }
-          Fl_Box {} {
-            private xywh {291 29 5 25} box FLAT_BOX
+            private xywh {261 29 5 25} box FLAT_BOX
           }
           Fl_Choice m_choice_basemap {
             user_data this
             callback cb_choice_basemap open
-            private xywh {296 29 504 26} down_box BORDER_BOX resizable
+            private xywh {266 29 534 26} down_box BORDER_BOX resizable
           } {}
           Fl_Box {} {
             private xywh {800 29 5 25}
@@ -389,7 +378,7 @@ ui->cb_choice_basemap_ex(widget);} {}
   Function {~dlg_ui()} {} {
     code {destroy_ex();} {}
   }
-  Function {show(int argc, char *argv[])} {open return_type void
+  Function {show(int argc, char *argv[])} {return_type void
   } {
     code {show_ex(argc, argv);} {}
   }

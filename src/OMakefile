@@ -6,7 +6,6 @@ if $(not $(defined PREFIX))
 	PREFIX = /usr
 	LOCALEDIR = $(PREFIX)/share/locale
 	export
-	echo $(PREFIX)
 else
 	LOCALEDIR = $(PREFIX)/share/locale
 	export
@@ -16,7 +15,7 @@ LOCALEDIR = $(absname $(LOCALEDIR))
 
 # Compiler and linker flags
 CXX = $(shell fltk-config --cxx)
-CXXFLAGS = -g -Wall -O2 -funroll-loops -DLOCALEDIR=\"$(LOCALEDIR)\" \
+CXXFLAGS = -std=c++11 -g -Wall -O2 -funroll-loops -DLOCALEDIR=\"$(LOCALEDIR)\" \
     $(shell fltk-config --use-images --cxxflags) \
 	$(shell curl-config --cflags) \
 	$(shell pkg-config --cflags sqlite3) \

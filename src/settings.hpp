@@ -3,6 +3,8 @@
 
 #include <string>
 #include <iterator>
+#include "gfx.hpp"
+#include "utils.hpp"
 
 // The YAML namespace defines an enumerator "None". This clashes with a
 // definition of "None" in X.h which is included by FLTK. So if there is any
@@ -15,38 +17,31 @@
 class cfg_tileserver
 {
     public:
-        cfg_tileserver() {};
-        cfg_tileserver(
-                const std::string& name,
-                const std::string& url,
-                unsigned int zmin,
-                unsigned int zmax,
-                unsigned int parallel,
-                int type) :
-            m_name(name),
-            m_url(url),
-            m_zmin(zmin),
-            m_zmax(zmax),
-            m_parallel(parallel),
-            m_type(type) {};
+        cfg_tileserver() : 
+            m_name("OpenStreetMap"),
+            m_url("http://tile.openstreetmap.org/$FLORBZ$/$FLORBX$/$FLORBY$.png"),
+            m_zmin(0),
+            m_zmax(18),
+            m_parallel(2),
+            m_type(image::PNG) {};
 
-        const std::string& name() const { return m_name; };
+        const std::string& name() const { return m_name; }
         void name(const std::string& n) { m_name = n; }
 
-        const std::string& url() const { return m_url; };
+        const std::string& url() const { return m_url; }
         void url(const std::string& u) { m_url = u; }
 
-        unsigned int zmin() const { return m_zmin; };
-        void zmin(unsigned int z) { m_zmin = z; };
+        unsigned int zmin() const { return m_zmin; }
+        void zmin(unsigned int z) { m_zmin = z; }
 
-        unsigned int zmax() const { return m_zmax; };
-        void zmax(unsigned int z) { m_zmax = z; };
+        unsigned int zmax() const { return m_zmax; }
+        void zmax(unsigned int z) { m_zmax = z; }
 
-        unsigned int parallel() const { return m_parallel; };
-        void parallel(unsigned int p) { m_parallel = p; };
+        unsigned int parallel() const { return m_parallel; }
+        void parallel(unsigned int p) { m_parallel = p; }
 
-        unsigned int type() const { return m_type; };
-        void type(unsigned int t) { m_type = t; };
+        unsigned int type() const { return m_type; }
+        void type(unsigned int t) { m_type = t; }
 
     private:
         std::string m_name;
@@ -61,11 +56,10 @@ class cfg_tileserver
 class cfg_gpsd
 {
     public:
-        cfg_gpsd() {};
-        cfg_gpsd(bool enabled, const std::string& host, const std::string& port) :
-            m_enabled(enabled),
-            m_host(host),
-            m_port(port) {};
+        cfg_gpsd() :
+            m_enabled(false),
+            m_host("localhost"),
+            m_port("2947") {};
 
         bool enabled() const { return m_enabled; };
         void enabled(bool e) { m_enabled = e; };
@@ -86,15 +80,55 @@ class cfg_gpsd
 class cfg_cache
 {
     public:
-        cfg_cache() {};
-        cfg_cache(const std::string& location) :
-            m_location(location) {};
+        cfg_cache() :
+            m_location(utils::appdir() + "/tiles") {};
     
         const std::string& location() const { return m_location; }
-        void location(const std::string& location) { m_location = location; };
+        void location(const std::string& location) { m_location = location; }
 
     private:    
         std::string m_location; 
+};
+
+// UI configuration class
+class cfg_ui
+{
+    public:
+        cfg_ui() :
+            m_markercolor(color(0,0,0xff)),
+            m_markercolorselected(color(0,0xff,0)),
+            m_trackcolor(color(0xff,0,0)),
+            m_selectioncolor(color(0xff,0,0xff)),
+            m_gpscursorcolor(color(0xff,0,0xff)),
+            m_tracklinewidth(2) {};
+    
+        color markercolor() const { return m_markercolor; }
+        void markercolor(color c) { m_markercolor = c; }
+
+        color markercolorselected() const { return m_markercolorselected; }
+        void markercolorselected(color c) { m_markercolorselected = c; }
+
+        color trackcolor() const { return m_trackcolor; }
+        void trackcolor(color c) { m_trackcolor = c; }
+
+        color selectioncolor() const { return m_selectioncolor; }
+        void selectioncolor(color c) { m_selectioncolor = c; }
+
+        color gpscursorcolor() const { return m_gpscursorcolor; }
+        void gpscursorcolor(color c) { m_gpscursorcolor = c; }
+
+        unsigned int tracklinewidth() const { return m_tracklinewidth; }
+        void tracklinewidth(unsigned int w) { m_tracklinewidth = w; }
+
+    private:
+
+        color m_markercolor;
+        color m_markercolorselected;
+        color m_trackcolor;
+        color m_selectioncolor;
+        color m_gpscursorcolor;
+        unsigned int m_tracklinewidth;
+
 };
 
 // Forward declaration of YAML-cpp node container and iterator container
@@ -131,10 +165,14 @@ class node
         node(const node& n);
         ~node();
 
+        bool is_sequence();
+
         node operator[] (const int idx);
         node operator[] (const std::string &name);
         node& operator= (const node& n);
         template<typename T> node& operator= (const T& rhs);
+
+        explicit operator bool() const;
 
         size_t size();
         template<typename T> T as() const;

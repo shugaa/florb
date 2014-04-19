@@ -18,6 +18,8 @@ class utils
         static point2d<double> px2wsg84(unsigned int z, const point2d<unsigned long> &px);
         static point2d<double> merc2wsg84(const point2d<double>& wsg84);
         static point2d<double> px2merc(unsigned int z, const point2d<unsigned long> &px);
+
+        static bool clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r1, point2d<double> r2, bool &p1clip, bool &p2clip); 
         
         static double dist(const point2d<double> &p1, const point2d<double> &p2);
         static double dist_merc(const point2d<double> &p1, const point2d<double> &p2);
@@ -30,6 +32,7 @@ class utils
         static void mkdir(const std::string& path);
         static bool exists(const std::string& path);
         static std::string filestem(const std::string& path);
+        static void touch(const std::string& path);
 
         static void set_window_icon(Fl_Window *w);
 

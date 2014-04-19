@@ -9,11 +9,6 @@
 #include "point.hpp"
 #include "gpxlayer.hpp"
 
-#define CLIPLEFT   (1)  // 0001
-#define CLIPRIGHT  (2)  // 0010
-#define CLIPBOTTOM (4)  // 0100
-#define CLIPTOP    (8)  // 1000
-
 gpxlayer::gpxlayer() :
     layer(),
     m_trip(0.0)
@@ -42,10 +37,7 @@ void gpxlayer::trip_update()
 
     point2d<double> p1((*(m_trkpts.end()-2)).lon, (*(m_trkpts.end()-2)).lat);
     point2d<double> p2((*(m_trkpts.end()-1)).lon, (*(m_trkpts.end()-1)).lat);
-    point2d<double> g1(utils::merc2wsg84(p1));
-    point2d<double> g2(utils::merc2wsg84(p2));
-         
-    m_trip += utils::dist(g1, g2);
+    m_trip += utils::dist(utils::merc2wsg84(p1), utils::merc2wsg84(p2));
 }
 
 void gpxlayer::trip_calcall()
@@ -62,10 +54,7 @@ void gpxlayer::trip_calcall()
     {
         point2d<double> p1((*it).lon, (*it).lat);
         point2d<double> p2((*(it-1)).lon, (*(it-1)).lat);
-        point2d<double> g1(utils::merc2wsg84(p1));
-        point2d<double> g2(utils::merc2wsg84(p2));
-         
-        sum += utils::dist(g1, g2);
+        sum += utils::dist(utils::merc2wsg84(p1), utils::merc2wsg84(p2));
     }
 
     m_trip = sum;
@@ -211,9 +200,6 @@ bool gpxlayer::release(const layer::event_mouse* evt)
     // Button release on an existing item
     if ((m_selection.waypoints.size() == 1) && (m_selection.multiselect == false))
     {
-        // Toggle highlight status
-        //m_selection.highlight = !m_selection.highlight;
-
         // Item has been dragged, recalculate trip
         if (m_selection.dragging)
             trip_calcall();
@@ -492,7 +478,7 @@ bool gpxlayer::handle_evt_mouse(const layer::event_mouse* evt)
     if (evt->button() != layer::event_mouse::BUTTON_LEFT)
         return false;
 
-    int ret = false;
+    bool ret = false;
     switch (evt->action())
     {
         case layer::event_mouse::ACTION_PRESS:
@@ -540,128 +526,16 @@ bool gpxlayer::handle_evt_key(const layer::event_key* evt)
     return ret;
 }
 
-// Cohen–Sutherland clipping algorithm
-bool gpxlayer::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r1, point2d<double> r2, bool &p1clip, bool &p2clip)
-{
-    bool ret = false;
-    double xmin, xmax, ymin, ymax;
-
-    if (r1.x() > r2.x())
-    {
-        xmin = r2.x();
-        xmax = r1.x();
-    }
-    else
-    {
-        xmin = r1.x();
-        xmax = r2.x();
-    }
-
-    if (r1.y() > r2.y())
-    {
-        ymin = r2.y();
-        ymax = r1.y();
-    }
-    else
-    {
-        ymin = r1.y();
-        ymax = r2.y();
-    } 
-
-    // Calculate m and n for this line
-    double m = (p2.y() - p1.y()) / (p2.x() - p1.x());
-    double n = p1.y() - m * p1.x();
-
-    // Max 2 clipping operations per point and one last check operation. The
-    // number of iterations is limited because for very large m and n the
-    // datatype might overflow and create an endless loop. In this case the
-    // loop exits and the line is simply not drawn.
-    for (int i=0;i<5;i++)
-    {
-        // Compute code for both points
-        int code1 = 0, code2 = 0;
-        
-        if (p1.x() < xmin)
-            code1 |= CLIPLEFT;
-        if (p1.x() > xmax)
-            code1 |= CLIPRIGHT;
-        if (p1.y() < ymin)
-            code1 |= CLIPTOP;
-        if (p1.y() > ymax)
-            code1 |= CLIPBOTTOM;
-
-        if (p2.x() < xmin)
-            code2 |= CLIPLEFT;
-        if (p2.x() > xmax)
-            code2 |= CLIPRIGHT;
-        if (p2.y() < ymin)
-            code2 |= CLIPTOP;
-        if (p2.y() > ymax)
-            code2 |= CLIPBOTTOM;
-
-        // Both inside, draw line
-        if ((code1 | code2) == 0)
-        {
-            ret = true;
-            break;
-        }
-
-        // Both top, bottom, left or right outside, line need not be drawn
-        if ((code1 & code2) != 0)
-        {
-            ret = false;
-            break;
-        }
-
-        // Pick an endpoint for clipping
-        point2d<double> &ptmp = (code1 != 0) ? p1 : p2;
-        int codetmp;
-        if (code1 != 0)
-        {
-            codetmp = code1;
-            p1clip = true;
-        }
-        else
-        {
-            codetmp = code2;
-            p2clip = true;
-        }
-
-        // Clip top
-        if (codetmp & CLIPTOP)
-        {
-            ptmp[0] = (ymin - n) / m; 
-            ptmp[1] = ymin;
-        }
-        // Clip Bottom
-        else if (codetmp & CLIPBOTTOM)
-        {
-            ptmp[0] = (ymax - n) / m; 
-            ptmp[1] = ymax;
-        }
-        // Clip Left
-        else if (codetmp & CLIPLEFT)
-        {
-            ptmp[0] = xmin; 
-            ptmp[1] = m * xmin + n;
-        }
-        // Clip Right
-        else if (codetmp & CLIPRIGHT)
-        {
-            ptmp[0] = xmax; 
-            ptmp[1] = m * xmax + n;
-        }
-    }
-
-    return ret;
-}
-
 void gpxlayer::draw(const viewport &vp, canvas &os)
 {
-    color color_track(0xff0000);
-    color color_point(0x0000ff);
-    color color_point_hl(0x00ff00);
-    color color_selector(0xff00b4);
+    // TODO: Performance killer
+    cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
+
+    color color_track(cfgui.trackcolor());
+    color color_point(cfgui.markercolor());
+    color color_point_hl(cfgui.markercolorselected());
+    color color_selector(cfgui.selectioncolor());
+    unsigned int linewidth = cfgui.tracklinewidth();
 
     point2d<double> pmerc_last;
     point2d<double> pmerc_r1(utils::px2merc(vp.z(), point2d<unsigned long>(vp.x(), vp.y())));
@@ -683,7 +557,7 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
             if (pmerc == pmerc_last)
                 continue;
 
-            bool dodraw = clipline(pmerc_last, pmerc, pmerc_r1, pmerc_r2, lastclip, curclip);
+            bool dodraw = utils::clipline(pmerc_last, pmerc, pmerc_r1, pmerc_r2, lastclip, curclip);
 
             ppx = utils::merc2px(vp.z(), pmerc);
             ppx_last = utils::merc2px(vp.z(), pmerc_last);
@@ -697,7 +571,7 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
                 ppx_last[1] -= vp.y();
 
                 os.fgcolor(color_track);
-                os.line(ppx_last.x(), ppx_last.y(), ppx.x(), ppx.y(), 2);
+                os.line(ppx_last.x(), ppx_last.y(), ppx.x(), ppx.y(), linewidth);
             }
             else
             {

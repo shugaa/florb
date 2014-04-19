@@ -33,11 +33,25 @@ class color
             m_r((c>>16) & 0xff),
             m_g((c>>8) & 0xff),
             m_b(c & 0xff) {};
+        color(const color& c) :
+            m_r(c.r()),
+            m_g(c.g()),
+            m_b(c.b()) {};
+
         ~color() {};
 
-        unsigned char r() { return m_r; };
-        unsigned char g() { return m_g; };
-        unsigned char b() { return m_b; };
+        unsigned char r() const { return m_r; };
+        unsigned char g() const { return m_g; };
+        unsigned char b() const { return m_b; };
+
+        unsigned int rgb() const 
+        {
+            unsigned int ret = 0;
+            ret |= m_r; ret <<= 8;
+            ret |= m_g; ret <<= 8;
+            ret |= m_b;
+            return ret;
+        }
 
     private:
         unsigned char m_r;

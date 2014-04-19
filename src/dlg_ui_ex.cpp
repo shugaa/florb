@@ -9,7 +9,7 @@
 #include "utils.hpp"
 #include "fluid/dlg_ui.hpp"
 #include "fluid/dlg_editselection.hpp"
-#include "fluid/dlg_gpsd.hpp"
+#include "fluid/dlg_settings.hpp"
 
 static dlg_ui *ui;
 
@@ -109,13 +109,15 @@ void dlg_ui::create_ex(void)
     m_menuitem_file_quit->label(_("Quit"));
     // Edit
     m_menuitem_edit->label(_("Edit"));
-    m_menuitem_edit_cleartrack->label(_("Clear track"));
-    m_menuitem_edit_editwaypoint->label(_("Edit waypoints"));
-    m_menuitem_edit_deletewaypoints->label(_("Delete waypoints"));
-    m_menuitem_edit_showwpmarkers->label(_("Show waypoint markers"));
+    m_menuitem_edit_settings->label(_("Settings"));
+    // Track
+    m_menuitem_track->label(_("Track"));
+    m_menuitem_track_clear->label(_("Clear"));
+    m_menuitem_track_editwaypoint->label(_("Edit waypoints"));
+    m_menuitem_track_deletewaypoints->label(_("Delete waypoints"));
+    m_menuitem_track_showwpmarkers->label(_("Show waypoint markers"));
     // GPSs
     m_menuitem_gpsd->label(_("GPSd"));
-    m_menuitem_gpsd_settings->label(_("Settings"));
     m_menuitem_gpsd_gotocursor->label(_("Go to cursor"));
     m_menuitem_gpsd_recordtrack->label(_("Record track"));
     m_menuitem_gpsd_lockcursor->label(_("Lock to cursor"));
@@ -152,7 +154,7 @@ void dlg_ui::create_ex(void)
     }
 
     // Show waypoint markers by default
-    m_menuitem_edit_showwpmarkers->set(); 
+    m_menuitem_track_showwpmarkers->set(); 
     m_mapctrl->gpx_showwpmarkers(true);
 
     // Start listening to mapctrl events
@@ -261,13 +263,13 @@ void dlg_ui::deleteselection_ex()
 
 void dlg_ui::showwpmarkers_ex()
 {
-    bool b = (m_menuitem_edit_showwpmarkers->value() == 0) ? false : true; 
+    bool b = (m_menuitem_track_showwpmarkers->value() == 0) ? false : true; 
     m_mapctrl->gpx_showwpmarkers(b);
 }
 
-void dlg_ui::gpsdsettings_ex()
+void dlg_ui::settings_ex()
 {
-    dlg_gpsd gd(m_mapctrl);
+    dlg_settings gd(m_mapctrl);
     gd.show();
 }
 
@@ -323,12 +325,6 @@ void dlg_ui::cb_btn_editselection_ex(Fl_Widget *widget)
     m_mapctrl->take_focus();
 }
 
-void dlg_ui::cb_btn_gpsd_ex(Fl_Widget *widget)
-{
-    gpsdsettings_ex(); 
-    m_mapctrl->take_focus();
-}
-
 void dlg_ui::cb_btn_deleteselection_ex(Fl_Widget *widget)
 {
     deleteselection_ex(); 
@@ -366,24 +362,26 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
         savetrack_ex();
     } 
 
-    // Edit submenu
-    else if (mit == m_menuitem_edit_cleartrack) {
-        cleartrack_ex();
-    }
-    else if (mit == m_menuitem_edit_editwaypoint) {
-        editselection_ex();
-    }
-    else if (mit == m_menuitem_edit_deletewaypoints) {
-        deleteselection_ex();
-    }
-    else if (mit == m_menuitem_edit_showwpmarkers) {
-        showwpmarkers_ex();
+    // Edit sumbemnu
+    else if (mit == m_menuitem_edit_settings) {
+        settings_ex();
     }
 
-    // GPSd submenu
-    else if (mit == m_menuitem_gpsd_settings) {
-        gpsdsettings_ex();
+    // Track submenu
+    else if (mit == m_menuitem_track_clear) {
+        cleartrack_ex();
     }
+    else if (mit == m_menuitem_track_editwaypoint) {
+        editselection_ex();
+    }
+    else if (mit == m_menuitem_track_deletewaypoints) {
+        deleteselection_ex();
+    }
+    else if (mit == m_menuitem_track_showwpmarkers) {
+        showwpmarkers_ex();
+    }
+    
+    // GPSd submenu
     else if (mit == m_menuitem_gpsd_gotocursor) {
         gotocursor_ex();
     }
