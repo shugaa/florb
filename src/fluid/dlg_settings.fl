@@ -19,6 +19,8 @@ class dlg_settings {open
   }
   decl {cfg_gpsd m_cfggpsd;} {private local
   }
+  decl {std::vector<cfg_tileserver> m_cfgtileservers;} {private local
+  }
   decl {void show_ex();} {private local
   }
   decl {void create_ex();} {private local
@@ -33,9 +35,15 @@ class dlg_settings {open
   }
   decl {void cb_btn_gpscursorcolor_ex(Fl_Widget *widget);} {private local
   }
-  decl {void cb_inp_trackwidth_ex(Fl_Widget *widget);} {private local
+  decl {void cb_btn_addserver_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_delserver_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_btn_editserver_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_chkbtn_enable_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_inp_trackwidth_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_inp_server_ex(Fl_Widget *widget);} {private local
   }
@@ -47,11 +55,13 @@ class dlg_settings {open
   }
   decl {void tab_gpsd_setup_ex();} {private local
   }
+  decl {void tab_tileservers_setup_ex();} {private local
+  }
   Function {dlg_settings(mapctrl *m)} {open
   } {
     Fl_Window m_window {
       label Settings open
-      private xywh {2225 177 500 295} type Double resizable modal visible
+      private xywh {2225 177 500 295} type Double resizable modal size_range {500 295 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 500 297} resizable
@@ -69,8 +79,8 @@ class dlg_settings {open
             private xywh {5 5 490 250} resizable
           } {
             Fl_Group {} {
-              label Interface selected
-              private xywh {10 25 480 225} resizable
+              label Interface open selected
+              private xywh {10 25 480 225}
             } {
               Fl_Pack {} {open
                 private xywh {10 25 480 225}
@@ -78,70 +88,67 @@ class dlg_settings {open
                 Fl_Box {} {
                   private xywh {10 25 480 5}
                 }
-                Fl_Pack {} {
+                Fl_Pack {} {open
                   private xywh {10 30 480 25} type HORIZONTAL
                 } {
                   Fl_Box {} {
                     label {Marker color}
-                    private xywh {10 30 245 25} align 20 resizable
+                    private xywh {10 30 335 25} align 20 resizable
                   }
                   Fl_Box m_box_markercolor {
-                    private xywh {255 30 115 25} box BORDER_BOX color 80 align 52
+                    private xywh {345 30 115 25} box BORDER_BOX color 80 align 52
                   }
                   Fl_Box {} {
-                    private xywh {370 30 5 25}
+                    private xywh {460 30 5 25}
                   }
                   Fl_Button {} {
-                    label Pick
                     user_data this
                     callback cb_btn_markercolor
-                    private xywh {375 30 115 25}
+                    private tooltip Edit image {../res/preferences-system.png} xywh {465 30 25 25} box NO_BOX down_box THIN_DOWN_BOX
                   }
                 }
                 Fl_Box {} {
                   private xywh {10 55 480 5}
                 }
-                Fl_Pack {} {
+                Fl_Pack {} {open
                   private xywh {10 60 480 25} type HORIZONTAL
                 } {
                   Fl_Box {} {
                     label {Marker color (selected)}
-                    private xywh {10 60 245 25} align 20 resizable
+                    private xywh {10 60 335 25} align 20 resizable
                   }
                   Fl_Box m_box_markercolorselected {
-                    private xywh {255 60 115 25} box BORDER_BOX color 80 align 52
+                    private xywh {345 60 115 25} box BORDER_BOX color 80 align 52
                   }
                   Fl_Box {} {
-                    private xywh {370 60 5 25}
+                    private xywh {460 60 5 25}
                   }
                   Fl_Button {} {
-                    label Pick
                     user_data this
                     callback cb_btn_markercolorselected
-                    private xywh {375 60 115 25}
+                    private tooltip Edit image {../res/preferences-system.png} xywh {465 60 25 25} box NO_BOX down_box THIN_DOWN_BOX
                   }
                 }
                 Fl_Box {} {
                   private xywh {10 85 480 5}
                 }
-                Fl_Pack {} {
+                Fl_Pack {} {open
                   private xywh {10 90 480 25} type HORIZONTAL
                 } {
                   Fl_Box {} {
                     label {Track color}
-                    private xywh {10 90 245 25} align 20 resizable
+                    private xywh {10 90 335 25} align 20 resizable
                   }
                   Fl_Box m_box_trackcolor {
-                    private xywh {255 90 115 25} box BORDER_BOX color 80 align 52
+                    private xywh {345 90 115 25} box BORDER_BOX color 80 align 52
                   }
                   Fl_Box {} {
-                    private xywh {370 90 5 25}
+                    private xywh {460 90 5 25}
                   }
                   Fl_Button {} {
-                    label Pick
                     user_data this
                     callback cb_btn_trackcolor
-                    private xywh {375 90 115 25}
+                    private tooltip Edit image {../res/preferences-system.png} xywh {465 90 25 25} box NO_BOX down_box THIN_DOWN_BOX
                   }
                 }
                 Fl_Box {} {
@@ -152,65 +159,56 @@ class dlg_settings {open
                 } {
                   Fl_Box {} {
                     label {Selection color}
-                    private xywh {10 120 245 25} align 20 resizable
+                    private xywh {10 120 335 25} align 20 resizable
                   }
                   Fl_Box m_box_selectioncolor {
-                    private xywh {255 120 115 25} box BORDER_BOX color 80 align 52
+                    private xywh {345 120 115 25} box BORDER_BOX color 80 align 52
                   }
                   Fl_Box {} {
-                    private xywh {370 120 5 25}
+                    private xywh {460 120 5 25}
                   }
                   Fl_Button {} {
-                    label Pick
                     user_data this
                     callback cb_btn_selectioncolor
-                    private xywh {375 120 115 25}
+                    private tooltip Edit image {../res/preferences-system.png} xywh {465 120 25 25} box NO_BOX down_box THIN_DOWN_BOX
                   }
                 }
                 Fl_Box {} {
                   private xywh {10 145 480 5}
                 }
-                Fl_Pack {} {
+                Fl_Pack {} {open
                   private xywh {10 150 480 25} type HORIZONTAL
                 } {
                   Fl_Box {} {
                     label {GPS cursor color}
-                    private xywh {10 150 245 25} align 20 resizable
+                    private xywh {10 150 335 25} align 20 resizable
                   }
                   Fl_Box m_box_gpscursorcolor {
-                    private xywh {255 150 115 25} box BORDER_BOX color 80 align 52
+                    private xywh {345 150 115 25} box BORDER_BOX color 80 align 52
                   }
                   Fl_Box {} {
-                    private xywh {370 150 5 25}
+                    private xywh {460 150 5 25}
                   }
                   Fl_Button {} {
-                    label Pick
                     user_data this
                     callback cb_btn_gpscursorcolor
-                    private xywh {375 150 115 25}
+                    private tooltip Edit image {../res/preferences-system.png} xywh {465 150 25 25} box NO_BOX down_box THIN_DOWN_BOX
                   }
                 }
                 Fl_Box {} {
                   private xywh {10 175 480 5}
                 }
-                Fl_Pack {} {
+                Fl_Pack {} {open
                   private xywh {10 180 480 25} type HORIZONTAL
                 } {
                   Fl_Box {} {
                     label {Track line width}
-                    private xywh {10 180 245 25} align 20 resizable
+                    private xywh {10 180 335 25} align 20 resizable
                   }
                   Fl_Input m_input_trackwidth {
                     user_data this
                     callback cb_inp_trackwidth
-                    private xywh {255 180 115 25} type Int when 1
-                  }
-                  Fl_Box {} {
-                    private xywh {370 180 5 25}
-                  }
-                  Fl_Box {} {
-                    label pixels
-                    private xywh {375 180 115 25} align 20
+                    private xywh {345 180 145 25} type Int when 1
                   }
                 }
                 Fl_Box {} {
@@ -235,7 +233,7 @@ class dlg_settings {open
                     label {Enable GPSd}
                     user_data this
                     callback cb_chkbtn_enable
-                    private xywh {10 30 480 25} down_box DOWN_BOX resizable
+                    private xywh {10 30 480 25} down_box DOWN_BOX color 7 resizable
                   }
                 }
                 Fl_Box {} {
@@ -275,6 +273,55 @@ class dlg_settings {open
                 }
               }
             }
+            Fl_Group {} {
+              label Tileservers open
+              private xywh {10 25 480 225} hide resizable
+            } {
+              Fl_Pack {} {open
+                private xywh {10 25 480 225}
+              } {
+                Fl_Box {} {
+                  private xywh {10 25 480 5}
+                }
+                Fl_Browser m_browser_tileservers {
+                  private xywh {10 30 480 185} type Hold box DOWN_BOX resizable
+                }
+                Fl_Box {} {
+                  private xywh {10 215 480 5}
+                }
+                Fl_Pack {} {open
+                  private xywh {10 220 480 25} type HORIZONTAL
+                } {
+                  Fl_Box {} {
+                    private xywh {10 220 395 25} resizable
+                  }
+                  Fl_Button m_btn_addserver {
+                    user_data this
+                    callback cb_btn_addserver
+                    private tooltip {Add tileserver} image {../res/list-add.png} xywh {405 220 25 25} box NO_BOX down_box THIN_DOWN_BOX
+                  }
+                  Fl_Box {} {
+                    private xywh {430 220 5 25}
+                  }
+                  Fl_Button m_btn_delserver {
+                    user_data this
+                    callback cb_btn_delserver
+                    private tooltip {Remove tileserver} image {../res/list-remove.png} xywh {435 220 25 25} box NO_BOX down_box THIN_DOWN_BOX
+                  }
+                  Fl_Box {} {
+                    private xywh {460 220 5 25}
+                  }
+                  Fl_Button m_btn_editserver {
+                    user_data this
+                    callback cb_btn_editserver
+                    private tooltip {Edit tileserver} image {../res/preferences-system.png} xywh {465 220 25 25} box NO_BOX down_box THIN_DOWN_BOX
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 245 480 5}
+                }
+              }
+            }
           }
           Fl_Box {} {
             private xywh {495 5 5 250}
@@ -299,7 +346,7 @@ class dlg_settings {open
         Fl_Box {} {
           private xywh {0 262 500 5}
         }
-        Fl_Pack {} {
+        Fl_Pack {} {open
           private xywh {0 267 500 25} type HORIZONTAL
         } {
           Fl_Box {} {
@@ -329,7 +376,8 @@ class dlg_settings {open
 create_ex();} {}
   }
   Function {~dlg_settings()} {} {
-    code {} {}
+    code {if (m_window)
+    delete m_window;} {}
   }
   Function {show()} {return_type void
   } {
@@ -365,7 +413,7 @@ dlg->cb_btn_gpscursorcolor_ex(widget);} {}
     code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
 dlg->cb_inp_trackwidth_ex(widget);} {}
   }
-  Function {cb_chkbtn_enable(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  Function {cb_chkbtn_enable(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
 dlg->cb_chkbtn_enable_ex(widget);} {}
@@ -379,5 +427,20 @@ dlg->cb_inp_server_ex(widget);} {}
   } {
     code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
 dlg->cb_inp_port_ex(widget);} {}
+  }
+  Function {cb_btn_addserver(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_btn_addserver_ex(widget);} {}
+  }
+  Function {cb_btn_delserver(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_btn_delserver_ex(widget);} {}
+  }
+  Function {cb_btn_editserver(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_btn_editserver_ex(widget);} {}
   }
 } 

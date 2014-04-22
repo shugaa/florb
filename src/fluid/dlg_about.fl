@@ -24,7 +24,7 @@ class dlg_about {open
   Function {dlg_about()} {open
   } {
     Fl_Window m_window {
-      label {About / License} open selected
+      label {About / License} open
       private xywh {554 188 500 295} type Double resizable modal visible
     } {
       Fl_Pack {} {open
@@ -39,8 +39,8 @@ class dlg_about {open
           Fl_Box {} {
             private xywh {0 5 5 250}
           }
-          Fl_Text_Display m_display {
-            private xywh {5 5 490 250} resizable
+          Fl_Text_Display m_display {selected
+            private xywh {5 5 490 250} box BORDER_BOX resizable
           }
           Fl_Box {} {
             private xywh {495 5 5 250}

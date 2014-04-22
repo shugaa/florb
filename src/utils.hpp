@@ -2,6 +2,7 @@
 #define UTILS_HPP
 
 #include <ctime>
+#include <libintl.h>
 #include <FL/Fl_Window.H>
 #include "point.hpp"
 

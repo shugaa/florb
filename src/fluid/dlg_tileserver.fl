@@ -1,0 +1,202 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include "settings.hpp"} {public global
+} 
+
+class dlg_tileserver {open
+} {
+  decl {cfg_tileserver m_cfgtileserver;} {private local
+  }
+  decl {bool show_ex();} {private local
+  }
+  decl {void create_ex();} {private local
+  }
+  decl {cfg_tileserver tileserver_ex();} {private local
+  }
+  decl {void cb_spinner_zmin_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_spinner_zmax_ex(Fl_Widget *widget);} {private local
+  }
+  Function {cb_spinner_zmin(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_tileserver *dlg = static_cast<dlg_tileserver*>(userdata);
+dlg->cb_spinner_zmin_ex(widget);} {}
+  }
+  Function {cb_spinner_zmax(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_tileserver *dlg = static_cast<dlg_tileserver*>(userdata);
+dlg->cb_spinner_zmax_ex(widget);} {}
+  }
+  Function {dlg_tileserver(const cfg_tileserver& c)} {open
+  } {
+    Fl_Window m_window {
+      label {Edit tileserver} open
+      private xywh {2231 351 380 220} type Double resizable modal size_range {380 220 0 0} visible
+    } {
+      Fl_Pack {} {open
+        private xywh {0 0 380 222} resizable
+      } {
+        Fl_Pack {} {open
+          private xywh {0 0 380 222} type HORIZONTAL resizable
+        } {
+          Fl_Box {} {
+            private xywh {0 0 5 222}
+          }
+          Fl_Pack {} {open
+            private xywh {5 0 370 222} resizable
+          } {
+            Fl_Box {} {
+              private xywh {5 0 370 5}
+            }
+            Fl_Pack {} {open
+              private xywh {5 5 370 25} type HORIZONTAL
+            } {
+              Fl_Box {} {
+                label Name
+                private xywh {5 5 130 25} align 20
+              }
+              Fl_Input m_input_name {
+                private xywh {135 5 240 25} resizable
+              }
+            }
+            Fl_Box {} {
+              private xywh {5 30 370 5}
+            }
+            Fl_Pack {} {
+              private xywh {5 35 370 25} type HORIZONTAL
+            } {
+              Fl_Box {} {
+                label URL
+                private xywh {5 35 130 25} align 20
+              }
+              Fl_Input m_input_url {
+                private xywh {135 35 240 25} resizable
+              }
+            }
+            Fl_Box {} {
+              private xywh {5 60 370 5}
+            }
+            Fl_Pack {} {open
+              private xywh {5 65 370 25} type HORIZONTAL
+            } {
+              Fl_Box {} {
+                label {Image format}
+                private xywh {5 65 130 25} align 20
+              }
+              Fl_Choice m_choice_imgtype {open
+                private xywh {135 65 240 25} down_box BORDER_BOX resizable
+              } {}
+            }
+            Fl_Box {} {
+              private xywh {5 90 370 5}
+            }
+            Fl_Pack {} {open
+              private xywh {5 95 370 25} type HORIZONTAL
+            } {
+              Fl_Box {} {
+                label {Min. z}
+                private xywh {5 95 130 25} align 20
+              }
+              Fl_Spinner m_spinner_zmin {
+                user_data this
+                callback cb_spinner_zmin
+                private xywh {135 95 80 25} minimum 0 maximum 20
+              }
+              Fl_Box {} {
+                private xywh {215 95 160 25} resizable
+              }
+            }
+            Fl_Box {} {
+              private xywh {5 120 370 5}
+            }
+            Fl_Pack {} {open
+              private xywh {5 125 370 25} type HORIZONTAL
+            } {
+              Fl_Box {} {
+                label {Max. z}
+                private xywh {5 125 130 25} align 20
+              }
+              Fl_Spinner m_spinner_zmax {
+                user_data this
+                callback cb_spinner_zmax
+                private xywh {135 125 80 25} maximum 21
+              }
+              Fl_Box {} {
+                private xywh {215 125 160 25} resizable
+              }
+            }
+            Fl_Box {} {
+              private xywh {5 150 370 5}
+            }
+            Fl_Pack {} {open
+              private xywh {5 155 370 25} type HORIZONTAL
+            } {
+              Fl_Box {} {
+                label {Sim. downloads}
+                private xywh {5 155 130 25} align 20
+              }
+              Fl_Spinner m_spinner_parallel {
+                private xywh {135 155 80 25} maximum 20
+              }
+              Fl_Box {} {
+                private xywh {215 155 160 25} resizable
+              }
+            }
+            Fl_Box {} {
+              private xywh {5 180 370 5} resizable
+            }
+            Fl_Box {} {
+              private xywh {5 185 370 2} box ENGRAVED_BOX
+            }
+            Fl_Box {} {
+              private xywh {5 187 370 5}
+            }
+            Fl_Pack {} {open
+              private xywh {5 192 370 25} type HORIZONTAL
+            } {
+              Fl_Box {} {
+                private xywh {5 192 155 25} resizable
+              }
+              Fl_Button m_btn_cancel {
+                label Cancel
+                private xywh {160 192 105 25}
+              }
+              Fl_Box {} {
+                private xywh {265 192 5 25}
+              }
+              Fl_Button m_btn_ok {
+                label OK selected
+                private xywh {270 192 105 25}
+              }
+            }
+            Fl_Box {} {
+              private xywh {5 217 370 5}
+            }
+          }
+          Fl_Box {} {
+            private xywh {375 0 5 222}
+          }
+        }
+      }
+    }
+    code {m_cfgtileserver = c;
+create_ex();} {}
+  }
+  Function {~dlg_tileserver()} {} {
+    code {if (m_window)
+    delete(m_window);} {}
+  }
+  Function {show()} {return_type bool
+  } {
+    code {return show_ex();} {}
+  }
+  Function {tileserver()} {return_type cfg_tileserver
+  } {
+    code {return tileserver_ex();} {}
+  }
+} 

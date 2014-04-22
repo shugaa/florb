@@ -29,7 +29,7 @@ decl {int main_ex(int argc, char* argv[]);} {private global
 decl {void sighandler_ex(int sig);} {private global
 } 
 
-class dlg_ui {open selected : {public event_listener}
+class dlg_ui {open : {public event_listener}
 } {
   decl {void create_ex(void);} {private local
   }
@@ -140,7 +140,8 @@ ui->cb_btn_deleteselection_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
-  Function {dlg_ui()} {} {
+  Function {dlg_ui()} {open
+  } {
     Fl_Window m_window {
       label florb open
       private xywh {1976 180 805 565} type Double align 80 resizable visible
@@ -231,7 +232,7 @@ ui->cb_choice_basemap_ex(widget);} {}
         Fl_Box {} {
           private xywh {0 25 805 4}
         }
-        Fl_Pack {} {
+        Fl_Pack {} {open
           private xywh {0 29 805 26} type HORIZONTAL
         } {
           Fl_Box {} {
@@ -321,8 +322,8 @@ ui->cb_choice_basemap_ex(widget);} {}
           }
           Fl_Choice m_choice_basemap {
             user_data this
-            callback cb_choice_basemap open
-            private xywh {266 29 534 26} down_box BORDER_BOX resizable
+            callback cb_choice_basemap open selected
+            private xywh {266 29 534 26} box BORDER_BOX resizable
           } {}
           Fl_Box {} {
             private xywh {800 29 5 25}

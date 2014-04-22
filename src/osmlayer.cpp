@@ -183,9 +183,9 @@ void osmlayer::download_qtile(int z, int x, int y)
     sy << y;
 
     std::string url(m_url);
-    url.replace (url.find("$FLORBZ$"), std::string("$FLORBZ$").length(), sz.str());
-    url.replace (url.find("$FLORBX$"), std::string("$FLORBX$").length(), sx.str());
-    url.replace (url.find("$FLORBY$"), std::string("$FLORBY$").length(), sy.str());
+    url.replace (url.find("{z}"), std::string("{z}").length(), sz.str());
+    url.replace (url.find("{x}"), std::string("{x}").length(), sx.str());
+    url.replace (url.find("{y}"), std::string("{y}").length(), sy.str());
 
     // Try to queue this URL for downloading
     bool ret = m_downloader->queue(url, ti);

@@ -3,6 +3,7 @@
 #include "settings.hpp"
 #include "utils.hpp"
 #include "fluid/dlg_settings.hpp"
+#include "fluid/dlg_tileserver.hpp"
 
 void dlg_settings::create_ex()
 {
@@ -11,9 +12,11 @@ void dlg_settings::create_ex()
 
     m_cfgui = settings::get_instance()["ui"].as<cfg_ui>();
     m_cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
+    m_cfgtileservers = settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >();
 
     tab_ui_setup_ex();
     tab_gpsd_setup_ex(); 
+    tab_tileservers_setup_ex(); 
 }
 
 void dlg_settings::cb_btn_markercolor_ex(Fl_Widget *widget)
@@ -102,6 +105,46 @@ void dlg_settings::cb_chkbtn_enable_ex(Fl_Widget *widget)
     tab_gpsd_setup_ex();
 }
 
+void dlg_settings::cb_btn_addserver_ex(Fl_Widget *widget)
+{
+    cfg_tileserver ts;
+    ts.name("My tileserver");
+    ts.url("{x}{y}{z}");
+
+    dlg_tileserver dlg(ts);
+    if(dlg.show())
+    {
+        m_cfgtileservers.push_back(dlg.tileserver());
+        tab_tileservers_setup_ex();
+    }
+}
+
+void dlg_settings::cb_btn_delserver_ex(Fl_Widget *widget)
+{
+    int idx = m_browser_tileservers->value();
+
+    if (idx <= 0)
+        return;
+
+    m_cfgtileservers.erase(m_cfgtileservers.begin()+(idx-1));
+    m_browser_tileservers->value(0);
+    tab_tileservers_setup_ex();
+}
+
+void dlg_settings::cb_btn_editserver_ex(Fl_Widget *widget)
+{
+    int idx = m_browser_tileservers->value();
+    if (idx <= 0)
+        return;
+
+    dlg_tileserver dlg(m_cfgtileservers[idx-1]);
+    if(dlg.show())
+    {
+        m_cfgtileservers[idx-1] = dlg.tileserver();
+        tab_tileservers_setup_ex();
+    }
+}
+
 void dlg_settings::tab_ui_setup_ex()
 {
     m_box_markercolor->color(fl_rgb_color(m_cfgui.markercolor().r(), m_cfgui.markercolor().g(), m_cfgui.markercolor().b()));
@@ -135,6 +178,22 @@ void dlg_settings::tab_gpsd_setup_ex()
         m_box_port->deactivate();
         m_input_port->deactivate(); 
     }
+}
+
+void dlg_settings::tab_tileservers_setup_ex()
+{
+    int idx = m_browser_tileservers->value();
+
+    m_browser_tileservers->clear();
+
+    std::vector<cfg_tileserver>::iterator it;
+    for(it=m_cfgtileservers.begin(); it!=m_cfgtileservers.end(); ++it) 
+    {
+        m_browser_tileservers->add((*it).name().c_str()); 
+    }
+
+    if (m_browser_tileservers->size() >= idx)
+        m_browser_tileservers->value(idx);
 }
 
 color dlg_settings::colorchooser_ex(color c)
@@ -177,6 +236,7 @@ void dlg_settings::show_ex()
     {
         settings::get_instance()["ui"] = m_cfgui;
         settings::get_instance()["gpsd"] = m_cfggpsd;
+        settings::get_instance()["tileservers"] = m_cfgtileservers;
 
         if (m_cfggpsd.enabled())
             m_mapctrl->gpsd_connect(m_cfggpsd.host(), m_cfggpsd.port());
