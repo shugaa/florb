@@ -31,7 +31,7 @@ downloader::downloader(int nthreads) :
             throw std::runtime_error(_("Failed to start downloader"));
         }
 
-#if 1
+#if 0
         struct sched_param param;
         param.sched_priority = 0;
         pthread_setschedparam(ti->t()->native_handle(), SCHED_RR, &param);

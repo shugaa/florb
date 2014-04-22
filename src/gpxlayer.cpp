@@ -296,7 +296,11 @@ void gpxlayer::load_track(const std::string &path)
     oldlc = setlocale(LC_ALL, 0);
     setlocale(LC_ALL, "C");
 
-    parsetree(doc.RootElement());
+    tinyxml2::XMLElement* root = doc.RootElement();
+    if (root)
+        parsetree(doc.RootElement());
+    else
+        throw std::runtime_error(_("Failed to open GPX file"));
 
     setlocale(LC_ALL, oldlc); 
 
@@ -305,7 +309,6 @@ void gpxlayer::load_track(const std::string &path)
 
 void gpxlayer::save_track(const std::string &path)
 {
-
     // TinyXML's number parsing is locale dependent
     char * oldlc;
     oldlc = setlocale(LC_ALL, 0);
