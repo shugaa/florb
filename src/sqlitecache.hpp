@@ -23,6 +23,7 @@ class sqlitecache
             NOTFOUND,
             FOUND
         };
+
     private:
         static const std::string stmt_checknew;
         static const std::string stmt_createschema;
@@ -39,6 +40,8 @@ class sqlitecache
         // Class wide sqlite handle and instance reference count
         static sqlite3 *m_db;
         static unsigned int m_refcount;
+
+        static const std::string dbname;
 };
 
 #endif // SQLITECACHE_HPP

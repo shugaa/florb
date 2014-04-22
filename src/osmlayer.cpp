@@ -6,6 +6,10 @@
 #define TILE_W                  (256)
 #define TILE_H                  (256)
 
+const std::string osmlayer::wcard_x = "{x}";
+const std::string osmlayer::wcard_y = "{y}";
+const std::string osmlayer::wcard_z = "{z}";
+
 class osmlayer::tileinfo
 {
     public:
@@ -177,19 +181,29 @@ void osmlayer::download_qtile(int z, int x, int y)
     // Create the userdata component to be attached to the download
     tileinfo *ti = new tileinfo(z, x, y);
 
+    // Construct the download URL
     std::ostringstream sz, sx, sy;
     sz << z;
     sx << x;
     sy << y;
 
     std::string url(m_url);
-    url.replace (url.find("{z}"), std::string("{z}").length(), sz.str());
-    url.replace (url.find("{x}"), std::string("{x}").length(), sx.str());
-    url.replace (url.find("{y}"), std::string("{y}").length(), sy.str());
+    
+    std::size_t idx = url.find(osmlayer::wcard_z);
+    if (idx != std::string::npos)
+        url.replace(idx, osmlayer::wcard_z.length(), sz.str());
+
+    idx = url.find(osmlayer::wcard_x);
+    if (idx != std::string::npos)
+        url.replace(idx, osmlayer::wcard_x.length(), sx.str());
+
+    idx = url.find(osmlayer::wcard_y);
+    if (idx != std::string::npos)
+        url.replace(idx, osmlayer::wcard_y.length(), sy.str());
 
     // Try to queue this URL for downloading
     bool ret = m_downloader->queue(url, ti);
-   
+
     // Item queued for downloading
     if (ret)
     {

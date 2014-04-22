@@ -24,8 +24,11 @@ class osmlayer : public layer
 
         int zoom_min() { return m_zmin; };
         int zoom_max() { return m_zmax; };
-
         void dlenable(bool e);
+
+        static const std::string wcard_x;
+        static const std::string wcard_y;
+        static const std::string wcard_z;
 
         class event_notify;
 

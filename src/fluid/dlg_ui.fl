@@ -53,6 +53,8 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void settings_ex(void);} {private local
   }
+  decl {void update_choice_basemap_ex(void);} {selected private local
+  }
   decl {void showwpmarkers_ex(void);} {private local
   }
   decl {void show_ex(int argc, char *argv[]);} {private local
@@ -322,8 +324,8 @@ ui->cb_choice_basemap_ex(widget);} {}
           }
           Fl_Choice m_choice_basemap {
             user_data this
-            callback cb_choice_basemap open selected
-            private xywh {266 29 534 26} box BORDER_BOX resizable
+            callback cb_choice_basemap open
+            private xywh {266 29 534 26} box BORDER_BOX down_box BORDER_BOX resizable
           } {}
           Fl_Box {} {
             private xywh {800 29 5 25}

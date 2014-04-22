@@ -12,6 +12,8 @@ class dlg_tileserver {open
 } {
   decl {cfg_tileserver m_cfgtileserver;} {private local
   }
+  decl {std::string m_title;} {selected private local
+  }
   decl {bool show_ex();} {private local
   }
   decl {void create_ex();} {private local
@@ -32,13 +34,13 @@ dlg->cb_spinner_zmin_ex(widget);} {}
     code {dlg_tileserver *dlg = static_cast<dlg_tileserver*>(userdata);
 dlg->cb_spinner_zmax_ex(widget);} {}
   }
-  Function {dlg_tileserver(const cfg_tileserver& c)} {open
+  Function {dlg_tileserver(const std::string& title, const cfg_tileserver& c)} {open
   } {
     Fl_Window m_window {
-      label {Edit tileserver} open
-      private xywh {2231 351 380 220} type Double resizable modal size_range {380 220 0 0} visible
+      label {Edit tileserver}
+      private xywh {2231 351 380 220} type Double hide resizable modal size_range {380 220 0 0}
     } {
-      Fl_Pack {} {open
+      Fl_Pack {} {
         private xywh {0 0 380 222} resizable
       } {
         Fl_Pack {} {open
@@ -67,7 +69,7 @@ dlg->cb_spinner_zmax_ex(widget);} {}
             Fl_Box {} {
               private xywh {5 30 370 5}
             }
-            Fl_Pack {} {
+            Fl_Pack {} {open
               private xywh {5 35 370 25} type HORIZONTAL
             } {
               Fl_Box {} {
@@ -170,7 +172,7 @@ dlg->cb_spinner_zmax_ex(widget);} {}
                 private xywh {265 192 5 25}
               }
               Fl_Button m_btn_ok {
-                label OK selected
+                label OK
                 private xywh {270 192 105 25}
               }
             }
@@ -185,6 +187,7 @@ dlg->cb_spinner_zmax_ex(widget);} {}
       }
     }
     code {m_cfgtileserver = c;
+m_title = title;
 create_ex();} {}
   }
   Function {~dlg_tileserver()} {} {

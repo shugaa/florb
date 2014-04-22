@@ -140,6 +140,15 @@ std::string utils::timet2iso8601(time_t t)
     return std::string(buf);
 }
 
+std::string utils::pathsep()
+{
+#if defined(WIN32) || defined(_WIN32) 
+return std::string("\\");
+#else 
+return std::string("/");
+#endif 
+}
+
 std::string utils::userdir()
 {
     char *home = getenv("HOME");
@@ -153,7 +162,8 @@ std::string utils::appdir()
 {
     std::ostringstream oss;
     oss << userdir();
-    oss << "/.florb";
+    oss << pathsep();
+    oss << ".florb";
 
     return oss.str();
 }

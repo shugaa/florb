@@ -48,6 +48,8 @@ const std::string sqlitecache::stmt_index = "\
     CREATE UNIQUE INDEX IF NOT EXISTS prkey \
     ON sessions (sid);";
 
+const std::string sqlitecache::dbname = "db";
+
 sqlite3* sqlitecache::m_db = NULL;
 unsigned int sqlitecache::m_refcount = 0;
 
@@ -63,7 +65,7 @@ sqlitecache::sqlitecache(const std::string& url) :
         // Create the tiles directory first if necessary
         utils::mkdir(url);
 
-        rc = sqlite3_open((url+"/db").c_str(), &m_db);
+        rc = sqlite3_open((url+utils::pathsep()+sqlitecache::dbname).c_str(), &m_db);
         if (rc != SQLITE_OK)
         {
             m_db = NULL;
@@ -235,20 +237,20 @@ void sqlitecache::put(int z, int x, int y, time_t expires, const std::vector<cha
         if (!utils::exists(oss.str()))
             utils::mkdir(oss.str());
 
-        oss << "/" << m_sid; 
+        oss << utils::pathsep() << m_sid; 
         if (!utils::exists(oss.str()))
             utils::mkdir(oss.str());
 
-        oss << "/" << z;
+        oss << utils::pathsep() << z;
         if (!utils::exists(oss.str()))
             utils::mkdir(oss.str());
 
-        oss << "/" << x;
+        oss << utils::pathsep() << x;
         if (!utils::exists(oss.str()))
             utils::mkdir(oss.str());
 
         // Store tile in filesystem
-        oss << "/" << y;
+        oss << utils::pathsep() << y;
         std::ofstream of;
         of.open(oss.str().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
 
@@ -441,7 +443,8 @@ int sqlitecache::get(int z, int x, int y, std::vector<char> &buf)
 
         // Return the data
         std::ostringstream oss;
-        oss << utils::appdir() << "/tiles/" << m_sid << "/" << z << "/" << x << "/" << y; 
+        std::string sep(utils::pathsep());
+        oss << m_url << sep << m_sid << sep << z << sep << x << sep << y; 
 
         std::ifstream tf;
         tf.open(oss.str().c_str(), std::ios::in | std::ios::binary);

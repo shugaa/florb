@@ -11,6 +11,8 @@ void dlg_tileserver::create_ex()
 
 bool dlg_tileserver::show_ex()
 {
+    m_window->label(m_title.c_str());
+
     m_choice_imgtype->add("PNG");
     m_choice_imgtype->add("JPEG");
 

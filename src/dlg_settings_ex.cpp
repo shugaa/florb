@@ -111,7 +111,7 @@ void dlg_settings::cb_btn_addserver_ex(Fl_Widget *widget)
     ts.name("My tileserver");
     ts.url("{x}{y}{z}");
 
-    dlg_tileserver dlg(ts);
+    dlg_tileserver dlg(_("Add tile server"), ts);
     if(dlg.show())
     {
         m_cfgtileservers.push_back(dlg.tileserver());
@@ -137,7 +137,7 @@ void dlg_settings::cb_btn_editserver_ex(Fl_Widget *widget)
     if (idx <= 0)
         return;
 
-    dlg_tileserver dlg(m_cfgtileservers[idx-1]);
+    dlg_tileserver dlg(_("Edit tile server"), m_cfgtileservers[idx-1]);
     if(dlg.show())
     {
         m_cfgtileservers[idx-1] = dlg.tileserver();
@@ -219,7 +219,7 @@ color dlg_settings::colorchooser_ex(color c)
     return c;
 }
 
-void dlg_settings::show_ex()
+bool dlg_settings::show_ex()
 {
     m_window->show();
     bool ok = false;
@@ -237,13 +237,8 @@ void dlg_settings::show_ex()
         settings::get_instance()["ui"] = m_cfgui;
         settings::get_instance()["gpsd"] = m_cfggpsd;
         settings::get_instance()["tileservers"] = m_cfgtileservers;
-
-        if (m_cfggpsd.enabled())
-            m_mapctrl->gpsd_connect(m_cfggpsd.host(), m_cfggpsd.port());
-        else
-            m_mapctrl->gpsd_disconnect();
-
     }
 
     m_window->hide();
+    return ok;
 }

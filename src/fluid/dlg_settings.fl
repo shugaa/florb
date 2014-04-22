@@ -5,23 +5,24 @@ i18n_include <libintl.h>
 i18n_function gettext 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include "mapctrl.hpp"} {public global
+decl {\#include "gfx.hpp"} {public global
 } 
 
-decl {\#include "gfx.hpp"} {public global
+decl {\#include "settings.hpp"} {public global
+} 
+
+decl {\#include <vector>} {selected public global
 } 
 
 class dlg_settings {open
 } {
-  decl {mapctrl *m_mapctrl;} {private local
-  }
   decl {cfg_ui m_cfgui;} {private local
   }
   decl {cfg_gpsd m_cfggpsd;} {private local
   }
   decl {std::vector<cfg_tileserver> m_cfgtileservers;} {private local
   }
-  decl {void show_ex();} {private local
+  decl {bool show_ex();} {private local
   }
   decl {void create_ex();} {private local
   }
@@ -57,10 +58,10 @@ class dlg_settings {open
   }
   decl {void tab_tileservers_setup_ex();} {private local
   }
-  Function {dlg_settings(mapctrl *m)} {open
+  Function {dlg_settings()} {open
   } {
     Fl_Window m_window {
-      label Settings open
+      label Settings
       private xywh {2225 177 500 295} type Double resizable modal size_range {500 295 0 0} visible
     } {
       Fl_Pack {} {open
@@ -79,7 +80,7 @@ class dlg_settings {open
             private xywh {5 5 490 250} resizable
           } {
             Fl_Group {} {
-              label Interface open selected
+              label Interface open
               private xywh {10 25 480 225}
             } {
               Fl_Pack {} {open
@@ -372,16 +373,15 @@ class dlg_settings {open
         }
       }
     }
-    code {m_mapctrl = m;
-create_ex();} {}
+    code {create_ex();} {}
   }
   Function {~dlg_settings()} {} {
     code {if (m_window)
     delete m_window;} {}
   }
-  Function {show()} {return_type void
+  Function {show()} {return_type bool
   } {
-    code {show_ex();} {}
+    code {return show_ex();} {}
   }
   Function {cb_btn_markercolor(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {

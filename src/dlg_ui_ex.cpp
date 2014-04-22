@@ -135,23 +135,7 @@ void dlg_ui::create_ex(void)
     m_window->callback(cb_close, this);
 
     // Populate the Basemap selector
-    node section = settings::get_instance()["tileservers"];
-    for(node::iterator it=section.begin(); it!=section.end(); ++it) {
-        m_choice_basemap->add((*it).as<cfg_tileserver>().name().c_str(), 0, NULL, NULL, 0);
-    }
-    if (section.size() > 0)
-    {
-        cfg_tileserver ts0((*section.begin()).as<cfg_tileserver>()); 
-        m_mapctrl->basemap(
-            ts0.name(), 
-            ts0.url(), 
-            ts0.zmin(), 
-            ts0.zmax(), 
-            ts0.parallel(),
-            ts0.type()); 
-        m_choice_basemap->value(0);
-        m_mapctrl->take_focus();
-    }
+    update_choice_basemap_ex();
 
     // Show waypoint markers by default
     m_menuitem_track_showwpmarkers->set(); 
@@ -160,6 +144,37 @@ void dlg_ui::create_ex(void)
     // Start listening to mapctrl events
     register_event_handler<dlg_ui, mapctrl::event_notify>(this, &dlg_ui::mapctrl_evt_notify_ex);
     m_mapctrl->add_event_listener(this);
+}
+
+void dlg_ui::update_choice_basemap_ex(void)
+{
+
+    int idx = (m_choice_basemap->value() >= 0) ? m_choice_basemap->value() : 0;
+    m_choice_basemap->clear();
+
+    node section = settings::get_instance()["tileservers"];
+    for(node::iterator it=section.begin(); it!=section.end(); ++it) {
+        m_choice_basemap->add((*it).as<cfg_tileserver>().name().c_str());
+    }
+
+    if (section.size() > 0)
+    {
+        if ((size_t)idx >= section.size())
+            idx = 0;
+
+        cfg_tileserver ts = section[idx].as<cfg_tileserver>(); 
+    
+        m_mapctrl->basemap(
+            ts.name(), 
+            ts.url(), 
+            ts.zmin(), 
+            ts.zmax(), 
+            ts.parallel(),
+            ts.type()); 
+
+        m_choice_basemap->value(idx);
+        m_mapctrl->take_focus();
+    }
 }
 
 void dlg_ui::destroy_ex(void)
@@ -269,8 +284,19 @@ void dlg_ui::showwpmarkers_ex()
 
 void dlg_ui::settings_ex()
 {
-    dlg_settings gd(m_mapctrl);
-    gd.show();
+    dlg_settings gd;
+    if (gd.show())
+    {
+        settings s = settings::get_instance();
+        cfg_gpsd cfggpsd = s["gpsd"].as<cfg_gpsd>();
+
+        if (cfggpsd.enabled() && (!m_mapctrl->gpsd_connected()))
+            m_mapctrl->gpsd_connect(cfggpsd.host(), cfggpsd.port());
+        else
+            m_mapctrl->gpsd_disconnect();
+
+        update_choice_basemap_ex();
+    }
 }
 
 void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)

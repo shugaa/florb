@@ -19,7 +19,7 @@ class cfg_tileserver
     public:
         cfg_tileserver() : 
             m_name("OpenStreetMap"),
-            m_url("http://tile.openstreetmap.org/$FLORBZ$/$FLORBX$/$FLORBY$.png"),
+            m_url("http://tile.openstreetmap.org/{z}/{x}/{y}.png"),
             m_zmin(0),
             m_zmax(18),
             m_parallel(2),
