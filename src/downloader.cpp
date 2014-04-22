@@ -3,6 +3,7 @@
 #include <boost/bind.hpp>
 #include <FL/Fl.H>
 
+#include "utils.hpp"
 #include "version.hpp"
 #include "downloader.hpp"
 
@@ -12,10 +13,25 @@ downloader::downloader(int nthreads) :
 {
     for (int i=0;i<nthreads;i++)
     {
-        workerinfo *ti = new workerinfo(
-            new boost::thread(boost::bind(&downloader::worker, this)));
+        workerinfo *ti;
+        try {
+            // Try to create a new worker thread
+            ti = new workerinfo(
+                new boost::thread(boost::bind(&downloader::worker, this)));
+        } catch (...) {
+            // Delete all previously created threads
+            exit(true);
+            for (int j=0;j<i;j++)
+            {
+                m_workers[j]->t()->join();
+                delete m_workers[j]->t();
+                delete m_workers[j];
+            }
 
-#if 0
+            throw std::runtime_error(_("Failed to start downloader"));
+        }
+
+#if 1
         struct sched_param param;
         param.sched_priority = 0;
         pthread_setschedparam(ti->t()->native_handle(), SCHED_RR, &param);
@@ -27,6 +43,7 @@ downloader::downloader(int nthreads) :
 
 downloader::~downloader()
 {
+    // Set exit flag
     exit(true);
 
     // Post once for each worker thread
@@ -152,7 +169,7 @@ void downloader::worker()
     curl_easy_setopt(curl_handle, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(curl_handle, CURLOPT_DNS_USE_GLOBAL_CACHE, 0);
 
-    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 15);
+    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 10);
     curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 10); 
 
     for (;;)
@@ -162,15 +179,13 @@ void downloader::worker()
         if (exit())
             break;
 
-        //boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
-
         // Get a download item from the list
         m_mutex.lock();
         download_internal dl = *(m_queue.end()-1);
         m_queue.erase(m_queue.end()-1);
         m_mutex.unlock();
 
-        // Clear the buffer, reset the expires header
+        // Clear the buffer
         dl.buf().resize(0);
         
         int rc;

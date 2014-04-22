@@ -53,7 +53,9 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void settings_ex(void);} {private local
   }
-  decl {void update_choice_basemap_ex(void);} {selected private local
+  decl {void about_ex(void);} {selected private local
+  }
+  decl {void update_choice_basemap_ex(void);} {private local
   }
   decl {void showwpmarkers_ex(void);} {private local
   }
@@ -84,8 +86,6 @@ class dlg_ui {open : {public event_listener}
   decl {void cb_close_ex(Fl_Widget *widget);} {private local
   }
   decl {bool mapctrl_evt_notify_ex(const mapctrl::event_notify *e);} {private local
-  }
-  decl {dlg_about *m_dlg_about;} {private local
   }
   Function {cb_close(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
@@ -142,10 +142,11 @@ ui->cb_btn_deleteselection_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
-  Function {dlg_ui()} {open
-  } {
+  Function {dlg_ui()} {} {
     Fl_Window m_window {
-      label florb open
+      label florb
+      user_data this
+      callback cb_close open
       private xywh {1976 180 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open

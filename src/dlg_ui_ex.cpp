@@ -15,6 +15,7 @@ static dlg_ui *ui;
 
 int main_ex(int argc, char* argv[])
 {
+    // Install signal handlers
     signal(SIGABRT, &sighandler);
     signal(SIGTERM, &sighandler);
     signal(SIGINT, &sighandler);
@@ -34,6 +35,7 @@ int main_ex(int argc, char* argv[])
 
     int ret = Fl::run();
 
+    // delete the dialog, it is hidden already
     delete ui;
 
     // Deinit CURL
@@ -44,6 +46,7 @@ int main_ex(int argc, char* argv[])
 
 void sighandler_ex(int sig)
 {
+    // Got SIGABRT / SIGTERM / SIGINT
     ui->hide();
 }
 
@@ -101,6 +104,9 @@ bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
 
 void dlg_ui::create_ex(void)
 {
+    // Set the window icon
+    utils::set_window_icon(m_window);
+
     // Fluid 1.3 does not gettext the menuitems, do it manually here
     // File
     m_menuitem_file->label(_("File"));
@@ -125,15 +131,6 @@ void dlg_ui::create_ex(void)
     m_menuitem_help->label(_("Help"));
     m_menuitem_help_about->label(_("About"));
 
-    // Set the window icon
-    utils::set_window_icon(m_window);
-
-    // Create UI dialogs
-    m_dlg_about = new dlg_about();
-
-    // Register UI callbacks
-    m_window->callback(cb_close, this);
-
     // Populate the Basemap selector
     update_choice_basemap_ex();
 
@@ -148,40 +145,49 @@ void dlg_ui::create_ex(void)
 
 void dlg_ui::update_choice_basemap_ex(void)
 {
-
+    // Remember the currently selected item index if any, then clear the widget
     int idx = (m_choice_basemap->value() >= 0) ? m_choice_basemap->value() : 0;
     m_choice_basemap->clear();
 
+    // Get the configured tileservers from the settings and populate the widget
     node section = settings::get_instance()["tileservers"];
     for(node::iterator it=section.begin(); it!=section.end(); ++it) {
         m_choice_basemap->add((*it).as<cfg_tileserver>().name().c_str());
     }
 
+    // If there are any connfigured tileservers at all...
     if (section.size() > 0)
     {
+        // Invalid index, reset to default (first item)
         if ((size_t)idx >= section.size())
             idx = 0;
 
+        // Pick the tileserver config item at index idx
         cfg_tileserver ts = section[idx].as<cfg_tileserver>(); 
-    
-        m_mapctrl->basemap(
-            ts.name(), 
-            ts.url(), 
-            ts.zmin(), 
-            ts.zmax(), 
-            ts.parallel(),
-            ts.type()); 
+   
+        // Try to create a basemap
+        try {
+            m_mapctrl->basemap(
+                ts.name(), 
+                ts.url(), 
+                ts.zmin(), 
+                ts.zmax(), 
+                ts.parallel(),
+                ts.type()); 
+        } catch (std::runtime_error& e) {
+            fl_alert("%s", e.what()); 
+        }
 
+        // Set the selected item index
         m_choice_basemap->value(idx);
+
+        // Focus on the map
         m_mapctrl->take_focus();
     }
 }
 
 void dlg_ui::destroy_ex(void)
 {
-    // Delete UI dialogs
-    delete(m_dlg_about);
-
     // Delete toplevel window
     delete(m_window);
 
@@ -215,7 +221,9 @@ void dlg_ui::loadtrack_ex()
     // Try to load the track
     try {
         m_mapctrl->gpx_loadtrack(std::string(fc.value()));
-    } catch (...) {}
+    } catch (std::runtime_error& e) {
+        fl_alert("%s", e.what());  
+    }
 }
 
 void dlg_ui::savetrack_ex()
@@ -234,69 +242,94 @@ void dlg_ui::savetrack_ex()
         return;
 
     // Load the track
-    m_mapctrl->gpx_savetrack(std::string(fc.value()));
+    try {
+        m_mapctrl->gpx_savetrack(std::string(fc.value()));
+    } catch (std::runtime_error& e) {
+        fl_alert("%s", e.what());
+    }
 }
 
 void dlg_ui::cleartrack_ex()
 {
+    // Clear all waypoints
     m_mapctrl->gpx_cleartrack();
 }
 
 void dlg_ui::gotocursor_ex()
 {
+    // Center over current GPS position
     m_mapctrl->goto_cursor();
 }
 
 void dlg_ui::lockcursor_ex()
 {
+    // Lock / unlock GPS cursor
     bool start = (m_btn_lockcursor->value() == 1) ? true : false;
     m_mapctrl->gpsd_lock(start);
 }
 
 void dlg_ui::recordtrack_ex()
 {
+    // Start / stop recording
     bool start = (m_btn_recordtrack->value() == 1) ? true : false;
     m_mapctrl->gpsd_record(start);
 }
 
 void dlg_ui::editselection_ex()
 {
+    // No waypoints selected
     if (!m_mapctrl->gpx_wpselected())
         return;
 
+    // Show editor dialog for selected waypoints
     dlg_editselection es(m_mapctrl);
     es.show();
 }
 
 void dlg_ui::deleteselection_ex()
 {
+    // No waypoints selected
     if (!m_mapctrl->gpx_wpselected())
         return;
 
+    // Delete selected waypoints
     m_mapctrl->gpx_wpdelete();
 }
 
 void dlg_ui::showwpmarkers_ex()
 {
+    // Show / hide waypoint markers
     bool b = (m_menuitem_track_showwpmarkers->value() == 0) ? false : true; 
     m_mapctrl->gpx_showwpmarkers(b);
 }
 
 void dlg_ui::settings_ex()
 {
+    // Create settings dialog
     dlg_settings gd;
+
+    // If the settings were updated
     if (gd.show())
     {
         settings s = settings::get_instance();
+        
+        // Connect / disconnect GPSD
         cfg_gpsd cfggpsd = s["gpsd"].as<cfg_gpsd>();
-
         if (cfggpsd.enabled() && (!m_mapctrl->gpsd_connected()))
             m_mapctrl->gpsd_connect(cfggpsd.host(), cfggpsd.port());
         else
             m_mapctrl->gpsd_disconnect();
 
+        // Update the list of tileservers
         update_choice_basemap_ex();
     }
+}
+
+void dlg_ui::about_ex()
+{
+    // Show about dialog
+    dlg_about gd;
+    gd.show();
 }
 
 void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
@@ -359,17 +392,26 @@ void dlg_ui::cb_btn_deleteselection_ex(Fl_Widget *widget)
 
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
 {
+    // Get selected item index
     int idx = m_choice_basemap->value();
 
+    // Get all configured tileservers
     std::vector<cfg_tileserver> tileservers(settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >());
-    m_mapctrl->basemap(
-            tileservers[idx].name(), 
-            tileservers[idx].url(), 
-            tileservers[idx].zmin(), 
-            tileservers[idx].zmax(), 
-            tileservers[idx].parallel(),
-            tileservers[idx].type());
 
+    // Try to create a basemap using the selected tile server configuration
+    try {
+        m_mapctrl->basemap(
+                tileservers[idx].name(), 
+                tileservers[idx].url(), 
+                tileservers[idx].zmin(), 
+                tileservers[idx].zmax(), 
+                tileservers[idx].parallel(),
+                tileservers[idx].type());
+    } catch (std::runtime_error& e) {
+        fl_alert("%s", e.what());        
+    }
+
+    // Map focus
     m_mapctrl->take_focus();
 }
 
@@ -422,7 +464,7 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
 
     // Help submenu
     else if (mit == m_menuitem_help_about) { 
-        m_dlg_about->show();
+        about_ex();
     }
 
     m_mapctrl->take_focus();

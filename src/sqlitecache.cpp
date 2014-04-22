@@ -65,11 +65,11 @@ sqlitecache::sqlitecache(const std::string& url) :
         // Create the tiles directory first if necessary
         utils::mkdir(url);
 
-        rc = sqlite3_open((url+utils::pathsep()+sqlitecache::dbname).c_str(), &m_db);
+        rc = sqlite3_open((url + utils::pathsep() + sqlitecache::dbname).c_str(), &m_db);
         if (rc != SQLITE_OK)
         {
             m_db = NULL;
-            throw 0;
+            throw std::runtime_error(_("Failed to open / create cache database"));
         }
     }
 
@@ -123,7 +123,7 @@ sqlitecache::sqlitecache(const std::string& url) :
             m_db = NULL;
         }
 
-        throw 0;
+        throw std::runtime_error(_("Failed to open / create cache database"));;
     }
 
     // One more user for this database connection
@@ -209,7 +209,7 @@ void sqlitecache::sessionid(const std::string& session)
 
     if (rc != 0)
     {
-        throw 0;
+        throw std::runtime_error(_("Cache error: SESSIONID"));
     }
 }
 
@@ -342,7 +342,7 @@ void sqlitecache::put(int z, int x, int y, time_t expires, const std::vector<cha
 
     if (rc != 0)
     {
-        throw 0;
+        throw std::runtime_error(_("Cache error: PUT"));
     }
 }
 
@@ -399,7 +399,7 @@ int sqlitecache::exists(int z, int x, int y)
 
     if (rc < 0)
     {
-        throw 0;
+        throw std::runtime_error(_("Cache error: EXISTS"));
     }
 
     return rc;
@@ -488,7 +488,7 @@ int sqlitecache::get(int z, int x, int y, std::vector<char> &buf)
 
     if (rc < 0)
     {
-        throw 0;
+        throw std::runtime_error(_("Cache error: GET"));
     }
 
     return rc;

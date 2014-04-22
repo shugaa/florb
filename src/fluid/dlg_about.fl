@@ -8,26 +8,23 @@ code_name {.cxx}
 decl {\#include <FL/Fl_Text_Buffer.H>} {public global
 } 
 
-decl {\#include <string>} {private global
-} 
-
-decl {\#include "version.hpp"} {private global
-} 
-
-decl {\#include "utils.hpp"} {private global
-} 
-
 class dlg_about {open
 } {
   decl {Fl_Text_Buffer *m_buf;} {private local
   }
+  decl {void create_ex();} {private local
+  }
+  decl {void destroy_ex();} {private local
+  }
+  decl {void show_ex();} {private local
+  }
   Function {dlg_about()} {open
   } {
     Fl_Window m_window {
-      label {About / License} open
-      private xywh {554 188 500 295} type Double resizable modal visible
+      label {About / License} selected
+      private xywh {2169 240 500 295} type Double resizable modal size_range {500 295 0 0} visible
     } {
-      Fl_Pack {} {open
+      Fl_Pack {} {
         private xywh {0 0 500 297} resizable
       } {
         Fl_Box {} {
@@ -39,7 +36,7 @@ class dlg_about {open
           Fl_Box {} {
             private xywh {0 5 5 250}
           }
-          Fl_Text_Display m_display {selected
+          Fl_Text_Display m_display {
             private xywh {5 5 490 250} box BORDER_BOX resizable
           }
           Fl_Box {} {
@@ -84,62 +81,13 @@ class dlg_about {open
         }
       }
     }
-    code {m_buf = new Fl_Text_Buffer();
-
-std::string v(std::string("Version: ") + std::string(FLORB_PROGSTR));
-
-m_buf->append(v.c_str());
-m_buf->append("\\n\\n");
-
-m_buf->append("Copyright (c) 2014 Bjoern Rehm <bjoern@shugaa.de>");
-m_buf->append("\\n\\n");
-m_buf->append("Distributed under the terms of the MIT license as stated below:");
-m_buf->append("\\n\\n");
-m_buf->append("Permission is hereby granted, free of charge, to any person obtaining a copy\\n");
-m_buf->append("of this software and associated documentation files (the \\"Software\\"), to deal\\n");
-m_buf->append("in the Software without restriction, including without limitation the rights\\n");
-m_buf->append("to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\\n");
-m_buf->append("copies of the Software, and to permit persons to whom the Software is\\n");
-m_buf->append("furnished to do so, subject to the following conditions:");
-m_buf->append("\\n\\n");
-m_buf->append("The above copyright notice and this permission notice shall be included in\\n");
-m_buf->append("all copies or substantial portions of the Software.");
-m_buf->append("\\n\\n");
-m_buf->append("THE SOFTWARE IS PROVIDED \\"AS IS\\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\\n");
-m_buf->append("IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY\\n");
-m_buf->append("FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\\n");
-m_buf->append("AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\\n");
-m_buf->append("LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\\n");
-m_buf->append("OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\\n");
-m_buf->append("THE SOFTWARE.");
-
-m_display->buffer(m_buf);
-
-// Set the window icon
-utils::set_window_icon(m_window);} {}
+    code {create_ex();} {}
   }
-  Function {~dlg_about()} {open
-  } {
-    code {if (m_window)
-    delete(m_window);
-    
-if (m_buf)
-    delete(m_buf);} {}
+  Function {~dlg_about()} {} {
+    code {destroy_ex();} {}
   }
-  Function {show()} {open return_type int
+  Function {show()} {return_type void
   } {
-    code {m_window->show();
-
-int r = 0;
-for (;;) {
-  Fl_Widget *o = Fl::readqueue();
-  if (!o) Fl::wait();
-  else if (o == m_btn_ok) {r=1;break;}
-  else if (o == m_window) {r=2;break;}
-}
-
-m_window->hide();
-
-return r;} {}
+    code {show_ex();} {}
   }
 } 

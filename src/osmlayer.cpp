@@ -53,20 +53,26 @@ osmlayer::osmlayer(
     // Create cache
     cfg_cache cfgcache = settings::get_instance()["cache"].as<cfg_cache>();
     m_cache = new sqlitecache(cfgcache.location());
-    if (!m_cache)
-        throw 0;
 
     // Create a cache session for the given URL
-    m_cache->sessionid(url);
+    try {
+        m_cache->sessionid(url);
+    } catch (std::runtime_error& e) {
+        delete m_cache;
+        throw e;
+    }
 
     // Create the requested number of download threads
-    m_downloader = new downloader(parallel);
-    if (!m_downloader)
-        throw 0;
+    try {
+        m_downloader = new downloader(parallel);
+    } catch (std::runtime_error& e) {
+        delete m_cache;
+        throw e;
+    }
 
     // Register event handlers
-    m_downloader->add_event_listener(this);
     register_event_handler<osmlayer, downloader::event_complete>(this, &osmlayer::evt_downloadcomplete);
+    m_downloader->add_event_listener(this);
 };
 
 osmlayer::~osmlayer()
@@ -119,8 +125,13 @@ void osmlayer::process_downloads()
 
         if (dtmp.buf().size() != 0)
         {
-            m_cache->put(ti->z(), ti->x(), ti->y(), expires, dtmp.buf());
             ret = true;
+
+            try {
+                m_cache->put(ti->z(), ti->x(), ti->y(), expires, dtmp.buf());
+            } catch (std::runtime_error& e) {
+                ret = false;
+            }
         }
 
         delete ti;
@@ -401,7 +412,13 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
        for (px=pstartx, tx=tstartx; px<(int)vp.w(); px+=TILE_H, tx++)
        {
           // Get the tile
-          int rc = m_cache->get(vp.z(), tx, ty, m_imgbuf);
+
+          int rc;
+          try {
+            rc = m_cache->get(vp.z(), tx, ty, m_imgbuf);
+          } catch (std::runtime_error& e) {
+            rc = sqlitecache::NOTFOUND;
+          }
           
           // Draw the tile if we either have a valid or expired version of it...
           if (rc != sqlitecache::NOTFOUND)

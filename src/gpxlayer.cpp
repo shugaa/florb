@@ -286,11 +286,10 @@ void gpxlayer::load_track(const std::string &path)
     name(path);
     tinyxml2::XMLDocument doc;
     if (doc.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR)
-        throw 0;
+        throw std::runtime_error(_("Failed to open GPX file"));
 
     m_trkpts.clear();
     m_selection.waypoints.clear();
-
 
     // TinyXML's number parsing is locale dependent
     char * oldlc;
@@ -377,9 +376,11 @@ void gpxlayer::save_track(const std::string &path)
         e2->InsertEndChild(e3);
     }
 
-    doc.SaveFile(path.c_str()); 
-
+    tinyxml2::XMLError xmlerr = doc.SaveFile(path.c_str());
     setlocale(LC_ALL, oldlc);
+
+    if (xmlerr !=  tinyxml2::XML_NO_ERROR)
+        throw std::runtime_error(_("Failed to save GPX data"));
 }
 
 void gpxlayer::clear_track()
@@ -702,7 +703,7 @@ void gpxlayer::parsetree(tinyxml2::XMLNode *parent)
     }
 
     if (ret == false)
-        throw("XML parser error");
+        std::runtime_error("GPX XML parser error");
 
     // Recurse the rest of the subtree
     tinyxml2::XMLNode *child;

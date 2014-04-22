@@ -189,19 +189,21 @@ void mapctrl::basemap(
     // Save a reference to the original basemap layer. This layer is not
     // removed before the new basemap layer is created, so the cache won't be
     // closed and reopened in the process.
-    layer *tmp = m_basemap;
-    m_basemap = NULL;
+    osmlayer *lold = m_basemap;
+    osmlayer *lnew = NULL;
 
     // Create a new basemap layer
-    m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
+    lnew = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
+    m_basemap = lnew;
+
     m_basemap->add_event_listener(this);
     add_event_listener(m_basemap);
 
     // Destroy the original basemap layer 
-    if (tmp)
+    if (lold)
     {
-        remove_event_listener(tmp);
-        delete tmp;
+        remove_event_listener(lold);
+        delete lold;
     }
 
     // Redraw
