@@ -58,14 +58,13 @@ void dlg_garminul::cb_btn_upload_ex(Fl_Widget *widget)
 
     std::string line;
     Fl::check();
-    while (sh.readln(line)) {}
+    bool ok = sh.wait();
 
     m_btn_upload->activate();
     m_btn_ok->activate();
     m_input_title->activate();
     m_choice_device->activate();
 
-    bool ok = sh.wait();
     if (ok)
         fl_message("%s", _("Upload OK"));
     else

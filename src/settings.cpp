@@ -236,9 +236,8 @@ node node::iterator::operator* () const
 
 settings::settings()
 {
-    std::string ad(utils::appdir());
-    m_cfgfile = ad+"/config";
-    utils::mkdir(ad);
+    m_cfgfile = utils::appdir() + utils::pathsep() + "config";
+    utils::mkdir(utils::appdir());
 
     m_rootnode = node(m_cfgfile);
     defaults(m_cfgfile);

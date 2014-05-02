@@ -195,6 +195,7 @@ class settings
         node operator[] (const std::string &name) { return m_rootnode[name]; };
     private:
         settings();
+        settings(const settings& s);
         void defaults(const std::string& path);
         node m_rootnode;
         std::string m_cfgfile;

@@ -341,7 +341,7 @@ void dlg_ui::settings_ex()
     // If the settings were updated
     if (gd.show())
     {
-        settings s = settings::get_instance();
+        settings &s = settings::get_instance();
         
         // Connect / disconnect GPSD
         cfg_gpsd cfggpsd = s["gpsd"].as<cfg_gpsd>();
