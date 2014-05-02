@@ -173,6 +173,11 @@ void utils::mkdir(const std::string& path)
     boost::filesystem::create_directory(path);
 }
 
+void utils::rm(const std::string& path)
+{
+    boost::filesystem::remove_all(path);
+}
+
 bool utils::exists(const std::string& path)
 {
     return boost::filesystem::exists(path);
@@ -195,6 +200,42 @@ void utils::set_window_icon(Fl_Window *w)
     Pixmap p, mask;
     XpmCreatePixmapFromData(fl_display, DefaultRootWindow(fl_display), const_cast<char**>(florb_xpm), &p, &mask, NULL);
     w->icon((char *)p);
+}
+
+std::vector<std::string> utils::str_split(const std::string& str, const std::string& delimiter)
+{
+    std::size_t offs = 0, p1 = 0, p2 = std::string::npos;
+    std::size_t len = str.length();
+
+    std::vector<std::string> ret;
+    while ((offs < len) && (p2 = str.find(delimiter, offs)) != std::string::npos)
+    {
+        std::string token(str.substr(p1, p2-p1));
+
+        if (token.length() > 0)
+            ret.push_back(str.substr(p1, p2-p1));
+    
+        p1 = p2 + delimiter.length();
+        offs = p1;
+    }
+
+    if ((p1 != len))
+        ret.push_back(str.substr(p1, len-p1));
+
+    return ret;
+}
+
+std::size_t utils::str_count(const std::string& str, const std::string& token)
+{
+    std::size_t ret = 0, offs = 0;
+
+    while ((offs < str.length()) && (offs = str.find(token, offs) != std::string::npos))
+    {
+        offs += token.length();
+        ret++;
+    }
+
+    return ret;
 }
 
 // Cohen–Sutherland clipping algorithm

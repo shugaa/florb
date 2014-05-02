@@ -199,15 +199,15 @@ void mapctrl::basemap(
     m_basemap->add_event_listener(this);
     add_event_listener(m_basemap);
 
+    // Redraw
+    refresh();
+
     // Destroy the original basemap layer 
     if (lold)
     {
         remove_event_listener(lold);
         delete lold;
     }
-
-    // Redraw
-    refresh();
 }
 
 unsigned int mapctrl::zoom()

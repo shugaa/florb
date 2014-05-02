@@ -655,7 +655,7 @@ void gpxlayer::parsetree(tinyxml2::XMLNode *parent)
         std::string val(parent->Value());
 
         // Handle trackpoint
-        if (val.compare("trkpt") == 0) 
+        if ((val.compare("trkpt") == 0) || (val.compare("wpt") == 0))
         {
             double lat = 1234.5, lon = 1234.5;
             etmp->QueryDoubleAttribute("lat", &lat);

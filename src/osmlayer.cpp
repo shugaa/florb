@@ -96,8 +96,8 @@ void osmlayer::process_downloads()
     bool ret = false; 
 
     // Only update if the last requested batch of tiles is complete
-    if (m_downloader->qsize() > 0)
-        return;
+    //if (m_downloader->qsize() > 0)
+    //    return;
 
     // Cache all downloaded tiles
     downloader::download dtmp;
@@ -178,8 +178,8 @@ void osmlayer::download_qtile(int z, int x, int y)
 {
     if (!m_dlenable)
         return;
-    if (m_downloader->qsize() >= m_parallel)
-        return;
+    //if (m_downloader->qsize() >= m_parallel)
+    //    return;
 
     // Check whether the requested tile is already being processed
     std::vector<tileinfo*>::iterator it;
@@ -437,7 +437,7 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {
-              if (parallel < m_parallel)
+              //if (parallel < m_parallel)
               {
                   download_qtile(vp.z(), tx, ty);
                   parallel++;

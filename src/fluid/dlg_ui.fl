@@ -53,11 +53,13 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void settings_ex(void);} {private local
   }
-  decl {void about_ex(void);} {selected private local
+  decl {void about_ex(void);} {private local
   }
   decl {void update_choice_basemap_ex(void);} {private local
   }
   decl {void showwpmarkers_ex(void);} {private local
+  }
+  decl {void garmindl_ex(void);} {private local
   }
   decl {void show_ex(int argc, char *argv[]);} {private local
   }
@@ -142,7 +144,8 @@ ui->cb_btn_deleteselection_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
-  Function {dlg_ui()} {} {
+  Function {dlg_ui()} {open
+  } {
     Fl_Window m_window {
       label florb
       user_data this
@@ -185,7 +188,7 @@ ui->cb_choice_basemap_ex(widget);} {}
             }
           }
           Submenu m_menuitem_track {
-            label Track open
+            label Track open selected
             private xywh {0 0 100 20}
           } {
             MenuItem m_menuitem_track_clear {
@@ -203,6 +206,10 @@ ui->cb_choice_basemap_ex(widget);} {}
             MenuItem m_menuitem_track_showwpmarkers {
               label {Show waypoint markers}
               private xywh {50 50 100 20} type Toggle shortcut 0x4006d
+            }
+            MenuItem m_menuitem_track_garmindl {
+              label {Download from Garmin device}
+              private xywh {60 60 100 20} shortcut 0x4006d
             }
           }
           Submenu m_menuitem_gpsd {

@@ -2,6 +2,7 @@
 #define UTILS_HPP
 
 #include <ctime>
+#include <vector>
 #include <libintl.h>
 #include <FL/Fl_Window.H>
 #include "point.hpp"
@@ -28,10 +29,14 @@ class utils
         static time_t iso8601_2timet(const std::string& iso);
         static std::string timet2iso8601(time_t t);
 
+        static std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
+        static std::size_t str_count(const std::string& str, const std::string& token);
+
         static std::string pathsep();
         static std::string userdir();
         static std::string appdir();
         static void mkdir(const std::string& path);
+        static void rm(const std::string& path);
         static bool exists(const std::string& path);
         static std::string filestem(const std::string& path);
         static void touch(const std::string& path);
