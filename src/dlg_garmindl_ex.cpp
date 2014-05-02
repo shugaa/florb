@@ -96,6 +96,11 @@ void dlg_garmindl::cb_btn_download_ex(Fl_Widget *widget)
     m_choice_device->activate();
 
     if (sh.wait())
+    {
+        fl_message("%s", _("Download OK"));
         m_dlstatus = true;
+    }
+    else
+        fl_message("%s", _("Download Failed!"));
 }
 

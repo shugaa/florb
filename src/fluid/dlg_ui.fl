@@ -61,6 +61,8 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void garmindl_ex(void);} {private local
   }
+  decl {void garminul_ex(void);} {private local
+  }
   decl {void show_ex(int argc, char *argv[]);} {private local
   }
   decl {void hide_ex();} {private local
@@ -158,7 +160,7 @@ ui->cb_choice_basemap_ex(widget);} {}
         Fl_Menu_Bar m_menubar {
           label Menu
           user_data this
-          callback cb_menu open
+          callback cb_menu open selected
           private xywh {0 0 805 25} box FLAT_BOX
         } {
           Submenu m_menuitem_file {
@@ -188,7 +190,7 @@ ui->cb_choice_basemap_ex(widget);} {}
             }
           }
           Submenu m_menuitem_track {
-            label Track open selected
+            label Track open
             private xywh {0 0 100 20}
           } {
             MenuItem m_menuitem_track_clear {
@@ -208,8 +210,12 @@ ui->cb_choice_basemap_ex(widget);} {}
               private xywh {50 50 100 20} type Toggle shortcut 0x4006d
             }
             MenuItem m_menuitem_track_garmindl {
-              label {Download from Garmin device}
-              private xywh {60 60 100 20} shortcut 0x4006d
+              label {Download from device}
+              private xywh {60 60 100 20}
+            }
+            MenuItem m_menuitem_track_garminul {
+              label {Upload to device}
+              private xywh {70 70 100 20}
             }
           }
           Submenu m_menuitem_gpsd {

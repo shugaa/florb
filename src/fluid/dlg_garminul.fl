@@ -1,0 +1,130 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include <string>} {public global
+} 
+
+class dlg_garminul {open
+} {
+  decl {void show_ex();} {private local
+  }
+  decl {void create_ex();} {private local
+  }
+  decl {void cb_btn_upload_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_input_title_ex(Fl_Widget *widget);} {selected private local
+  }
+  decl {std::string m_path;} {private local
+  }
+  Function {cb_btn_upload(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_garminul *dlg = static_cast<dlg_garminul*>(userdata);
+dlg->cb_btn_upload_ex(widget);} {}
+  }
+  Function {cb_input_title(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_garminul *dlg = static_cast<dlg_garminul*>(userdata);
+dlg->cb_input_title_ex(widget);} {}
+  }
+  Function {dlg_garminul(const std::string& path)} {} {
+    Fl_Window m_window {
+      label {Device upload} open
+      private xywh {2290 332 380 130} type Double resizable modal size_range {380 130 0 0} visible
+    } {
+      Fl_Pack {} {open
+        private xywh {0 0 380 132} type HORIZONTAL resizable
+      } {
+        Fl_Box {} {
+          private xywh {0 0 5 132}
+        }
+        Fl_Pack {} {open
+          private xywh {5 0 370 132} resizable
+        } {
+          Fl_Box {} {
+            private xywh {5 0 370 5}
+          }
+          Fl_Pack {} {open
+            private xywh {5 5 370 25} type HORIZONTAL
+          } {
+            Fl_Box {} {
+              label Device
+              private xywh {5 5 130 25} align 20
+            }
+            Fl_Choice m_choice_device {open
+              private xywh {135 5 240 25} down_box BORDER_BOX resizable
+            } {}
+          }
+          Fl_Box {} {
+            private xywh {5 30 370 5}
+          }
+          Fl_Pack {} {open
+            private xywh {5 35 370 25} type HORIZONTAL
+          } {
+            Fl_Box {} {
+              label {Track title}
+              private xywh {5 35 130 25} align 20
+            }
+            Fl_Input m_input_title {
+              user_data this
+              callback cb_input_title
+              private xywh {135 35 240 25} when 1
+            }
+          }
+          Fl_Box {} {
+            private xywh {5 60 370 5}
+          }
+          Fl_Pack {} {open
+            private xywh {5 65 370 25} type HORIZONTAL
+          } {
+            Fl_Button m_btn_upload {
+              label Upload
+              user_data this
+              callback cb_btn_upload
+              private xywh {5 65 370 25} resizable
+            }
+          }
+          Fl_Box {} {
+            private xywh {5 90 370 5} resizable
+          }
+          Fl_Box {} {
+            private xywh {5 95 370 2} box ENGRAVED_BOX
+          }
+          Fl_Box {} {
+            private xywh {5 97 370 5}
+          }
+          Fl_Pack {} {open
+            private xywh {5 102 370 25} type HORIZONTAL
+          } {
+            Fl_Box {} {
+              private xywh {5 102 265 25} resizable
+            }
+            Fl_Button m_btn_ok {
+              label OK
+              private xywh {270 102 105 25}
+            }
+          }
+          Fl_Box {} {
+            private xywh {5 127 370 5}
+          }
+        }
+        Fl_Box {} {
+          private xywh {375 0 5 132}
+        }
+      }
+    }
+    code {m_path = path;
+create_ex();} {}
+  }
+  Function {~dlg_garminul()} {} {
+    code {if (m_window)
+    delete(m_window);} {}
+  }
+  Function {show()} {return_type void
+  } {
+    code {show_ex();} {}
+  }
+} 

@@ -11,6 +11,7 @@
 #include "fluid/dlg_editselection.hpp"
 #include "fluid/dlg_settings.hpp"
 #include "fluid/dlg_garmindl.hpp"
+#include "fluid/dlg_garminul.hpp"
 
 static dlg_ui *ui;
 
@@ -123,7 +124,8 @@ void dlg_ui::create_ex(void)
     m_menuitem_track_editwaypoint->label(_("Edit waypoints"));
     m_menuitem_track_deletewaypoints->label(_("Delete waypoints"));
     m_menuitem_track_showwpmarkers->label(_("Show waypoint markers"));
-    m_menuitem_track_garmindl->label(_("Download from Garmin device"));
+    m_menuitem_track_garmindl->label(_("Download from device"));
+    m_menuitem_track_garminul->label(_("Upload to device"));
     // GPSs
     m_menuitem_gpsd->label(_("GPSd"));
     m_menuitem_gpsd_gotocursor->label(_("Go to cursor"));
@@ -319,6 +321,18 @@ void dlg_ui::garmindl_ex()
     }
 }
 
+void dlg_ui::garminul_ex()
+{
+    // Temp gpx file path
+    std::string tmp(utils::appdir() + utils::pathsep() + "tmp.gpx"); 
+    m_mapctrl->gpx_savetrack(tmp);
+
+    // Show upload dialog
+    dlg_garminul dlg(tmp);
+    dlg.show();
+    utils::rm(tmp);
+}
+
 void dlg_ui::settings_ex()
 {
     // Create settings dialog
@@ -466,6 +480,9 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
     }
     else if (mit == m_menuitem_track_garmindl) {
         garmindl_ex();
+    }
+    else if (mit == m_menuitem_track_garminul) {
+        garminul_ex();
     }
     
     // GPSd submenu
