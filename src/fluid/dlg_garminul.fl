@@ -33,7 +33,7 @@ dlg->cb_input_title_ex(widget);} {}
   Function {dlg_garminul(const std::string& path)} {open
   } {
     Fl_Window m_window {
-      label {Device upload} open
+      label {Device upload} open selected
       private xywh {2290 332 380 130} type Double resizable modal size_range {380 130 0 0} visible
     } {
       Fl_Pack {} {open
@@ -71,7 +71,7 @@ dlg->cb_input_title_ex(widget);} {}
             }
             Fl_Input m_input_title {
               user_data this
-              callback cb_input_title selected
+              callback cb_input_title
               private xywh {135 35 240 25} when 1 resizable
             }
           }

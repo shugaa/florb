@@ -385,4 +385,5 @@ template node& node::operator=<cfg_tileserver> (const cfg_tileserver& rhs);
 template node& node::operator=<bool> (const bool& rhs);
 template node& node::operator=<cfg_gpsd> (const cfg_gpsd& rhs);
 template node& node::operator=<cfg_ui> (const cfg_ui& rhs);
+template node& node::operator=<cfg_cache> (const cfg_cache& rhs);
 

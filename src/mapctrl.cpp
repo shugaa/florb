@@ -186,28 +186,24 @@ void mapctrl::basemap(
                 unsigned int parallel,
                 int imgtype)
 {
-    // Save a reference to the original basemap layer. This layer is not
-    // removed before the new basemap layer is created, so the cache won't be
-    // closed and reopened in the process.
     osmlayer *lold = m_basemap;
-    osmlayer *lnew = NULL;
+    m_basemap = NULL;
+
+    // Destroy the orig
+    if (lold)
+    {
+        remove_event_listener(lold);
+        delete lold;
+    }
 
     // Create a new basemap layer
-    lnew = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
-    m_basemap = lnew;
+    m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
 
     m_basemap->add_event_listener(this);
     add_event_listener(m_basemap);
 
     // Redraw
     refresh();
-
-    // Destroy the original basemap layer 
-    if (lold)
-    {
-        remove_event_listener(lold);
-        delete lold;
-    }
 }
 
 unsigned int mapctrl::zoom()

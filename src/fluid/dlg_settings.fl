@@ -11,7 +11,7 @@ decl {\#include "gfx.hpp"} {public global
 decl {\#include "settings.hpp"} {public global
 } 
 
-decl {\#include <vector>} {selected public global
+decl {\#include <vector>} {public global
 } 
 
 class dlg_settings {open
@@ -21,6 +21,8 @@ class dlg_settings {open
   decl {cfg_gpsd m_cfggpsd;} {private local
   }
   decl {std::vector<cfg_tileserver> m_cfgtileservers;} {private local
+  }
+  decl {cfg_cache m_cfgcache;} {private local
   }
   decl {bool show_ex();} {private local
   }
@@ -42,6 +44,8 @@ class dlg_settings {open
   }
   decl {void cb_btn_editserver_ex(Fl_Widget *widget);} {private local
   }
+  decl {void cb_btn_location_ex(Fl_Widget *widget);} {private local
+  }
   decl {void cb_chkbtn_enable_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_inp_trackwidth_ex(Fl_Widget *widget);} {private local
@@ -58,10 +62,12 @@ class dlg_settings {open
   }
   decl {void tab_tileservers_setup_ex();} {private local
   }
+  decl {void tab_cache_setup_ex();} {private local
+  }
   Function {dlg_settings()} {open
   } {
     Fl_Window m_window {
-      label Settings
+      label Settings open
       private xywh {2225 177 500 295} type Double resizable modal size_range {500 295 0 0} visible
     } {
       Fl_Pack {} {open
@@ -80,7 +86,7 @@ class dlg_settings {open
             private xywh {5 5 490 250} resizable
           } {
             Fl_Group {} {
-              label Interface open
+              label Interface open selected
               private xywh {10 25 480 225}
             } {
               Fl_Pack {} {open
@@ -155,7 +161,7 @@ class dlg_settings {open
                 Fl_Box {} {
                   private xywh {10 115 480 5}
                 }
-                Fl_Pack {} {
+                Fl_Pack {} {open
                   private xywh {10 120 480 25} type HORIZONTAL
                 } {
                   Fl_Box {} {
@@ -240,7 +246,7 @@ class dlg_settings {open
                 Fl_Box {} {
                   private xywh {10 55 480 5}
                 }
-                Fl_Pack {} {open
+                Fl_Pack {} {
                   private xywh {10 60 480 25} type HORIZONTAL
                 } {
                   Fl_Box m_box_server {
@@ -256,7 +262,7 @@ class dlg_settings {open
                 Fl_Box {} {
                   private xywh {10 85 480 5}
                 }
-                Fl_Pack {} {open
+                Fl_Pack {} {
                   private xywh {10 90 480 25} type HORIZONTAL
                 } {
                   Fl_Box m_box_port {
@@ -275,7 +281,7 @@ class dlg_settings {open
               }
             }
             Fl_Group {} {
-              label Tileservers open
+              label Tileservers
               private xywh {10 25 480 225} hide resizable
             } {
               Fl_Pack {} {open
@@ -323,6 +329,40 @@ class dlg_settings {open
                 }
               }
             }
+            Fl_Group {} {
+              label Cache open
+              private xywh {10 25 480 225} hide
+            } {
+              Fl_Pack {} {open
+                private xywh {10 25 480 225}
+              } {
+                Fl_Box {} {
+                  private xywh {10 25 480 5}
+                }
+                Fl_Pack {} {open
+                  private xywh {10 30 480 25} type HORIZONTAL
+                } {
+                  Fl_Box {} {
+                    label Location
+                    private xywh {10 30 245 25} align 20
+                  }
+                  Fl_Output m_output_location {
+                    private xywh {255 30 205 25} color 49 resizable
+                  }
+                  Fl_Box {} {
+                    private xywh {460 30 5 25}
+                  }
+                  Fl_Button m_btn_location {
+                    user_data this
+                    callback cb_btn_location
+                    private tooltip {Select cache directory} image {../res/document-open.png} xywh {465 30 25 25} box NO_BOX down_box THIN_DOWN_BOX
+                  }
+                }
+                Fl_Box {} {
+                  private xywh {10 55 480 195} resizable
+                }
+              }
+            }
           }
           Fl_Box {} {
             private xywh {495 5 5 250}
@@ -347,7 +387,7 @@ class dlg_settings {open
         Fl_Box {} {
           private xywh {0 262 500 5}
         }
-        Fl_Pack {} {open
+        Fl_Pack {} {
           private xywh {0 267 500 25} type HORIZONTAL
         } {
           Fl_Box {} {
@@ -442,5 +482,10 @@ dlg->cb_btn_delserver_ex(widget);} {}
   } {
     code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
 dlg->cb_btn_editserver_ex(widget);} {}
+  }
+  Function {cb_btn_location(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_btn_location_ex(widget);} {}
   }
 } 

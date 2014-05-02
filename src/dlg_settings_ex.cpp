@@ -1,5 +1,7 @@
 #include <sstream>
+#include <iostream>
 #include <FL/Fl_Color_Chooser.H>
+#include <Fl/Fl_File_Chooser.H>
 #include "settings.hpp"
 #include "utils.hpp"
 #include "fluid/dlg_settings.hpp"
@@ -13,10 +15,12 @@ void dlg_settings::create_ex()
     m_cfgui = settings::get_instance()["ui"].as<cfg_ui>();
     m_cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
     m_cfgtileservers = settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >();
+    m_cfgcache = settings::get_instance()["cache"].as<cfg_cache>();
 
     tab_ui_setup_ex();
     tab_gpsd_setup_ex(); 
     tab_tileservers_setup_ex(); 
+    tab_cache_setup_ex();
 }
 
 void dlg_settings::cb_btn_markercolor_ex(Fl_Widget *widget)
@@ -75,6 +79,26 @@ void dlg_settings::cb_inp_trackwidth_ex(Fl_Widget *widget)
     }
 }
 
+void dlg_settings::cb_btn_location_ex(Fl_Widget *widget)
+{
+    // Create a file chooser instance
+    Fl_File_Chooser fc(m_cfgcache.location().c_str(), NULL, Fl_File_Chooser::DIRECTORY, _("Select cache directory"));
+    fc.preview(0);
+    fc.show();
+
+    // Wait for user action
+    while(fc.shown())
+        Fl::wait();
+
+    // Do nothing on cancel
+    if (fc.value() == NULL)
+        return;
+
+    // Update location
+    m_cfgcache.location(fc.value());
+    m_output_location->value(m_cfgcache.location().c_str());
+}
+
 void dlg_settings::cb_inp_server_ex(Fl_Widget *widget)
 {
     std::string str(m_input_server->value());
@@ -108,7 +132,7 @@ void dlg_settings::cb_chkbtn_enable_ex(Fl_Widget *widget)
 void dlg_settings::cb_btn_addserver_ex(Fl_Widget *widget)
 {
     cfg_tileserver ts;
-    ts.name("My tileserver");
+    ts.name(_("My tileserver"));
     ts.url("{x}{y}{z}");
 
     dlg_tileserver dlg(_("Add tile server"), ts);
@@ -153,6 +177,11 @@ void dlg_settings::tab_ui_setup_ex()
     m_box_selectioncolor->color(fl_rgb_color(m_cfgui.selectioncolor().r(), m_cfgui.selectioncolor().g(), m_cfgui.selectioncolor().b()));
     m_box_gpscursorcolor->color(fl_rgb_color(m_cfgui.gpscursorcolor().r(), m_cfgui.gpscursorcolor().g(), m_cfgui.gpscursorcolor().b()));
     m_input_trackwidth->value(static_cast<std::ostringstream*>( &(std::ostringstream() << m_cfgui.tracklinewidth()) )->str().c_str());
+}
+
+void dlg_settings::tab_cache_setup_ex()
+{
+    m_output_location->value(m_cfgcache.location().c_str());
 }
 
 void dlg_settings::tab_gpsd_setup_ex()
@@ -237,6 +266,7 @@ bool dlg_settings::show_ex()
         settings::get_instance()["ui"] = m_cfgui;
         settings::get_instance()["gpsd"] = m_cfggpsd;
         settings::get_instance()["tileservers"] = m_cfgtileservers;
+        settings::get_instance()["cache"] = m_cfgcache;
     }
 
     m_window->hide();
