@@ -16,7 +16,7 @@ class dlg_garminul {open
   }
   decl {void cb_btn_upload_ex(Fl_Widget *widget);} {private local
   }
-  decl {void cb_input_title_ex(Fl_Widget *widget);} {selected private local
+  decl {void cb_input_title_ex(Fl_Widget *widget);} {private local
   }
   decl {std::string m_path;} {private local
   }
@@ -30,7 +30,8 @@ dlg->cb_btn_upload_ex(widget);} {}
     code {dlg_garminul *dlg = static_cast<dlg_garminul*>(userdata);
 dlg->cb_input_title_ex(widget);} {}
   }
-  Function {dlg_garminul(const std::string& path)} {} {
+  Function {dlg_garminul(const std::string& path)} {open
+  } {
     Fl_Window m_window {
       label {Device upload} open
       private xywh {2290 332 380 130} type Double resizable modal size_range {380 130 0 0} visible
@@ -70,8 +71,8 @@ dlg->cb_input_title_ex(widget);} {}
             }
             Fl_Input m_input_title {
               user_data this
-              callback cb_input_title
-              private xywh {135 35 240 25} when 1
+              callback cb_input_title selected
+              private xywh {135 35 240 25} when 1 resizable
             }
           }
           Fl_Box {} {
