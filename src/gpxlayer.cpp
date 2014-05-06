@@ -292,8 +292,11 @@ void gpxlayer::load_track(const std::string &path)
     m_selection.waypoints.clear();
 
     // TinyXML's number parsing is locale dependent
-    char * oldlc;
-    oldlc = setlocale(LC_ALL, 0);
+    char *poldlc;
+    char oldlc[16];
+    poldlc = setlocale(LC_ALL, NULL);
+    strncpy(oldlc, poldlc, 15);
+    oldlc[15] = '\0';
     setlocale(LC_ALL, "C");
 
     tinyxml2::XMLElement* root = doc.RootElement();
@@ -309,9 +312,12 @@ void gpxlayer::load_track(const std::string &path)
 
 void gpxlayer::save_track(const std::string &path)
 {
-    // TinyXML's number parsing is locale dependent
-    char * oldlc;
-    oldlc = setlocale(LC_ALL, 0);
+    // TinyXML's number parsing is locale dependent, set to C and restore later
+    char *poldlc;
+    char oldlc[16];
+    poldlc = setlocale(LC_ALL, NULL);
+    strncpy(oldlc, poldlc, 15);
+    oldlc[15] = '\0';
     setlocale(LC_ALL, "C");
 
     tinyxml2::XMLDocument doc;

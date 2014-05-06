@@ -22,9 +22,19 @@ bool dlg_garmindl::show_ex()
 {
     shell sh;
     sh.run("gpsbabel -i garmin -f usb:-1");
-    std::string sout, tmp;
+    std::string tmp;
     while(sh.readln(tmp))
+    {
+        // Very basic gpsbabel output validation (check first item integer)
+        std::istringstream conv(utils::str_split(tmp, " ")[0]);
+        int devidx;
+        if (!(conv >> devidx))
+            break;
+
         m_choice_device->add(tmp.c_str());
+    }
+
+    sh.wait();
 
     if (m_choice_device->size() == 0)
     {
