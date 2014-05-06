@@ -28,10 +28,10 @@ dlg->cb_btn_download_ex(widget);} {}
   Function {dlg_garmindl(const std::string& path)} {open
   } {
     Fl_Window m_window {
-      label {Device download} selected
+      label {Device download} open
       private xywh {2289 221 380 130} type Double resizable modal size_range {380 130 0 0} visible
     } {
-      Fl_Pack {} {
+      Fl_Pack {} {open
         private xywh {0 0 380 132} type HORIZONTAL resizable
       } {
         Fl_Box {} {
@@ -85,15 +85,15 @@ dlg->cb_btn_download_ex(widget);} {}
           Fl_Pack {} {open
             private xywh {5 102 370 25} type HORIZONTAL
           } {
-            Fl_Box {} {
-              private xywh {5 102 155 25}
+            Fl_Box {} {selected
+              private xywh {5 102 155 25} resizable
             }
             Fl_Button m_btn_cancel {
               label Cancel
               private xywh {160 102 105 25}
             }
             Fl_Box {} {
-              private xywh {265 102 5 25} resizable
+              private xywh {265 102 5 25}
             }
             Fl_Button m_btn_ok {
               label OK
