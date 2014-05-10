@@ -111,7 +111,9 @@ double utils::dist(const point2d<double> &p1, const point2d<double> &p2)
     double lon2 = p2.x()*d2r;
     double lat2 = p2.y()*d2r;
 
-    return (6378.388 * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)));
+    double ret = (6378.388 * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)));
+
+    return (isnan(ret) > 0) ? 0.0 : ret;
 }
 
 double utils::dist_merc(const point2d<double> &p1, const point2d<double> &p2)
