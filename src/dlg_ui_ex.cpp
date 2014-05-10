@@ -324,13 +324,14 @@ void dlg_ui::garmindl_ex()
 void dlg_ui::garminul_ex()
 {
     // Temp gpx file path
-    std::string tmp(utils::appdir() + utils::pathsep() + "tmp.gpx"); 
-    m_mapctrl->gpx_savetrack(tmp);
+    std::string name(m_mapctrl->gpx_trackname());
+    std::string path(utils::appdir() + utils::pathsep() + "tmp.gpx"); 
+    m_mapctrl->gpx_savetrack(path);
 
     // Show upload dialog
-    dlg_garminul dlg(tmp);
+    dlg_garminul dlg(path, name);
     dlg.show();
-    utils::rm(tmp);
+    utils::rm(path);
 }
 
 void dlg_ui::settings_ex()

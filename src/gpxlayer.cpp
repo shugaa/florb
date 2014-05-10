@@ -13,7 +13,7 @@ gpxlayer::gpxlayer() :
     layer(),
     m_trip(0.0)
 {
-    name(std::string("Unnamed GPX layer"));
+    name(std::string(_("New GPX track")));
     register_event_handler<gpxlayer, layer::event_mouse>(this, &gpxlayer::handle_evt_mouse);
     register_event_handler<gpxlayer, layer::event_key>(this, &gpxlayer::handle_evt_key);
 }
@@ -283,7 +283,7 @@ void gpxlayer::add_trackpoint(const point2d<double>& p)
 
 void gpxlayer::load_track(const std::string &path)
 {
-    name(path);
+    name(utils::filestem(path));
     tinyxml2::XMLDocument doc;
     if (doc.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR)
         throw std::runtime_error(_("Failed to open GPX file"));
@@ -394,7 +394,7 @@ void gpxlayer::save_track(const std::string &path)
 
 void gpxlayer::clear_track()
 {
-   name(std::string("Unnamed GPX layer"));
+   name(std::string(_("New GPX track")));
    m_trkpts.clear();
    m_selection.waypoints.clear();
    trip_calcall();

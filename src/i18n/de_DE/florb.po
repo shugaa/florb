@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-02 21:25+0200\n"
-"PO-Revision-Date: 2014-05-02 21:57+0100\n"
+"POT-Creation-Date: 2014-05-10 23:44+0200\n"
+"PO-Revision-Date: 2014-05-10 23:44+0100\n"
 "Last-Translator: Björn Rehm <bjoern@shugaa.de>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -56,7 +56,7 @@ msgid "Cache error: SESSIONID"
 msgstr "Cache-Fehler: SESSIONID"
 
 #: fluid/dlg_settings.cpp:615 fluid/dlg_tileserver.cpp:123
-#: fluid/dlg_editselection.cpp:80 fluid/dlg_garmindl.cpp:60
+#: fluid/dlg_editselection.cpp:80 fluid/dlg_garmindl.cpp:61
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -88,11 +88,11 @@ msgstr "Geräte-Upload"
 msgid "Download"
 msgstr "Herunterladen"
 
-#: dlg_garmindl_ex.cpp:104
+#: dlg_garmindl_ex.cpp:114
 msgid "Download Failed!"
 msgstr "Download fehlgeschlagen!"
 
-#: dlg_garmindl_ex.cpp:100
+#: dlg_garmindl_ex.cpp:110
 msgid "Download OK"
 msgstr "Download OK"
 
@@ -134,11 +134,11 @@ msgstr "GPSd aktivieren"
 msgid "Failed to open / create cache database"
 msgstr "Konnte Cache nicht öffnen / erzeugen"
 
-#: gpxlayer.cpp:289 gpxlayer.cpp:303
+#: gpxlayer.cpp:289 gpxlayer.cpp:306
 msgid "Failed to open GPX file"
 msgstr "Fehler beim Laden der GPX Datei"
 
-#: gpxlayer.cpp:386
+#: gpxlayer.cpp:392
 msgid "Failed to save GPX data"
 msgstr "Konnte GPX-Daten nicht speichern"
 
@@ -230,11 +230,11 @@ msgstr "Mein Tileserver"
 msgid "Name"
 msgstr "Name"
 
-#: dlg_garminul_ex.cpp:31
-msgid "New GPS track"
+#: gpxlayer.cpp:16 gpxlayer.cpp:397
+msgid "New GPX track"
 msgstr "Neuer GPS Track"
 
-#: dlg_garminul_ex.cpp:24 dlg_garmindl_ex.cpp:31
+#: dlg_garminul_ex.cpp:34 dlg_garmindl_ex.cpp:41
 msgid "No devices found"
 msgstr "Keine Geräte gefunden"
 
@@ -340,11 +340,11 @@ msgstr "URL"
 msgid "Upload"
 msgstr "Hochladen"
 
-#: dlg_garminul_ex.cpp:71
+#: dlg_garminul_ex.cpp:81
 msgid "Upload Failed!"
 msgstr "Hochladen fehlgeschlagen!"
 
-#: dlg_garminul_ex.cpp:69
+#: dlg_garminul_ex.cpp:79
 msgid "Upload OK"
 msgstr "Hochladen OK"
 

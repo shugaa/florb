@@ -38,7 +38,7 @@ void dlg_garminul::show_ex()
     }
 
     m_choice_device->value(0);
-    m_input_title->value(_("New GPS track"));
+    m_input_title->value(m_name.c_str());
 
     // Show the window
     m_window->show();

@@ -124,6 +124,14 @@ void mapctrl::gpx_showwpmarkers(bool s)
     m_gpxlayer->showwpmarkers(s);
 }
 
+std::string mapctrl::gpx_trackname()
+{
+    if (!m_gpxlayer)
+        throw 0;
+
+    return m_gpxlayer->name();
+}
+
 bool mapctrl::gpsd_connected()
 {
     if (!m_gpsdlayer)

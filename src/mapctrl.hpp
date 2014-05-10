@@ -49,6 +49,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         void gpx_selection_set(const std::vector<gpxlayer::waypoint>& waypoints); 
         double gpx_trip();
         void gpx_showwpmarkers(bool s);
+        std::string gpx_trackname();
         
         // Viewport control
         unsigned int zoom();
