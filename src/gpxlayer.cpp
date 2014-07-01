@@ -5,36 +5,33 @@
 #include <FL/fl_draw.H>
 #include <clocale>
 #include "utils.hpp"
+#include "version.hpp"
 #include "settings.hpp"
 #include "point.hpp"
 #include "gpxlayer.hpp"
+
+const std::string gpxlayer::trackname = "New GPX track";
 
 gpxlayer::gpxlayer() :
     layer(),
     m_trip(0.0)
 {
-    name(std::string(_("New GPX track")));
+    name(std::string(_(trackname.c_str())));
     register_event_handler<gpxlayer, layer::event_mouse>(this, &gpxlayer::handle_evt_mouse);
     register_event_handler<gpxlayer, layer::event_key>(this, &gpxlayer::handle_evt_key);
 }
 
-bool gpxlayer::key(const layer::event_key* evt)
-{
-    if (evt->key() != layer::event_key::KEY_DEL)
-        return false;
-
-    selection_delete();
-    return true;
-}
-
 void gpxlayer::trip_update()
 {
+    // Less than 2 trackpoints, can't calculate trip
     if (m_trkpts.size() < 2) 
     {
         m_trip = 0.0;
         return;
     }
 
+    // Take the last trackpoint in the list and the one before that and
+    // calculate the distance. Then add to trip.
     point2d<double> p1((*(m_trkpts.end()-2)).lon, (*(m_trkpts.end()-2)).lat);
     point2d<double> p2((*(m_trkpts.end()-1)).lon, (*(m_trkpts.end()-1)).lat);
     m_trip += utils::dist(utils::merc2wsg84(p1), utils::merc2wsg84(p2));
@@ -42,22 +39,32 @@ void gpxlayer::trip_update()
 
 void gpxlayer::trip_calcall()
 {
+    // Less than 2 trackpoints, can't calculate trip
     if (m_trkpts.size() < 2)
     {
         m_trip = 0.0;
         return;
     }
 
-    double sum = 0.0;
+    // Add up the distances between any consecutive trackpoints in the list
+    m_trip = 0.0;
     std::vector<gpx_trkpt>::iterator it;
     for (it=m_trkpts.begin()+1;it!=m_trkpts.end();++it)
     {
         point2d<double> p1((*it).lon, (*it).lat);
         point2d<double> p2((*(it-1)).lon, (*(it-1)).lat);
-        sum += utils::dist(utils::merc2wsg84(p1), utils::merc2wsg84(p2));
+        m_trip += utils::dist(utils::merc2wsg84(p1), utils::merc2wsg84(p2));
     }
+}
 
-    m_trip = sum;
+bool gpxlayer::key(const layer::event_key* evt)
+{
+    // We only care for the DEL key at the moment
+    if (evt->key() != layer::event_key::KEY_DEL)
+        return false;
+
+    selection_delete();
+    return true;
 }
 
 bool gpxlayer::press(const layer::event_mouse* evt)
@@ -83,13 +90,13 @@ bool gpxlayer::press(const layer::event_mouse* evt)
         point2d<unsigned long> cmp = utils::merc2px(evt->vp().z(), point2d<double>((*it).lon, (*it).lat)); 
 
         // Check whether the click might refer to this point
-        if (pxabs.x() >= (cmp.x()+6))
+        if (pxabs.x() >= (cmp.x()+wp_hotspot))
             continue;
-        if (pxabs.x() < ((cmp.x()>=6) ? cmp.x()-6 : 0))
+        if (pxabs.x() < ((cmp.x()>=wp_hotspot) ? cmp.x()-wp_hotspot : 0))
             continue;
-        if (pxabs.y() >= (cmp.y()+6))
+        if (pxabs.y() >= (cmp.y()+wp_hotspot))
             continue;
-        if (pxabs.y() < ((cmp.y()>=6) ? cmp.y()-6 : 0))
+        if (pxabs.y() < ((cmp.y()>=wp_hotspot) ? cmp.y()-wp_hotspot : 0))
             continue;
 
         break;
@@ -112,11 +119,12 @@ bool gpxlayer::press(const layer::event_mouse* evt)
 
 bool gpxlayer::drag(const layer::event_mouse* evt)
 {
+    // Enter drag mode
     m_selection.dragging = true;
 
-    // Viewport-relative to absolute coordinate
     point2d<unsigned long> px(evt->pos().x(), evt->pos().y());
-
+    
+    // Catch drag outside map area
     if (evt->pos().x() < 0)
         px[0] = 0;
     else if (evt->pos().x() >= (int)evt->vp().w())
@@ -126,24 +134,28 @@ bool gpxlayer::drag(const layer::event_mouse* evt)
     else if (evt->pos().y() >= (int)evt->vp().h())
         px[1] = evt->vp().h()-1;
 
+    // Convert viewport relative to map coordinate
     px[0] += evt->vp().x();
     px[1] += evt->vp().y();
 
-    // Convert position to mercator
+    // Convert map coordinate to mercator
     point2d<double> merc = utils::px2merc(evt->vp().z(), px);
 
     // Dragging a single active waypoint around
     if ((m_selection.waypoints.size() == 1) && (m_selection.multiselect == false))
     { 
+        // Update the position for the trackpoint currently being dragged
         (*(m_selection.waypoints[0])).lon = merc.x();
         (*(m_selection.waypoints[0])).lat = merc.y();
     }
     // Selecting multiple waypoints
     else
     {
+        // Update current drag coordinate for later reference
         m_selection.dragcurrent = merc;
         m_selection.multiselect = true;
 
+        // Clear the list of selected waypoints
         m_selection.waypoints.clear();
 
         // Check for each waypoint whether it is within the selection rectangle
@@ -185,6 +197,7 @@ bool gpxlayer::drag(const layer::event_mouse* evt)
             if (cmp.y() > bottom)
                 continue;
 
+            // Trackpoint inside rectangle, add to list
             m_selection.waypoints.push_back(it);
         }
     }
@@ -204,6 +217,7 @@ bool gpxlayer::release(const layer::event_mouse* evt)
         if (m_selection.dragging)
             trip_calcall();
 
+        // Update
         notify();
         return true;
     };
@@ -221,39 +235,22 @@ bool gpxlayer::release(const layer::event_mouse* evt)
         return true;
     }
 
-    // Add a new waypoint
-
+    // Not exiting from drag mode, add a new waypoint
     // Viewport-relative to absolute map coordinate
     point2d<unsigned long> px(
             evt->pos().x() + evt->vp().x(),
             evt->pos().y() + evt->vp().y());
 
-    // A new point is to be added
-    // Try to convert the pixel position to mercator coordinate
-    point2d<double> merc;
+    // Try to convert the pixel position to wsg84
+    point2d<double> wsg84;
     try {
-        merc = utils::px2merc(evt->vp().z(), px);
+        wsg84 = utils::px2wsg84(evt->vp().z(), px);
     } catch (...) {
         return false;
     }
 
-    // Add the position to the list
-    gpx_trkpt p;
-    p.lon = merc.x();
-    p.lat = merc.y();
-    p.time = time(NULL);
-    p.ele = 0.0; 
-    m_trkpts.push_back(p);
-    
-    // Update current trip
-    trip_update();
-
-    // Select the newly added item
-    m_selection.waypoints.clear();
-    m_selection.waypoints.push_back(m_trkpts.end()-1);
-
-    // Indicate that this layer has changed
-    notify();
+    // Add the new trackpoint
+    add_trackpoint(wsg84);
 
     return true;
 }
@@ -283,15 +280,17 @@ void gpxlayer::add_trackpoint(const point2d<double>& p)
 
 void gpxlayer::load_track(const std::string &path)
 {
-    name(utils::filestem(path));
+    // Load the XML
     tinyxml2::XMLDocument doc;
     if (doc.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR)
         throw std::runtime_error(_("Failed to open GPX file"));
 
+    // Clear existing track and selection
     m_trkpts.clear();
     m_selection.waypoints.clear();
 
-    // TinyXML's number parsing is locale dependent
+    // TinyXML's number parsing is locale dependent, so we switch to "C"
+    // and back after parsing
     char *poldlc;
     char oldlc[16];
     poldlc = setlocale(LC_ALL, NULL);
@@ -299,20 +298,31 @@ void gpxlayer::load_track(const std::string &path)
     oldlc[15] = '\0';
     setlocale(LC_ALL, "C");
 
+    // Parse the GPX XML
     tinyxml2::XMLElement* root = doc.RootElement();
     if (root)
         parsetree(doc.RootElement());
     else
+    {
+        // Switch back to original locale before throwing
+        setlocale(LC_ALL, oldlc); 
         throw std::runtime_error(_("Failed to open GPX file"));
+    }
 
+    // Switch back to original locale
     setlocale(LC_ALL, oldlc); 
 
+    // The filename will be the name for the loaded track
+    name(utils::filestem(path));
+
+    // Request update
     notify();
 };
 
 void gpxlayer::save_track(const std::string &path)
 {
-    // TinyXML's number parsing is locale dependent, set to C and restore later
+    // TinyXML's number parsing is locale dependent, set to "C" and restore
+    // later
     char *poldlc;
     char oldlc[16];
     poldlc = setlocale(LC_ALL, NULL);
@@ -320,18 +330,20 @@ void gpxlayer::save_track(const std::string &path)
     oldlc[15] = '\0';
     setlocale(LC_ALL, "C");
 
+    // Create an XML document
     tinyxml2::XMLDocument doc;
     
     // XML standard declaration
     doc.NewDeclaration();
     
+    // 3 Levels of elements and children
     tinyxml2::XMLElement *e1, *e2, *e3;
     tinyxml2::XMLText *t1;
 
     // Add a gpx element
     e1 = doc.NewElement("gpx");
     e1->SetAttribute("version",            "1.1");
-    e1->SetAttribute("creator",            "florb");
+    e1->SetAttribute("creator",            FLORB_PROGSTR);
     e1->SetAttribute("xmlns:xsi",          "http://www.w3.org/2001/XMLSchema-instance");
     e1->SetAttribute("xmlns",              "http://www.topografix.com/GPX/1/1");
     e1->SetAttribute("xsi:schemaLocation", "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd");
@@ -385,19 +397,28 @@ void gpxlayer::save_track(const std::string &path)
         e2->InsertEndChild(e3);
     }
 
+    // Try to save and restore original locale
     tinyxml2::XMLError xmlerr = doc.SaveFile(path.c_str());
     setlocale(LC_ALL, oldlc);
 
+    // Throw in case of error
     if (xmlerr !=  tinyxml2::XML_NO_ERROR)
         throw std::runtime_error(_("Failed to save GPX data"));
 }
 
 void gpxlayer::clear_track()
 {
-   name(std::string(_("New GPX track")));
+   // Reset the track name
+   name(std::string(_(trackname.c_str())));
+
+   // Clear the list of trackpoints and the current selection
    m_trkpts.clear();
    m_selection.waypoints.clear();
+
+   // Recalculate the trip (well, this will turn out to be 0.0)
    trip_calcall();
+
+   // Request update
    notify();
 }
 
@@ -408,6 +429,7 @@ double gpxlayer::trip()
 
 void gpxlayer::showwpmarkers(bool s)
 {
+    // Set flag and request update
     m_showwpmarkers = s;
     notify();
 }
@@ -420,13 +442,16 @@ void gpxlayer::notify()
 
 size_t gpxlayer::selected()
 {
+    // Return the numer of selected waypoints
     return m_selection.waypoints.size();
 }
 
 void gpxlayer::selection_get(std::vector<waypoint>& waypoints)
 {
+    // Clear the passed vector
     waypoints.clear();
 
+    // Return a list of selected waypoints
     std::vector< std::vector<gpx_trkpt>::iterator >::iterator it;
     for(it=m_selection.waypoints.begin();it!=m_selection.waypoints.end();++it)
     {
@@ -437,9 +462,11 @@ void gpxlayer::selection_get(std::vector<waypoint>& waypoints)
 
 void gpxlayer::selection_set(const std::vector<waypoint>& waypoints)
 {
+    // Number of waypoints must be the same
     if (waypoints.size() != m_selection.waypoints.size())
-        throw 0;
+        throw std::runtime_error(_("Error updating selected waypoints"));;
 
+    // Update the internal representation of each selected waypoint
     std::vector< std::vector<gpx_trkpt>::iterator >::iterator it;
     size_t i;
     for(it=m_selection.waypoints.begin(), i=0;it!=m_selection.waypoints.end();++it,i++)
@@ -453,12 +480,11 @@ void gpxlayer::selection_set(const std::vector<waypoint>& waypoints)
 
 void gpxlayer::selection_delete()
 {
-    if (selected() == 0)
-        throw 0;
+    // No selection or no waypoints
+    if ((selected() == 0) || (m_trkpts.size() == 0))
+        throw std::out_of_range("Invalid selection"); 
 
-    if (m_trkpts.size() == 0)
-        throw 0;
-
+    // Delete all selected waypoints, back to front
     std::vector< std::vector<gpx_trkpt>::iterator >::iterator it = m_selection.waypoints.end();
     do
     {
@@ -467,12 +493,14 @@ void gpxlayer::selection_delete()
 
     } while (it != m_selection.waypoints.begin());
 
+    // Clear the list of selected waypoints
     m_selection.waypoints.clear();
 
+    // If there are waypoints remaining, select the last one in the list
     if (m_trkpts.size() > 0)
         m_selection.waypoints.push_back(m_trkpts.end()-1);
 
-    // Recalculate trip for the entire track and update the display
+    // Recalculate trip for the entire track and request update
     trip_calcall();
     notify();
 }
@@ -538,7 +566,7 @@ bool gpxlayer::handle_evt_key(const layer::event_key* evt)
 
 void gpxlayer::draw(const viewport &vp, canvas &os)
 {
-    // TODO: Performance killer
+    // TODO: Performance killer!!
     cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
 
     color color_track(cfgui.trackcolor());
@@ -711,7 +739,7 @@ void gpxlayer::parsetree(tinyxml2::XMLNode *parent)
         break;
     }
 
-    if (ret == false)
+    if (!ret)
         std::runtime_error("GPX XML parser error");
 
     // Recurse the rest of the subtree

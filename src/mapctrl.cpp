@@ -206,7 +206,6 @@ void mapctrl::basemap(
 
     // Create a new basemap layer
     m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
-
     m_basemap->add_event_listener(this);
     add_event_listener(m_basemap);
 

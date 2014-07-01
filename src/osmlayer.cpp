@@ -178,8 +178,6 @@ void osmlayer::download_qtile(int z, int x, int y)
 {
     if (!m_dlenable)
         return;
-    //if (m_downloader->qsize() >= m_parallel)
-    //    return;
 
     // Check whether the requested tile is already being processed
     std::vector<tileinfo*>::iterator it;

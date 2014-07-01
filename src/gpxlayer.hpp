@@ -29,9 +29,7 @@ class gpxlayer : public layer
         void clear_track();
         void add_trackpoint(const point2d<double>& p);
 
-
         size_t selected();
-
         void selection_get(std::vector<waypoint>& waypoints);
         void selection_set(const std::vector<waypoint>& waypoints);
         void selection_delete();
@@ -40,6 +38,9 @@ class gpxlayer : public layer
         void showwpmarkers(bool s);
 
     private:
+        static const unsigned int wp_hotspot = 6;
+        static const std::string trackname;
+
         struct gpx_trkpt {
             double lat;
             double lon;

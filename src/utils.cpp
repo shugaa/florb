@@ -66,7 +66,7 @@ point2d<double> utils::px2wsg84(unsigned int z, const point2d<unsigned long> &px
     // Unit conversion
     point2d<double> mdeg(
             (360.0/((double)dimxy/(double)px.x())),
-            (360.0/((double)dimxy/(double)(dimxy-px.y()))));
+            (360.0/((double)dimxy/(double)px.y())));
 
     // Convert mercator to GPS coordinate
     return merc2wsg84(mdeg);
