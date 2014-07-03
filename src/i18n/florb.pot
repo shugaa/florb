@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-10 23:44+0200\n"
+"POT-Creation-Date: 2014-07-03 11:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,19 +37,19 @@ msgstr ""
 msgid "Cache"
 msgstr ""
 
-#: sqlitecache.cpp:402
+#: sqlitecache.cpp:405
 msgid "Cache error: EXISTS"
 msgstr ""
 
-#: sqlitecache.cpp:491
+#: sqlitecache.cpp:494
 msgid "Cache error: GET"
 msgstr ""
 
-#: sqlitecache.cpp:345
+#: sqlitecache.cpp:348
 msgid "Cache error: PUT"
 msgstr ""
 
-#: sqlitecache.cpp:212
+#: sqlitecache.cpp:218
 msgid "Cache error: SESSIONID"
 msgstr ""
 
@@ -128,15 +128,19 @@ msgstr ""
 msgid "Enable GPSd"
 msgstr ""
 
-#: sqlitecache.cpp:72 sqlitecache.cpp:126
+#: gpxlayer.cpp:467
+msgid "Error updating selected waypoints"
+msgstr ""
+
+#: sqlitecache.cpp:71 sqlitecache.cpp:78 sqlitecache.cpp:132
 msgid "Failed to open / create cache database"
 msgstr ""
 
-#: gpxlayer.cpp:289 gpxlayer.cpp:306
+#: gpxlayer.cpp:286 gpxlayer.cpp:309
 msgid "Failed to open GPX file"
 msgstr ""
 
-#: gpxlayer.cpp:392
+#: gpxlayer.cpp:406
 msgid "Failed to save GPX data"
 msgstr ""
 
@@ -226,10 +230,6 @@ msgstr ""
 
 #: fluid/dlg_tileserver.cpp:29
 msgid "Name"
-msgstr ""
-
-#: gpxlayer.cpp:16 gpxlayer.cpp:397
-msgid "New GPX track"
 msgstr ""
 
 #: dlg_garminul_ex.cpp:34 dlg_garmindl_ex.cpp:41

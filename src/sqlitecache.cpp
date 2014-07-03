@@ -63,7 +63,13 @@ sqlitecache::sqlitecache(const std::string& url) :
     if (m_db == NULL) 
     {
         // Create the tiles directory first if necessary
-        utils::mkdir(url);
+        try {
+            utils::mkdir(url);
+        }
+        catch (...)
+        {
+            throw std::runtime_error(_("Failed to open / create cache database"));
+        }
 
         rc = sqlite3_open((url + utils::pathsep() + sqlitecache::dbname).c_str(), &m_db);
         if (rc != SQLITE_OK)
@@ -233,11 +239,7 @@ void sqlitecache::put(int z, int x, int y, time_t expires, const std::vector<cha
         // Create the storage directory for the tile if not already present
         std::ostringstream oss;
         
-        oss << m_url; 
-        if (!utils::exists(oss.str()))
-            utils::mkdir(oss.str());
-
-        oss << utils::pathsep() << m_sid; 
+        oss << m_url << utils::pathsep() << m_sid; 
         if (!utils::exists(oss.str()))
             utils::mkdir(oss.str());
 
@@ -249,8 +251,9 @@ void sqlitecache::put(int z, int x, int y, time_t expires, const std::vector<cha
         if (!utils::exists(oss.str()))
             utils::mkdir(oss.str());
 
-        // Store tile in filesystem
         oss << utils::pathsep() << y;
+
+        // Store tile in filesystem
         std::ofstream of;
         of.open(oss.str().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
 

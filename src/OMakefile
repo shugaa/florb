@@ -89,14 +89,14 @@ clean:
 
 # update translation files
 i18nupdate:
-	xgettext -d florb -s -o i18n/florb.pot --keyword=_ --from-code=utf-8  $(find ./ -name *.cpp) $(find ./ -name *.hpp)
+	xgettext -d florb -s -o i18n/$(PROGRAM).pot --keyword=_ --from-code=utf-8  $(find ./ -name *.cpp) $(find ./ -name *.hpp)
 	foreach(t => ..., $(basename $(TRANSLATIONS)))
-	    if $(file-exists ./i18n/$(t)/florb.po)
-			msgmerge -U ./i18n/$(t)/florb.po i18n/florb.pot
+	    if $(file-exists ./i18n/$(t)/$(PROGRAM).po)
+			msgmerge -U ./i18n/$(t)/$(PROGRAM).po i18n/$(PROGRAM).pot
 	    else
-			msginit --no-translator -l $(t).utf8 -o ./i18n/$(t)/florb.po -i i18n/florb.pot
+			msginit --no-translator -l $(t).utf8 -o ./i18n/$(t)/$(PROGRAM).po -i i18n/$(PROGRAM).pot
 		
 # compile translations
 i18ncompile:
 	foreach(t => ..., $(basename $(TRANSLATIONS)))
-		msgfmt -c -o ./i18n/$(t)/florb.mo ./i18n/$(t)/florb.po
+		msgfmt -c -o ./i18n/$(t)/florb.mo ./i18n/$(t)/$(PROGRAM).po

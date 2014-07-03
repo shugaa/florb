@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-10 23:44+0200\n"
-"PO-Revision-Date: 2014-05-10 23:44+0100\n"
+"POT-Creation-Date: 2014-07-03 11:05+0200\n"
+"PO-Revision-Date: 2014-07-03 11:05+0100\n"
 "Last-Translator: Björn Rehm <bjoern@shugaa.de>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -39,19 +39,19 @@ msgstr "Kachelserver hinzufügen"
 msgid "Cache"
 msgstr "Cache"
 
-#: sqlitecache.cpp:402
+#: sqlitecache.cpp:405
 msgid "Cache error: EXISTS"
 msgstr "Cache-Fehler: EXISTS"
 
-#: sqlitecache.cpp:491
+#: sqlitecache.cpp:494
 msgid "Cache error: GET"
 msgstr "Cache-Fehler: GET"
 
-#: sqlitecache.cpp:345
+#: sqlitecache.cpp:348
 msgid "Cache error: PUT"
 msgstr "Cache-Fehler: PUT"
 
-#: sqlitecache.cpp:212
+#: sqlitecache.cpp:218
 msgid "Cache error: SESSIONID"
 msgstr "Cache-Fehler: SESSIONID"
 
@@ -130,15 +130,19 @@ msgstr "Höhe [m]"
 msgid "Enable GPSd"
 msgstr "GPSd aktivieren"
 
-#: sqlitecache.cpp:72 sqlitecache.cpp:126
+#: gpxlayer.cpp:467
+msgid "Error updating selected waypoints"
+msgstr "Fehler beim Aktualisieren der Wegpunkte"
+
+#: sqlitecache.cpp:71 sqlitecache.cpp:78 sqlitecache.cpp:132
 msgid "Failed to open / create cache database"
 msgstr "Konnte Cache nicht öffnen / erzeugen"
 
-#: gpxlayer.cpp:289 gpxlayer.cpp:306
+#: gpxlayer.cpp:286 gpxlayer.cpp:309
 msgid "Failed to open GPX file"
 msgstr "Fehler beim Laden der GPX Datei"
 
-#: gpxlayer.cpp:392
+#: gpxlayer.cpp:406
 msgid "Failed to save GPX data"
 msgstr "Konnte GPX-Daten nicht speichern"
 
@@ -229,10 +233,6 @@ msgstr "Mein Tileserver"
 #: fluid/dlg_tileserver.cpp:29
 msgid "Name"
 msgstr "Name"
-
-#: gpxlayer.cpp:16 gpxlayer.cpp:397
-msgid "New GPX track"
-msgstr "Neuer GPS Track"
 
 #: dlg_garminul_ex.cpp:34 dlg_garmindl_ex.cpp:41
 msgid "No devices found"
@@ -355,6 +355,9 @@ msgstr "Hochladen auf Gerät"
 #: fluid/dlg_ui.cpp:806
 msgid "florb"
 msgstr "florb"
+
+#~ msgid "New GPX track"
+#~ msgstr "Neuer GPS Track"
 
 #~ msgid "Pick"
 #~ msgstr "Wählen"

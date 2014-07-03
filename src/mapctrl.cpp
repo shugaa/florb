@@ -230,19 +230,25 @@ void mapctrl::zoom(unsigned int z)
 
 void mapctrl::goto_cursor()
 {
+    // GPSd not connected
     if (!gpsd_connected())
         return;
 
+    // No valid fix
     if (!m_gpsdlayer->valid())
         return;
 
+    // Convert GPS position to pixel position on the map for the current zoom
+    // level
     point2d<unsigned long> ppx(utils::wsg842px(m_viewport.z(), m_gpsdlayer->pos()));
 
+    // Center the viewport over the GPS position
     unsigned long x = (ppx.x() < (m_viewport.w()/2)) ? 0 : ppx.x()-(m_viewport.w()/2);
     unsigned long y = (ppx.y() < (m_viewport.h()/2)) ? 0 : ppx.y()-(m_viewport.h()/2);
-
     m_viewport.x(x);
     m_viewport.y(y);
+
+    // Redraw
     refresh();
 }
 
@@ -319,14 +325,17 @@ bool mapctrl::vp_inside(const point2d<int>& pos)
 
 bool mapctrl::gpsd_evt_motion(const gpsdlayer::event_motion *e)
 {
+    // Track recording on, add current position
     if (m_recordtrack)
         m_gpxlayer->add_trackpoint(e->pos());
     
+    // Center the viewport over the current position
     if (m_lockcursor)
         goto_cursor();
     else 
         refresh();
 
+    // Notify any listeners about the change
     event_notify en;
     fire(&en);
 

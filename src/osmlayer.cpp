@@ -95,10 +95,6 @@ void osmlayer::process_downloads()
 {
     bool ret = false; 
 
-    // Only update if the last requested batch of tiles is complete
-    //if (m_downloader->qsize() > 0)
-    //    return;
-
     // Cache all downloaded tiles
     downloader::download dtmp;
     while (m_downloader->get(dtmp))
@@ -150,13 +146,14 @@ void osmlayer::dlenable(bool e)
     if (e)
     {
         //Kickstart the downloader
-        event_notify e;
-        fire(&e);
+        event_notify ev;
+        fire(&ev);
     }
 }
 
 void osmlayer::cb_download(void *userdata)
 {
+    // This might be a callback for an already destroyed layer instance
     layer *l = static_cast<layer*>(userdata);
     if (!is_instance(l))
         return;
