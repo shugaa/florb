@@ -131,6 +131,29 @@ class cfg_ui
 
 };
 
+// Viewport configuration class
+class cfg_viewport
+{
+    public:
+        cfg_viewport() :
+            m_lon(0),
+            m_lat(0),
+            m_z(0) {};
+    
+        double lat() const { return m_lat; }
+        double lon() const { return m_lon; }
+        unsigned int z() const { return m_z; }
+
+        void lat(double l) { m_lat = l; }
+        void lon(double l) { m_lon = l; }
+        void z(unsigned int z) { m_z = z; }
+
+    private:    
+        double m_lon;
+        double m_lat;
+        unsigned int m_z;
+};
+
 // Forward declaration of YAML-cpp node container and iterator container
 class yaml_node;
 class yaml_iterator;

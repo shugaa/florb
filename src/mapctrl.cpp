@@ -36,10 +36,37 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     cfg_gpsd cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
     if (cfggpsd.enabled())
         gpsd_connect(cfggpsd.host(), cfggpsd.port());  
+
+    // Restore previous viewport
+    cfg_viewport cfgvp = settings::get_instance()["viewport"].as<cfg_viewport>();
+    unsigned int z = m_viewport.z();
+
+    // Set previous zoom level
+    if (cfgvp.z() > m_viewport.z())
+    {
+        z = cfgvp.z();
+        m_viewport.z(cfgvp.z(), m_viewport.w()/2, m_viewport.h()/2);
+    }
+
+    // set previous position
+    point2d<unsigned long> ppx(utils::wsg842px(z, point2d<double>(cfgvp.lon(), cfgvp.lat())));
+    m_viewport.x(ppx.x() - (m_viewport.w()/2));
+    m_viewport.y(ppx.y() - (m_viewport.h()/2));
 }
 
 mapctrl::~mapctrl()
 {
+    // Save viewport configuration
+    cfg_viewport cfgvp = settings::get_instance()["viewport"].as<cfg_viewport>();
+    cfgvp.z(m_viewport.z());
+    point2d<double> pos = utils::px2wsg84(
+            m_viewport.z(), 
+            point2d<unsigned long>(m_viewport.x()+(m_viewport.w()/2), m_viewport.y()+(m_viewport.h()/2)));
+
+    cfgvp.lon(pos.x());
+    cfgvp.lat(pos.y());
+    settings::get_instance()["viewport"] = cfgvp;
+
     // Delete all layers if active
     if (m_basemap)
         delete m_basemap;

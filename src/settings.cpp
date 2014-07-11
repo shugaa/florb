@@ -146,6 +146,37 @@ namespace YAML {
                 return true;
             }
         };
+
+    template<>
+        struct convert<cfg_viewport> {
+            static Node encode(const cfg_viewport& rhs) {
+                Node node;
+                node["lon"] = rhs.lon();
+                node["lat"] = rhs.lat();
+                node["z"] = rhs.z();
+                return node;
+            }
+
+            static bool decode(const Node& node, cfg_viewport& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                {
+                    return true;
+                }
+
+
+                if (node["lat"])
+                    rhs.lat(node["lat"].as<double>());
+
+                if (node["lon"])
+                    rhs.lon(node["lon"].as<double>());
+
+                if (node["z"])
+                    rhs.z(node["z"].as<unsigned int>());
+                
+                return true;
+            }
+        };
 }
 
 class yaml_node
@@ -277,6 +308,10 @@ void settings::defaults(const std::string& path)
     // UI default configuration
     cfg_ui cfgui = m_rootnode["ui"].as<cfg_ui>();
     m_rootnode["ui"] = cfgui;
+
+    // Viewport default configuration
+    cfg_viewport cfgvp = m_rootnode["viewport"].as<cfg_viewport>();
+    m_rootnode["viewport"] = cfgvp;
 }
 
 node::node(const std::string& path)
@@ -372,6 +407,7 @@ template bool node::as<bool>() const;
 template cfg_cache node::as<cfg_cache>() const;
 template cfg_gpsd node::as<cfg_gpsd>() const;
 template cfg_ui node::as<cfg_ui>() const;
+template cfg_viewport node::as<cfg_viewport>() const;
 
 template void node::push_back<int>(const int& rhs);
 template void node::push_back<std::string>(const std::string& rhs);
@@ -386,4 +422,5 @@ template node& node::operator=<bool> (const bool& rhs);
 template node& node::operator=<cfg_gpsd> (const cfg_gpsd& rhs);
 template node& node::operator=<cfg_ui> (const cfg_ui& rhs);
 template node& node::operator=<cfg_cache> (const cfg_cache& rhs);
+template node& node::operator=<cfg_viewport> (const cfg_viewport& rhs);
 
