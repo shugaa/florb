@@ -1,11 +1,14 @@
 #include <cmath>
+#include <limits>
 #include <stdexcept>
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include <sstream>
 #include <cstdlib>
 #include <fstream>
+#include <cfenv>
 #include <X11/xpm.h>
+#include <iomanip>
 #include <FL/x.H>
 #include "utils.hpp"
 #include "florb.xpm"
@@ -270,14 +273,34 @@ bool utils::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r
         ymax = r2.y();
     } 
 
-    // Calculate m and n for this line
-    double m = (p2.y() - p1.y()) / (p2.x() - p1.x());
-    double n = p1.y() - m * p1.x();
+    bool overflowa = false;
 
-    // Max 2 clipping operations per point and one last check operation. The
-    // number of iterations is limited because for very large m and n the
-    // datatype might overflow and create an endless loop. In this case the
-    // loop exits and the line is simply not drawn.
+    // Catch arithmetic overflow when calculating  m and n
+    double n = 0, m = 0;
+    for (;;)
+    {
+        std::feclearexcept(FE_OVERFLOW|FE_UNDERFLOW|FE_DIVBYZERO);
+        
+        m = (p2.y() - p1.y()) / (p2.x() - p1.x());
+        if (std::fetestexcept(FE_OVERFLOW|FE_UNDERFLOW|FE_DIVBYZERO) != 0)
+        {
+            overflowa = true;
+            break;
+        }
+
+        std::feclearexcept(FE_OVERFLOW|FE_UNDERFLOW|FE_DIVBYZERO);
+
+        n = p1.y() - (m * p1.x());
+        if (std::fetestexcept(FE_OVERFLOW|FE_UNDERFLOW|FE_DIVBYZERO) != 0)
+        {
+            overflowa = true;
+            break;
+        }
+
+        break;
+    }
+
+    // Max 2 clipping operations per point and one last check operation. 
     for (int i=0;i<5;i++)
     {
         // Compute code for both points
@@ -332,24 +355,82 @@ bool utils::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r
         // Clip top
         if (codetmp & CLIPTOP)
         {
-            ptmp[0] = (ymin - n) / m; 
+            // This is what the following code does with just a little overflow
+            // protection:
+            // ptmp[0] = (ymin - n) / m; 
+
+            // In case of an overflow we assume a vertical line
+            double cx;
+            for (;!overflowa;)
+            {
+                std::feclearexcept(FE_OVERFLOW|FE_UNDERFLOW|FE_DIVBYZERO);
+                cx = (ymin - n) / m;
+
+                if (std::fetestexcept(FE_OVERFLOW|FE_UNDERFLOW|FE_DIVBYZERO) != 0)
+                {
+                    overflowa = true;
+                    break;
+                }
+
+                break;
+            }
+
+            if (!overflowa)
+                ptmp[0] = cx;
+
             ptmp[1] = ymin;
         }
         // Clip Bottom
         else if (codetmp & CLIPBOTTOM)
         {
-            ptmp[0] = (ymax - n) / m; 
+            // This is what the following code does with just a little overflow
+            // protection:
+            // ptmp[0] = (ymax - n) / m; 
+
+            // In case of an overflow we assume a vertical line
+            double cx;
+            for (;!overflowa;)
+            {
+                std::feclearexcept(FE_OVERFLOW|FE_UNDERFLOW|FE_DIVBYZERO);
+                cx = (ymax - n) / m;
+
+                if (std::fetestexcept(FE_OVERFLOW|FE_UNDERFLOW|FE_DIVBYZERO) != 0)
+                {
+                    overflowa = true;
+                    break;
+                }
+
+                break;
+            }
+
+            if (!overflowa)
+                ptmp[0] = cx;
+
             ptmp[1] = ymax;
         }
         // Clip Left
         else if (codetmp & CLIPLEFT)
         {
+            // Vertical line left outside
+            if (overflowa)
+            {
+                ret = false;
+                break;
+            }
+                
             ptmp[0] = xmin; 
             ptmp[1] = m * xmin + n;
         }
         // Clip Right
         else if (codetmp & CLIPRIGHT)
         {
+            // Vertical line right outside
+            if (overflowa)
+            {
+                ret = false;
+                break;
+            }
+
             ptmp[0] = xmax; 
             ptmp[1] = m * xmax + n;
         }

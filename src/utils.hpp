@@ -42,7 +42,6 @@ class utils
         static void touch(const std::string& path);
 
         static void set_window_icon(Fl_Window *w);
-
     private:
 };
 
