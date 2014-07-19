@@ -53,6 +53,8 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void settings_ex(void);} {private local
   }
+  decl {void search_ex(void);} {selected private local
+  }
   decl {void about_ex(void);} {private local
   }
   decl {void update_choice_basemap_ex(void);} {private local
@@ -146,13 +148,12 @@ ui->cb_btn_deleteselection_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
-  Function {dlg_ui()} {open
-  } {
+  Function {dlg_ui()} {} {
     Fl_Window m_window {
       label florb
       user_data this
-      callback cb_close open
-      private xywh {1976 180 805 565} type Double align 80 resizable visible
+      callback cb_close
+      private xywh {1729 211 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
@@ -160,7 +161,7 @@ ui->cb_choice_basemap_ex(widget);} {}
         Fl_Menu_Bar m_menubar {
           label Menu
           user_data this
-          callback cb_menu open selected
+          callback cb_menu open
           private xywh {0 0 805 25} box FLAT_BOX
         } {
           Submenu m_menuitem_file {
@@ -187,6 +188,10 @@ ui->cb_choice_basemap_ex(widget);} {}
             MenuItem m_menuitem_edit_settings {
               label Settings
               private xywh {5 5 100 20}
+            }
+            MenuItem m_menuitem_edit_search {
+              label Suchen
+              private xywh {15 15 100 20}
             }
           }
           Submenu m_menuitem_track {

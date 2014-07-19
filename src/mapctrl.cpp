@@ -39,19 +39,13 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
 
     // Restore previous viewport
     cfg_viewport cfgvp = settings::get_instance()["viewport"].as<cfg_viewport>();
-    unsigned int z = m_viewport.z();
 
     // Set previous zoom level
     if (cfgvp.z() > m_viewport.z())
-    {
-        z = cfgvp.z();
         m_viewport.z(cfgvp.z(), m_viewport.w()/2, m_viewport.h()/2);
-    }
 
     // set previous position
-    point2d<unsigned long> ppx(utils::wsg842px(z, point2d<double>(cfgvp.lon(), cfgvp.lat())));
-    m_viewport.x(ppx.x() - (m_viewport.w()/2));
-    m_viewport.y(ppx.y() - (m_viewport.h()/2));
+    goto_pos(point2d<double>(cfgvp.lon(), cfgvp.lat()));
 }
 
 mapctrl::~mapctrl()
@@ -76,6 +70,16 @@ mapctrl::~mapctrl()
 
     if (m_gpsdlayer)
         delete m_gpsdlayer;
+}
+
+void mapctrl::goto_pos(const point2d<double> &pwsg84)
+{
+    // set previous position
+    point2d<unsigned long> ppx(utils::wsg842px(zoom(), pwsg84));
+    m_viewport.x(ppx.x() - (m_viewport.w()/2));
+    m_viewport.y(ppx.y() - (m_viewport.h()/2));
+
+    refresh();
 }
 
 void mapctrl::gpx_loadtrack(const std::string& path)

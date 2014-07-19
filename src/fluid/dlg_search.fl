@@ -1,0 +1,168 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include <FL/Fl_Text_Buffer.H>} {public global
+} 
+
+decl {\#include "downloader.hpp"} {public global
+} 
+
+decl {\#include "event.hpp"} {public global
+} 
+
+decl {\#include "point.hpp"} {public global
+} 
+
+decl {\#include "mapctrl.hpp"} {public global
+} 
+
+class dlg_search {open : {public event_listener}
+} {
+  class searchresult {} {
+    decl {std::string m_displayname;} {public local
+    }
+    decl {point2d<double> m_pos;} {public local
+    }
+  }
+  decl {std::vector<searchresult> m_searchresults;} {private local
+  }
+  decl {downloader* m_downloader;} {private local
+  }
+  decl {mapctrl* m_mapctrl;} {private local
+  }
+  decl {void create_ex();} {private local
+  }
+  decl {void destroy_ex();} {private local
+  }
+  decl {void show_ex();} {private local
+  }
+  decl {void cb_btn_search_ex(Fl_Widget *widget);} {private global
+  }
+  decl {void cb_browser_results_ex(Fl_Widget *widget);} {private global
+  }
+  decl {void process_download_ex();} {private global
+  }
+  decl {bool evt_downloadcomplete_ex(const downloader::event_complete *e);} {private global
+  }
+  decl {static void cb_download_ex(void *userdata);} {private global
+  }
+  Function {dlg_search(mapctrl *mc)} {open
+  } {
+    Fl_Window m_window {
+      label Search open
+      private xywh {2240 239 500 295} type Double resizable modal size_range {500 295 0 0} visible
+    } {
+      Fl_Pack {} {open
+        private xywh {0 0 500 297} resizable
+      } {
+        Fl_Box {} {
+          private xywh {0 0 500 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 5 500 250} type HORIZONTAL resizable
+        } {
+          Fl_Box {} {
+            private xywh {0 5 5 250}
+          }
+          Fl_Pack {} {open
+            private xywh {5 5 490 250} resizable
+          } {
+            Fl_Pack {} {open
+              private xywh {5 5 490 25} type HORIZONTAL
+            } {
+              Fl_Input m_input_query {
+                user_data this
+                callback cb_input_query
+                private xywh {5 5 380 25} when 8 resizable
+              }
+              Fl_Box {} {
+                private xywh {385 5 5 25}
+              }
+              Fl_Button m_btn_search {
+                label Search
+                user_data this
+                callback cb_btn_search selected
+                private xywh {390 5 105 25}
+              }
+            }
+            Fl_Box {} {
+              private xywh {5 30 490 5}
+            }
+            Fl_Browser m_browser_results {
+              user_data this
+              callback cb_browser_results
+              private xywh {5 35 490 220} type Hold resizable
+            }
+          }
+          Fl_Box {} {
+            private xywh {495 5 5 250}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 255 500 5}
+        }
+        Fl_Pack {} {
+          private xywh {0 260 500 2} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            xywh {0 260 5 2}
+          }
+          Fl_Box {} {
+            xywh {5 260 490 2} box ENGRAVED_BOX resizable
+          }
+          Fl_Box {} {
+            xywh {495 260 5 2}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 262 500 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 267 500 25} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 267 390 25} resizable
+          }
+          Fl_Button m_btn_ok {
+            label OK
+            private xywh {390 267 105 25}
+          }
+          Fl_Box {} {
+            private xywh {495 267 5 25}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 292 500 5}
+        }
+      }
+    }
+    code {m_mapctrl = mc;
+create_ex();} {}
+  }
+  Function {~dlg_search()} {} {
+    code {destroy_ex();} {}
+  }
+  Function {show()} {return_type void
+  } {
+    code {show_ex();} {}
+  }
+  Function {cb_btn_search(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_search *dlg = static_cast<dlg_search*>(userdata);
+dlg->cb_btn_search_ex(widget);} {}
+  }
+  Function {cb_input_query(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_search *dlg = static_cast<dlg_search*>(userdata);
+dlg->cb_btn_search_ex(widget);} {}
+  }
+  Function {cb_browser_results(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_search *dlg = static_cast<dlg_search*>(userdata);
+dlg->cb_browser_results_ex(widget);} {}
+  }
+} 

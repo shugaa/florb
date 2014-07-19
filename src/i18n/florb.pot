@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-03 11:13+0200\n"
+"POT-Creation-Date: 2014-07-19 21:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: dlg_ui_ex.cpp:136
+#: dlg_ui_ex.cpp:138
 msgid "About"
 msgstr ""
 
@@ -58,15 +58,15 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: dlg_ui_ex.cpp:123
+#: dlg_ui_ex.cpp:125
 msgid "Clear"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:856
+#: fluid/dlg_ui.cpp:858
 msgid "Clear current track"
 msgstr ""
 
-#: dlg_ui_ex.cpp:125 fluid/dlg_ui.cpp:876
+#: dlg_ui_ex.cpp:127 fluid/dlg_ui.cpp:878
 msgid "Delete waypoints"
 msgstr ""
 
@@ -94,11 +94,11 @@ msgstr ""
 msgid "Download OK"
 msgstr ""
 
-#: dlg_ui_ex.cpp:127
+#: dlg_ui_ex.cpp:129
 msgid "Download from device"
 msgstr ""
 
-#: dlg_ui_ex.cpp:119 fluid/dlg_settings.cpp:326 fluid/dlg_settings.cpp:350
+#: dlg_ui_ex.cpp:120 fluid/dlg_settings.cpp:326 fluid/dlg_settings.cpp:350
 #: fluid/dlg_settings.cpp:374 fluid/dlg_settings.cpp:398
 #: fluid/dlg_settings.cpp:422
 msgid "Edit"
@@ -112,7 +112,7 @@ msgstr ""
 msgid "Edit tileserver"
 msgstr ""
 
-#: dlg_ui_ex.cpp:124 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:866
+#: dlg_ui_ex.cpp:126 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:868
 msgid "Edit waypoints"
 msgstr ""
 
@@ -148,7 +148,7 @@ msgstr ""
 msgid "Failed to start downloader"
 msgstr ""
 
-#: dlg_ui_ex.cpp:114
+#: dlg_ui_ex.cpp:115
 msgid "File"
 msgstr ""
 
@@ -156,15 +156,15 @@ msgstr ""
 msgid "GPS cursor color"
 msgstr ""
 
-#: dlg_ui_ex.cpp:130 fluid/dlg_settings.cpp:452
+#: dlg_ui_ex.cpp:132 fluid/dlg_settings.cpp:452
 msgid "GPSd"
 msgstr ""
 
-#: dlg_ui_ex.cpp:131 fluid/dlg_ui.cpp:892
+#: dlg_ui_ex.cpp:133 fluid/dlg_ui.cpp:894
 msgid "Go to cursor"
 msgstr ""
 
-#: dlg_ui_ex.cpp:135
+#: dlg_ui_ex.cpp:137
 msgid "Help"
 msgstr ""
 
@@ -184,7 +184,7 @@ msgstr ""
 msgid "Latitude [°]"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:830
+#: fluid/dlg_ui.cpp:832
 msgid "Load GPX file"
 msgstr ""
 
@@ -192,7 +192,7 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
-#: dlg_ui_ex.cpp:133 fluid/dlg_ui.cpp:902
+#: dlg_ui_ex.cpp:135 fluid/dlg_ui.cpp:904
 msgid "Lock to cursor"
 msgstr ""
 
@@ -216,7 +216,7 @@ msgstr ""
 msgid "Max. z"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:810
+#: fluid/dlg_ui.cpp:812
 msgid "Menu"
 msgstr ""
 
@@ -238,11 +238,11 @@ msgstr ""
 
 #: fluid/dlg_settings.cpp:619 fluid/dlg_tileserver.cpp:127
 #: fluid/dlg_garminul.cpp:74 fluid/dlg_editselection.cpp:76
-#: fluid/dlg_about.cpp:46 fluid/dlg_garmindl.cpp:65
+#: fluid/dlg_about.cpp:46 fluid/dlg_garmindl.cpp:65 fluid/dlg_search.cpp:67
 msgid "OK"
 msgstr ""
 
-#: dlg_ui_ex.cpp:115
+#: dlg_ui_ex.cpp:116
 msgid "Open GPX"
 msgstr ""
 
@@ -258,11 +258,11 @@ msgstr ""
 msgid "Port"
 msgstr ""
 
-#: dlg_ui_ex.cpp:117
+#: dlg_ui_ex.cpp:118
 msgid "Quit"
 msgstr ""
 
-#: dlg_ui_ex.cpp:132 fluid/dlg_ui.cpp:913
+#: dlg_ui_ex.cpp:134 fluid/dlg_ui.cpp:915
 msgid "Record track"
 msgstr ""
 
@@ -270,12 +270,16 @@ msgstr ""
 msgid "Remove tileserver"
 msgstr ""
 
-#: dlg_ui_ex.cpp:116
+#: dlg_ui_ex.cpp:117
 msgid "Save GPX as"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:840
+#: fluid/dlg_ui.cpp:842
 msgid "Save current track"
+msgstr ""
+
+#: dlg_ui_ex.cpp:122 fluid/dlg_search.cpp:7 fluid/dlg_search.cpp:26
+msgid "Search"
 msgstr ""
 
 #: dlg_settings_ex.cpp:85 fluid/dlg_settings.cpp:571
@@ -294,11 +298,11 @@ msgstr ""
 msgid "Server"
 msgstr ""
 
-#: dlg_ui_ex.cpp:120 fluid/dlg_settings.cpp:298
+#: dlg_ui_ex.cpp:121 fluid/dlg_settings.cpp:298
 msgid "Settings"
 msgstr ""
 
-#: dlg_ui_ex.cpp:126
+#: dlg_ui_ex.cpp:128
 msgid "Show waypoint markers"
 msgstr ""
 
@@ -306,7 +310,7 @@ msgstr ""
 msgid "Sim. downloads"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:946
+#: fluid/dlg_ui.cpp:948
 msgid "Slippy Map"
 msgstr ""
 
@@ -314,7 +318,7 @@ msgstr ""
 msgid "Tileservers"
 msgstr ""
 
-#: dlg_ui_ex.cpp:122
+#: dlg_ui_ex.cpp:124
 msgid "Track"
 msgstr ""
 
@@ -346,10 +350,10 @@ msgstr ""
 msgid "Upload OK"
 msgstr ""
 
-#: dlg_ui_ex.cpp:128
+#: dlg_ui_ex.cpp:130
 msgid "Upload to device"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:806
+#: fluid/dlg_ui.cpp:808
 msgid "florb"
 msgstr ""

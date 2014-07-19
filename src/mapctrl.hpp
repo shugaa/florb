@@ -55,6 +55,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         unsigned int zoom();
         void zoom(unsigned int z);
         void goto_cursor();
+        void goto_pos(const point2d<double> &pwsg84);
         point2d<double> mousepos();
         
         // Event classes

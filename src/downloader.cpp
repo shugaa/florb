@@ -20,7 +20,7 @@ downloader::downloader(int nthreads) :
                 new boost::thread(boost::bind(&downloader::worker, this)));
         } catch (...) {
             // Delete all previously created threads
-            exit(true);
+            do_exit(true);
             for (int j=0;j<i;j++)
             {
                 m_workers[j]->t()->join();
@@ -44,7 +44,7 @@ downloader::downloader(int nthreads) :
 downloader::~downloader()
 {
     // Set exit flag
-    exit(true);
+    do_exit(true);
 
     // Post once for each worker thread
     for (size_t i=0;i<m_workers.size();i++)
@@ -64,14 +64,20 @@ downloader::~downloader()
 
 bool downloader::queue(const std::string& url, void* userdata)
 {   
-    if (exit())
+    if (do_exit())
         return false;
+
+    // Very basic URL encoding
+    std::string urle(url);
+    size_t pos;
+    while((pos = urle.find(" ")) != std::string::npos)
+        urle.replace(pos, 1, "%20"); 
 
     m_mutex.lock();
 
     // Find an existing item in the list
     bool newitem = false;
-    download_internal d(this, url, userdata);
+    download_internal d(this, urle, userdata);
     std::vector<download_internal>::iterator it;
     for (it=m_queue.begin(); it!=m_queue.end(); ++it)
     {
@@ -137,14 +143,14 @@ bool downloader::get(download& dl)
     return ret;
 }
 
-void downloader::exit(bool i)
+void downloader::do_exit(bool i)
 {
     m_mutex.lock();
     m_exit = i;
     m_mutex.unlock();
 }
 
-bool downloader::exit(void)
+bool downloader::do_exit(void)
 {
     bool ret;
 
@@ -176,7 +182,7 @@ void downloader::worker()
     {
         m_threadblock.wait();
 
-        if (exit())
+        if (do_exit())
             break;
 
         // Get a download item from the list

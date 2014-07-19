@@ -244,7 +244,7 @@ std::size_t utils::str_count(const std::string& str, const std::string& token)
 }
 
 // Cohen–Sutherland clipping algorithm
-bool utils::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r1, point2d<double> r2, bool &p1clip, bool &p2clip)
+bool utils::clipline(point2d<double> &p1, point2d<double> &p2, const point2d<double> &r1, const point2d<double> &r2, bool &p1clip, bool &p2clip)
 {
     bool ret = false;
     double xmin, xmax, ymin, ymax;
@@ -275,7 +275,7 @@ bool utils::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r
 
     bool overflowa = false;
 
-    // Catch arithmetic overflow when calculating  m and n
+    // Catch arithmetic overflow when calculating m and n
     double n = 0, m = 0;
     for (;;)
     {
@@ -359,7 +359,6 @@ bool utils::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r
             // protection:
             // ptmp[0] = (ymin - n) / m; 
 
-            // In case of an overflow we assume a vertical line
             double cx;
             for (;!overflowa;)
             {
@@ -375,6 +374,8 @@ bool utils::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r
                 break;
             }
 
+            // In case of an arithmetic exception we assume a vertical line and
+            // keep the original x coordinate
             if (!overflowa)
                 ptmp[0] = cx;
 
@@ -387,7 +388,6 @@ bool utils::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r
             // protection:
             // ptmp[0] = (ymax - n) / m; 
 
-            // In case of an overflow we assume a vertical line
             double cx;
             for (;!overflowa;)
             {
@@ -403,6 +403,8 @@ bool utils::clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r
                 break;
             }
 
+            // In case of an arithmetic exception we assume a vertical line and
+            // keep the original x coordinate
             if (!overflowa)
                 ptmp[0] = cx;
 

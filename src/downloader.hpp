@@ -95,8 +95,8 @@ class downloader : public event_generator
         size_t handle_data(void *ptr, size_t size, size_t nmemb, std::vector<char>& buf);
         size_t handle_header(void *ptr, size_t size, size_t nmemb, time_t& expires);
 
-        bool exit(void);
-        void exit(bool i);
+        bool do_exit(void);
+        void do_exit(bool i);
 
         std::vector<download_internal> m_queue;
         std::vector<download_internal> m_done;

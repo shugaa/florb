@@ -10,6 +10,7 @@
 #include "fluid/dlg_ui.hpp"
 #include "fluid/dlg_editselection.hpp"
 #include "fluid/dlg_settings.hpp"
+#include "fluid/dlg_search.hpp"
 #include "fluid/dlg_garmindl.hpp"
 #include "fluid/dlg_garminul.hpp"
 
@@ -118,6 +119,7 @@ void dlg_ui::create_ex(void)
     // Edit
     m_menuitem_edit->label(_("Edit"));
     m_menuitem_edit_settings->label(_("Settings"));
+    m_menuitem_edit_search->label(_("Search"));
     // Track
     m_menuitem_track->label(_("Track"));
     m_menuitem_track_clear->label(_("Clear"));
@@ -356,6 +358,13 @@ void dlg_ui::settings_ex()
     }
 }
 
+void dlg_ui::search_ex()
+{
+    // Create search dialog and show it
+    dlg_search gd(m_mapctrl);
+    gd.show();
+}
+
 void dlg_ui::about_ex()
 {
     // Show about dialog
@@ -464,6 +473,10 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
     // Edit sumbemnu
     else if (mit == m_menuitem_edit_settings) {
         settings_ex();
+    }
+    // Edit sumbemnu
+    else if (mit == m_menuitem_edit_search) {
+        search_ex();
     }
 
     // Track submenu
