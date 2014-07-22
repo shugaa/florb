@@ -40,9 +40,13 @@ class dlg_search {open : {public event_listener}
   }
   decl {void show_ex();} {private local
   }
+  decl {void hide_ex();} {private local
+  }
   decl {void cb_btn_search_ex(Fl_Widget *widget);} {private global
   }
   decl {void cb_browser_results_ex(Fl_Widget *widget);} {private global
+  }
+  decl {void cb_btn_ok_ex(Fl_Widget *widget);} {selected private global
   }
   decl {void process_download_ex();} {private global
   }
@@ -50,11 +54,10 @@ class dlg_search {open : {public event_listener}
   }
   decl {static void cb_download_ex(void *userdata);} {private global
   }
-  Function {dlg_search(mapctrl *mc)} {open
-  } {
+  Function {dlg_search(mapctrl *mc)} {} {
     Fl_Window m_window {
       label Search open
-      private xywh {2240 239 500 295} type Double resizable modal size_range {500 295 0 0} visible
+      private xywh {2240 239 500 295} type Double resizable size_range {500 295 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 500 297} resizable
@@ -85,7 +88,7 @@ class dlg_search {open : {public event_listener}
               Fl_Button m_btn_search {
                 label Search
                 user_data this
-                callback cb_btn_search selected
+                callback cb_btn_search
                 private xywh {390 5 105 25}
               }
             }
@@ -150,6 +153,10 @@ create_ex();} {}
   } {
     code {show_ex();} {}
   }
+  Function {hide()} {return_type void
+  } {
+    code {hide_ex();} {}
+  }
   Function {cb_btn_search(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
     code {dlg_search *dlg = static_cast<dlg_search*>(userdata);
@@ -164,5 +171,10 @@ dlg->cb_btn_search_ex(widget);} {}
   } {
     code {dlg_search *dlg = static_cast<dlg_search*>(userdata);
 dlg->cb_browser_results_ex(widget);} {}
+  }
+  Function {cb_btn_ok(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_search *dlg = static_cast<dlg_search*>(userdata);
+dlg->cb_btn_ok_ex(widget);} {}
   }
 } 

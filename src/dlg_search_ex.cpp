@@ -80,18 +80,20 @@ void dlg_search::cb_browser_results_ex(Fl_Widget *widget)
     m_mapctrl->goto_pos(m_searchresults[--v].m_pos);
 }
 
+void dlg_search::cb_btn_ok_ex(Fl_Widget *widget)
+{
+    hide_ex();
+}
+
 void dlg_search::show_ex()
 {
     // Show the window
     m_window->show();
+}
 
-    for (;;) {
-        Fl_Widget *o = Fl::readqueue();
-        if (!o) Fl::wait();
-        else if (o == m_btn_ok)     {break;}
-        else if (o == m_window)     {break;}
-    }
-
+void dlg_search::hide_ex()
+{
+    // hide the window
     m_window->hide();
 }
 

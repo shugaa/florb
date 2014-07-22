@@ -2,17 +2,13 @@
 #include <Fl/Fl_File_Chooser.H>
 #include <curl/curl.h>
 #include <locale.h>
+#include <cstdlib>
 #include "gpxlayer.hpp"
 #include "mapctrl.hpp"
 #include "settings.hpp"
 #include "gpsdclient.hpp"
 #include "utils.hpp"
 #include "fluid/dlg_ui.hpp"
-#include "fluid/dlg_editselection.hpp"
-#include "fluid/dlg_settings.hpp"
-#include "fluid/dlg_search.hpp"
-#include "fluid/dlg_garmindl.hpp"
-#include "fluid/dlg_garminul.hpp"
 
 static dlg_ui *ui;
 
@@ -49,8 +45,10 @@ int main_ex(int argc, char* argv[])
 
 void sighandler_ex(int sig)
 {
-    // Got SIGABRT / SIGTERM / SIGINT
-    ui->hide();
+    // "Just die already!" approach: Clean up curl and get out of here. Sadly
+    // the OS has to take care of memory deallocation from here on.
+    curl_global_cleanup();
+    exit(EXIT_SUCCESS);
 }
 
 bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
@@ -194,9 +192,6 @@ void dlg_ui::update_choice_basemap_ex(void)
 
 void dlg_ui::destroy_ex(void)
 {
-    // Delete toplevel window
-    delete(m_window);
-
     // Curl cleanup
     curl_global_cleanup();
 
@@ -288,8 +283,10 @@ void dlg_ui::editselection_ex()
         return;
 
     // Show editor dialog for selected waypoints
-    dlg_editselection es(m_mapctrl);
-    es.show();
+    if (!m_dlg_editselection)
+        m_dlg_editselection = new dlg_editselection(m_mapctrl);
+    
+    m_dlg_editselection->show();
 }
 
 void dlg_ui::deleteselection_ex()
@@ -315,8 +312,10 @@ void dlg_ui::garmindl_ex()
     std::string tmp(utils::appdir() + utils::pathsep() + "tmp.gpx"); 
 
     // Download track from garmin device to temporary file
-    dlg_garmindl dlg(tmp);
-    if (dlg.show())
+    if (!m_dlg_garmindl)
+        m_dlg_garmindl = new dlg_garmindl(tmp);
+
+    if (m_dlg_garmindl->show())
     {
         m_mapctrl->gpx_loadtrack(tmp);
         utils::rm(tmp);
@@ -325,24 +324,33 @@ void dlg_ui::garmindl_ex()
 
 void dlg_ui::garminul_ex()
 {
+    //winopen.wait();
+
     // Temp gpx file path
     std::string name(m_mapctrl->gpx_trackname());
     std::string path(utils::appdir() + utils::pathsep() + "tmp.gpx"); 
     m_mapctrl->gpx_savetrack(path);
 
     // Show upload dialog
-    dlg_garminul dlg(path, name);
-    dlg.show();
+    if (!m_dlg_garminul)
+        m_dlg_garminul = new dlg_garminul(path, name);
+
+    m_dlg_garminul->show();
+
+    // Remove temp file
     utils::rm(path);
+
+    //winopen.post();
 }
 
 void dlg_ui::settings_ex()
 {
     // Create settings dialog
-    dlg_settings gd;
+    if (!m_dlg_settings)
+        m_dlg_settings = new dlg_settings;
 
     // If the settings were updated
-    if (gd.show())
+    if (m_dlg_settings->show())
     {
         settings &s = settings::get_instance();
         
@@ -361,15 +369,19 @@ void dlg_ui::settings_ex()
 void dlg_ui::search_ex()
 {
     // Create search dialog and show it
-    dlg_search gd(m_mapctrl);
-    gd.show();
+    if (!m_dlg_search)
+        m_dlg_search = new dlg_search(m_mapctrl);
+
+    m_dlg_search->show();
 }
 
 void dlg_ui::about_ex()
 {
     // Show about dialog
-    dlg_about gd;
-    gd.show();
+    if (!m_dlg_about)
+        m_dlg_about = new dlg_about;
+
+    m_dlg_about->show();
 }
 
 void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
@@ -461,7 +473,11 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
 
     // File submenu
     if (mit == m_menuitem_file_quit) {
-        m_window->hide();
+        hide_ex();
+
+        // All the rest of the application is long gone by now. Nothing left to
+        // do but return.
+        return;
     }
     else if (mit == m_menuitem_file_opengpx) { 
         loadtrack_ex();
@@ -522,11 +538,28 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
 
 void dlg_ui::cb_close_ex(Fl_Widget *widget)
 {
-    m_window->hide();
+    hide_ex();
 }
 
 void dlg_ui::hide_ex()
 {
+    // Close all non-modal dialogs, we won't be able to get here with any modal
+    // dialog still open
+    if (m_dlg_search)
+        m_dlg_search->hide();
+
+    // Hide the main window
     m_window->hide();
+
+    // Delete all dialogs
+    if (m_dlg_garminul)         delete m_dlg_garminul;
+    if (m_dlg_garmindl)         delete m_dlg_garmindl;
+    if (m_dlg_search)           delete m_dlg_search;
+    if (m_dlg_editselection)    delete m_dlg_editselection;
+    if (m_dlg_settings)         delete m_dlg_settings;
+    if (m_dlg_about)            delete m_dlg_about;
+
+    // Delete the main window
+    delete(m_window);
 }
 

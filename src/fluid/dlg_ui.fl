@@ -14,13 +14,28 @@ decl {\#include <curl/curl.h>} {private global
 decl {\#include "dlg_ui.hpp"} {private global
 } 
 
-decl {\#include "dlg_about.hpp"} {public global
-} 
-
 decl {\#include "mapctrl.hpp"} {public global
 } 
 
 decl {\#include "event.hpp"} {public global
+} 
+
+decl {\#include "dlg_search.hpp"} {public global
+} 
+
+decl {\#include "dlg_garminul.hpp"} {public global
+} 
+
+decl {\#include "dlg_garmindl.hpp"} {public global
+} 
+
+decl {\#include "dlg_editselection.hpp"} {public global
+} 
+
+decl {\#include "dlg_settings.hpp"} {public global
+} 
+
+decl {\#include "dlg_about.hpp"} {selected public global
 } 
 
 decl {int main_ex(int argc, char* argv[]);} {private global
@@ -31,6 +46,18 @@ decl {void sighandler_ex(int sig);} {private global
 
 class dlg_ui {open : {public event_listener}
 } {
+  decl {dlg_search *m_dlg_search;} {private local
+  }
+  decl {dlg_garminul *m_dlg_garminul;} {private local
+  }
+  decl {dlg_garmindl *m_dlg_garmindl;} {private local
+  }
+  decl {dlg_settings *m_dlg_settings;} {private local
+  }
+  decl {dlg_editselection *m_dlg_editselection;} {private local
+  }
+  decl {dlg_about *m_dlg_about;} {private local
+  }
   decl {void create_ex(void);} {private local
   }
   decl {void destroy_ex(void);} {private local
@@ -53,7 +80,7 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void settings_ex(void);} {private local
   }
-  decl {void search_ex(void);} {selected private local
+  decl {void search_ex(void);} {private local
   }
   decl {void about_ex(void);} {private local
   }
@@ -148,12 +175,13 @@ ui->cb_btn_deleteselection_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
-  Function {dlg_ui()} {} {
+  Function {dlg_ui()} {open
+  } {
     Fl_Window m_window {
       label florb
       user_data this
       callback cb_close
-      private xywh {1729 211 805 565} type Double align 80 resizable visible
+      private xywh {1485 191 805 565} type Double align 80 resizable visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
