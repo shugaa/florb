@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-19 21:28+0200\n"
-"PO-Revision-Date: 2014-07-19 21:29+0100\n"
+"POT-Creation-Date: 2014-07-23 13:20+0200\n"
+"PO-Revision-Date: 2014-07-23 13:21+0100\n"
 "Last-Translator: Björn Rehm <bjoern@shugaa.de>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: dlg_ui_ex.cpp:138
+#: dlg_ui_ex.cpp:136
 msgid "About"
 msgstr "Über florb"
 
@@ -60,7 +60,7 @@ msgstr "Cache-Fehler: SESSIONID"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: dlg_ui_ex.cpp:125
+#: dlg_ui_ex.cpp:123
 msgid "Clear"
 msgstr "Track löschen"
 
@@ -68,7 +68,7 @@ msgstr "Track löschen"
 msgid "Clear current track"
 msgstr "Track löschen"
 
-#: dlg_ui_ex.cpp:127 fluid/dlg_ui.cpp:878
+#: dlg_ui_ex.cpp:125 fluid/dlg_ui.cpp:878
 msgid "Delete waypoints"
 msgstr "Wegpunkte löschen"
 
@@ -96,11 +96,11 @@ msgstr "Download fehlgeschlagen!"
 msgid "Download OK"
 msgstr "Download OK"
 
-#: dlg_ui_ex.cpp:129
+#: dlg_ui_ex.cpp:127
 msgid "Download from device"
 msgstr "Von Gerät herunterladen"
 
-#: dlg_ui_ex.cpp:120 fluid/dlg_settings.cpp:326 fluid/dlg_settings.cpp:350
+#: dlg_ui_ex.cpp:118 fluid/dlg_settings.cpp:326 fluid/dlg_settings.cpp:350
 #: fluid/dlg_settings.cpp:374 fluid/dlg_settings.cpp:398
 #: fluid/dlg_settings.cpp:422
 msgid "Edit"
@@ -114,7 +114,7 @@ msgstr "Kachelserver bearbeiten"
 msgid "Edit tileserver"
 msgstr "Kachelserver bearbeiten"
 
-#: dlg_ui_ex.cpp:126 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:868
+#: dlg_ui_ex.cpp:124 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:868
 msgid "Edit waypoints"
 msgstr "Wegpunkte bearbeiten"
 
@@ -146,11 +146,11 @@ msgstr "Fehler beim Laden der GPX Datei"
 msgid "Failed to save GPX data"
 msgstr "Konnte GPX-Daten nicht speichern"
 
-#: downloader.cpp:31
+#: downloader.cpp:32
 msgid "Failed to start downloader"
 msgstr "Konnte Downloader nicht starten"
 
-#: dlg_ui_ex.cpp:115
+#: dlg_ui_ex.cpp:113
 msgid "File"
 msgstr "Datei"
 
@@ -158,15 +158,15 @@ msgstr "Datei"
 msgid "GPS cursor color"
 msgstr "Farbe GPS cursor"
 
-#: dlg_ui_ex.cpp:132 fluid/dlg_settings.cpp:452
+#: dlg_ui_ex.cpp:130 fluid/dlg_settings.cpp:452
 msgid "GPSd"
 msgstr "GPSd"
 
-#: dlg_ui_ex.cpp:133 fluid/dlg_ui.cpp:894
+#: dlg_ui_ex.cpp:131 fluid/dlg_ui.cpp:894
 msgid "Go to cursor"
 msgstr "Gehe zu Position"
 
-#: dlg_ui_ex.cpp:137
+#: dlg_ui_ex.cpp:135
 msgid "Help"
 msgstr "Hilfe"
 
@@ -194,7 +194,7 @@ msgstr "GPX laden"
 msgid "Location"
 msgstr "Verzeichnis"
 
-#: dlg_ui_ex.cpp:135 fluid/dlg_ui.cpp:904
+#: dlg_ui_ex.cpp:133 fluid/dlg_ui.cpp:904
 msgid "Lock to cursor"
 msgstr "Position folgen"
 
@@ -213,6 +213,10 @@ msgstr "Farbe Marker"
 #: fluid/dlg_settings.cpp:338
 msgid "Marker color (selected)"
 msgstr "Farbe Marker (ausgewählt)"
+
+#: mapctrl.cpp:100 mapctrl.cpp:108 mapctrl.cpp:116
+msgid "Marker error"
+msgstr "Markerfehler"
 
 #: fluid/dlg_tileserver.cpp:83
 msgid "Max. z"
@@ -244,7 +248,7 @@ msgstr "Keine Geräte gefunden"
 msgid "OK"
 msgstr "OK"
 
-#: dlg_ui_ex.cpp:116
+#: dlg_ui_ex.cpp:114
 msgid "Open GPX"
 msgstr "GPX laden"
 
@@ -260,11 +264,11 @@ msgstr "Bitte eine URL für diesen Server angeben!"
 msgid "Port"
 msgstr "Port"
 
-#: dlg_ui_ex.cpp:118
+#: dlg_ui_ex.cpp:116
 msgid "Quit"
 msgstr "Beenden"
 
-#: dlg_ui_ex.cpp:134 fluid/dlg_ui.cpp:915
+#: dlg_ui_ex.cpp:132 fluid/dlg_ui.cpp:915
 msgid "Record track"
 msgstr "Track aufzeichnen"
 
@@ -272,7 +276,7 @@ msgstr "Track aufzeichnen"
 msgid "Remove tileserver"
 msgstr "Kachelserver löschen"
 
-#: dlg_ui_ex.cpp:117
+#: dlg_ui_ex.cpp:115
 msgid "Save GPX as"
 msgstr "GPX speichern unter"
 
@@ -280,7 +284,7 @@ msgstr "GPX speichern unter"
 msgid "Save current track"
 msgstr "GPX speichern unter"
 
-#: dlg_ui_ex.cpp:122 fluid/dlg_search.cpp:7 fluid/dlg_search.cpp:26
+#: dlg_ui_ex.cpp:120 fluid/dlg_search.cpp:7 fluid/dlg_search.cpp:26
 msgid "Search"
 msgstr "Suchen"
 
@@ -300,11 +304,11 @@ msgstr "Farbe Auswahl"
 msgid "Server"
 msgstr "Server"
 
-#: dlg_ui_ex.cpp:121 fluid/dlg_settings.cpp:298
+#: dlg_ui_ex.cpp:119 fluid/dlg_settings.cpp:298
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: dlg_ui_ex.cpp:128
+#: dlg_ui_ex.cpp:126
 msgid "Show waypoint markers"
 msgstr "Zeige Wegpunktmarkierungen"
 
@@ -320,7 +324,7 @@ msgstr "Kartenansicht"
 msgid "Tileservers"
 msgstr "Kachelserver"
 
-#: dlg_ui_ex.cpp:124
+#: dlg_ui_ex.cpp:122
 msgid "Track"
 msgstr "Track"
 
@@ -352,7 +356,7 @@ msgstr "Hochladen fehlgeschlagen!"
 msgid "Upload OK"
 msgstr "Hochladen OK"
 
-#: dlg_ui_ex.cpp:130
+#: dlg_ui_ex.cpp:128
 msgid "Upload to device"
 msgstr "Hochladen auf Gerät"
 
