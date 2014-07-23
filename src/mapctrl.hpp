@@ -10,6 +10,7 @@
 #include "point.hpp"
 #include "osmlayer.hpp"
 #include "gpxlayer.hpp"
+#include "markerlayer.hpp"
 #include "gpsdlayer.hpp"
 #include "gfx.hpp"
 
@@ -57,7 +58,12 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         void goto_cursor();
         void goto_pos(const point2d<double> &pwsg84);
         point2d<double> mousepos();
-        
+       
+        // Marker handling
+        void marker_add(const point2d<double> &pmerc, size_t id);
+        size_t marker_add(const point2d<double> &pmerc);
+        void marker_remove(size_t id);
+
         // Event classes
         class event_notify;
     private:
@@ -89,9 +95,13 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         // GPX-layer event handlers
         bool gpx_evt_notify(const gpxlayer::event_notify *e);
 
+        // Marker layer event handlers
+        bool marker_evt_notify(const markerlayer::event_notify *e);
+
         // Layers
         osmlayer *m_basemap;
         gpxlayer *m_gpxlayer;
+        markerlayer *m_markerlayer;
         gpsdlayer *m_gpsdlayer;
 
         point2d<int> m_mousepos;

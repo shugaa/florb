@@ -636,6 +636,9 @@ void gpxlayer::draw(const viewport &vp, canvas &os)
 
                 os.line(ppx.x()-6, ppx.y(), ppx.x()+6, ppx.y(), 1);
                 os.line(ppx.x(), ppx.y()-6, ppx.x(), ppx.y()+6, 1);
+
+                os.circle(ppx.x(), ppx.y(), 3);
+                os.circle(ppx.x(), ppx.y(), 4);
             }
 
             if ((it != m_trkpts.begin()) && (!lastclip))

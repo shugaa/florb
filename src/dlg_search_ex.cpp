@@ -2,11 +2,14 @@
 #include <sstream>
 #include <tinyxml2.h>
 #include <clocale>
+#include <limits>
 #include "utils.hpp"
 #include "fluid/dlg_search.hpp"
 
 void dlg_search::create_ex()
 {
+    m_markerid = std::numeric_limits<size_t>::max();
+
     // Set the window icon
     utils::set_window_icon(m_window);
 
@@ -17,6 +20,7 @@ void dlg_search::create_ex()
         throw e;
     }
 
+    m_downloader->timeout(20);
     register_event_handler<dlg_search, downloader::event_complete>(this, &dlg_search::evt_downloadcomplete_ex);
     m_downloader->add_event_listener(this);
 }
@@ -35,6 +39,12 @@ void dlg_search::cb_btn_search_ex(Fl_Widget *widget)
     std::string query(m_input_query->value());
     if (query.length() == 0)
         return;
+
+    if (m_markerid != std::numeric_limits<size_t>::max())
+    {
+        m_mapctrl->marker_remove(m_markerid);
+        m_markerid = std::numeric_limits<size_t>::max();
+    }
 
     // Perform some very basic string sanitation
     size_t pos;
@@ -75,9 +85,21 @@ void dlg_search::cb_browser_results_ex(Fl_Widget *widget)
 {
     int v = m_browser_results->value();
     if (v == 0)
-        return;
+    {
+        if (m_markerid != std::numeric_limits<size_t>::max())
+        {
+            m_mapctrl->marker_remove(m_markerid);
+            m_markerid = std::numeric_limits<size_t>::max();
+        }
 
-    m_mapctrl->goto_pos(m_searchresults[--v].m_pos);
+        return;
+    }
+
+    if (m_markerid != std::numeric_limits<size_t>::max())
+        m_mapctrl->marker_remove(m_markerid);
+
+    m_markerid = m_mapctrl->marker_add(utils::wsg842merc(m_searchresults[v-1].m_pos));
+    m_mapctrl->goto_pos(m_searchresults[v-1].m_pos);
 }
 
 void dlg_search::cb_btn_ok_ex(Fl_Widget *widget)
@@ -93,6 +115,12 @@ void dlg_search::show_ex()
 
 void dlg_search::hide_ex()
 {
+    if (m_markerid != std::numeric_limits<size_t>::max())
+    {
+        m_mapctrl->marker_remove(m_markerid);
+        m_markerid = std::numeric_limits<size_t>::max();
+    }
+
     // hide the window
     m_window->hide();
 }
@@ -132,8 +160,6 @@ void dlg_search::process_download_ex()
             if (std::string(child->ToElement()->Value()).compare("place") != 0)
                 continue;
 
-            searchresult tmp;
-
             const char *dn = child->ToElement()->Attribute("display_name");
             if (dn == NULL)
                 continue;
@@ -146,6 +172,7 @@ void dlg_search::process_download_ex()
             if ((lat == 1234.5) || (lon == 1234.5))
                 continue;
 
+            searchresult tmp;
             tmp.m_displayname = std::string(dn);
             tmp.m_pos = point2d<double>(lon,lat);
             

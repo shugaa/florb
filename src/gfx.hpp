@@ -96,6 +96,7 @@ class canvas : public drawable
         void draw(image &src, int dstx, int dsty);
         void fillrect(int x, int y, int w, int h);
         void line(int x1, int y1, int x2, int y2, int linewidth);
+        void circle(double x, double y, double r);
         canvas_storage buf(void) { trycreate(); return m_buf; };
         void buf(canvas_storage bufs) { m_buf = bufs; };
         unsigned int w(void) { return m_w; };

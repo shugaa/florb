@@ -8,6 +8,7 @@
 #include "downloader.hpp"
 
 downloader::downloader(int nthreads) : 
+    m_timeout(10),
     m_threadblock(0),
     m_exit(false)
 {
@@ -60,6 +61,13 @@ downloader::~downloader()
         delete (*it)->t();
         delete (*it);
     }
+}
+
+void downloader::timeout(size_t sec)
+{
+    m_mutex.lock();
+    m_timeout = sec;
+    m_mutex.unlock();
 }
 
 bool downloader::queue(const std::string& url, void* userdata)
@@ -175,8 +183,10 @@ void downloader::worker()
     curl_easy_setopt(curl_handle, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(curl_handle, CURLOPT_DNS_USE_GLOBAL_CACHE, 0);
 
-    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 10);
-    curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 10); 
+    m_mutex.lock();
+    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, m_timeout);
+    curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, m_timeout); 
+    m_mutex.unlock();
 
     for (;;)
     {

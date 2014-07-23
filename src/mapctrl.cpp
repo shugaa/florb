@@ -23,6 +23,7 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     register_event_handler<mapctrl, gpsdlayer::event_motion>(this, &mapctrl::gpsd_evt_motion);
     register_event_handler<mapctrl, osmlayer::event_notify>(this, &mapctrl::osm_evt_notify);
     register_event_handler<mapctrl, gpxlayer::event_notify>(this, &mapctrl::gpx_evt_notify);
+    register_event_handler<mapctrl, markerlayer::event_notify>(this, &mapctrl::marker_evt_notify);
 
     // Add a GPX layer
     m_gpxlayer = new gpxlayer();
@@ -31,6 +32,14 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
 
     m_gpxlayer->add_event_listener(this);
     add_event_listener(m_gpxlayer);
+
+    // Add a marker layer
+    m_markerlayer = new markerlayer();
+    if (!m_markerlayer)
+        throw 0;
+
+    m_markerlayer->add_event_listener(this);
+    add_event_listener(m_markerlayer);
 
     // Add a gpsdlayer if enabled
     cfg_gpsd cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
@@ -68,6 +77,9 @@ mapctrl::~mapctrl()
     if (m_gpxlayer)
         delete m_gpxlayer;
 
+    if (m_markerlayer)
+        delete m_markerlayer;
+
     if (m_gpsdlayer)
         delete m_gpsdlayer;
 }
@@ -80,6 +92,30 @@ void mapctrl::goto_pos(const point2d<double> &pwsg84)
     m_viewport.y(ppx.y() - (m_viewport.h()/2));
 
     refresh();
+}
+
+void mapctrl::marker_add(const point2d<double> &pmerc, size_t id)
+{
+    if (!m_markerlayer)
+        throw std::runtime_error(_("Marker error"));
+
+    m_markerlayer->add(pmerc, id);
+}
+
+size_t mapctrl::marker_add(const point2d<double> &pmerc)
+{
+    if (!m_markerlayer)
+        throw std::runtime_error(_("Marker error"));
+
+    return m_markerlayer->add(pmerc);
+}
+
+void mapctrl::marker_remove(size_t id)
+{
+    if (!m_markerlayer)
+        throw std::runtime_error(_("Marker error"));
+
+    m_markerlayer->remove(id);
 }
 
 void mapctrl::gpx_loadtrack(const std::string& path)
@@ -236,7 +272,15 @@ void mapctrl::basemap(
     }
 
     // Create a new basemap layer
-    m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
+    
+    try {
+        m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
+    } catch (std::runtime_error& e) {
+        delete m_basemap;
+        m_basemap = NULL;
+        throw e;
+    }
+
     m_basemap->add_event_listener(this);
     add_event_listener(m_basemap);
 
@@ -393,6 +437,12 @@ bool mapctrl::gpx_evt_notify(const gpxlayer::event_notify *e)
     return true;
 }
 
+bool mapctrl::marker_evt_notify(const markerlayer::event_notify *e)
+{
+    refresh();
+    return true;
+}
+
 int mapctrl::handle_move(int event)
 {
     // Save the current mouse position
@@ -448,7 +498,8 @@ int mapctrl::handle_push(int event)
 int mapctrl::handle_release(int event)
 {
     // End of drag mode, allow downloading of tiles
-    m_basemap->dlenable(true);
+    if (m_basemap)
+        m_basemap->dlenable(true);
 
     // Cursor reset
     fl_cursor(FL_CURSOR_CROSS);
@@ -708,6 +759,10 @@ void mapctrl::draw()
     // Draw the gpx layer
     if (m_gpxlayer)
         m_gpxlayer->draw(m_viewport, m_offscreen);
+
+    // Draw the marker layer
+    if (m_markerlayer)
+        m_markerlayer->draw(m_viewport, m_offscreen);
 
     // Draw the gpsd layer
     if (m_gpsdlayer)

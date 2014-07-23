@@ -86,6 +86,14 @@ void canvas::line(int x1, int y1, int x2, int y2, int linewidth)
     fl_end_offscreen();
 };
 
+void canvas::circle(double x, double y, double r)
+{
+    fl_color(m_fgcolor.r(), m_fgcolor.g(), m_fgcolor.b());
+    fl_begin_offscreen(m_buf);
+    fl_circle(x, y, r);
+    fl_end_offscreen();
+};
+
 void canvas::trycreate(void)
 {
     if (m_init)

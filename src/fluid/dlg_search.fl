@@ -34,6 +34,8 @@ class dlg_search {open : {public event_listener}
   }
   decl {mapctrl* m_mapctrl;} {private local
   }
+  decl {size_t m_markerid;} {selected private local
+  }
   decl {void create_ex();} {private local
   }
   decl {void destroy_ex();} {private local
@@ -46,7 +48,7 @@ class dlg_search {open : {public event_listener}
   }
   decl {void cb_browser_results_ex(Fl_Widget *widget);} {private global
   }
-  decl {void cb_btn_ok_ex(Fl_Widget *widget);} {selected private global
+  decl {void cb_btn_ok_ex(Fl_Widget *widget);} {private global
   }
   decl {void process_download_ex();} {private global
   }
@@ -132,6 +134,8 @@ class dlg_search {open : {public event_listener}
           }
           Fl_Button m_btn_ok {
             label OK
+            user_data this
+            callback cb_btn_ok
             private xywh {390 267 105 25}
           }
           Fl_Box {} {
