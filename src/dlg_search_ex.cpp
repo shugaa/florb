@@ -107,6 +107,11 @@ void dlg_search::cb_btn_ok_ex(Fl_Widget *widget)
     hide_ex();
 }
 
+void dlg_search::cb_window_ex(Fl_Widget *widget)
+{
+    hide_ex();
+}
+
 void dlg_search::show_ex()
 {
     // Show the window

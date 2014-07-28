@@ -7,7 +7,7 @@ void dlg_editselection::show_ex()
     m_mapctrl->gpx_selection_get(waypoints);
 
     std::ostringstream os;
-    os.precision(6);
+    os.precision(8);
     os.setf(std::ios::fixed, std::ios::floatfield);
 
     os.str("");

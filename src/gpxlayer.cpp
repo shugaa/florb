@@ -455,7 +455,9 @@ void gpxlayer::selection_get(std::vector<waypoint>& waypoints)
     std::vector< std::vector<gpx_trkpt>::iterator >::iterator it;
     for(it=m_selection.waypoints.begin();it!=m_selection.waypoints.end();++it)
     {
-        waypoint tmp((*(*it)).lon, (*(*it)).lat, (*(*it)).ele, (*(*it)).time);
+        point2d<double> pwsg84(utils::merc2wsg84(point2d<double>((*(*it)).lon, (*(*it)).lat)));
+
+        waypoint tmp(pwsg84.x(), pwsg84.y(), (*(*it)).ele, (*(*it)).time);
         waypoints.push_back(tmp);
     }
 }
@@ -471,8 +473,10 @@ void gpxlayer::selection_set(const std::vector<waypoint>& waypoints)
     size_t i;
     for(it=m_selection.waypoints.begin(), i=0;it!=m_selection.waypoints.end();++it,i++)
     {
-        (*(*it)).lon = waypoints[i].lon();
-        (*(*it)).lat = waypoints[i].lat();
+        point2d<double> pmerc(utils::wsg842merc(point2d<double>(waypoints[i].lon(), waypoints[i].lat())));
+
+        (*(*it)).lon = pmerc.x();
+        (*(*it)).lat = pmerc.y();
         (*(*it)).ele = waypoints[i].elevation();
         (*(*it)).time = waypoints[i].time();
     }

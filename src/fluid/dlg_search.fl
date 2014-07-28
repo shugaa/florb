@@ -34,7 +34,7 @@ class dlg_search {open : {public event_listener}
   }
   decl {mapctrl* m_mapctrl;} {private local
   }
-  decl {size_t m_markerid;} {selected private local
+  decl {size_t m_markerid;} {private local
   }
   decl {void create_ex();} {private local
   }
@@ -50,6 +50,8 @@ class dlg_search {open : {public event_listener}
   }
   decl {void cb_btn_ok_ex(Fl_Widget *widget);} {private global
   }
+  decl {void cb_window_ex(Fl_Widget *widget);} {selected private global
+  }
   decl {void process_download_ex();} {private global
   }
   decl {bool evt_downloadcomplete_ex(const downloader::event_complete *e);} {private global
@@ -58,7 +60,9 @@ class dlg_search {open : {public event_listener}
   }
   Function {dlg_search(mapctrl *mc)} {} {
     Fl_Window m_window {
-      label Search open
+      label Search
+      user_data this
+      callback cb_window
       private xywh {2240 239 500 295} type Double resizable size_range {500 295 0 0} visible
     } {
       Fl_Pack {} {open
@@ -180,5 +184,10 @@ dlg->cb_browser_results_ex(widget);} {}
   } {
     code {dlg_search *dlg = static_cast<dlg_search*>(userdata);
 dlg->cb_btn_ok_ex(widget);} {}
+  }
+  Function {cb_window(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  } {
+    code {dlg_search *dlg = static_cast<dlg_search*>(userdata);
+dlg->cb_window_ex(widget);} {}
   }
 } 
