@@ -6,11 +6,14 @@
 #include <FL/fl_draw.H>
 #include <FL/Fl_PNG_Image.H>
 #include <FL/Fl_JPEG_Image.H>
+#include <string>
 
 namespace fgfx
 {
     typedef Fl_Offscreen canvas_storage;
     typedef Fl_Image* image_storage;
+
+    class color;
 
     // Represents any kind of surface that can be drawn on
     class drawable
@@ -20,6 +23,12 @@ namespace fgfx
             virtual unsigned int h() = 0;
             virtual void fillrect(int x, int y, int w, int h) = 0;
             virtual void line(int x1, int y1, int x2, int y2, int linewidth) = 0;
+            virtual void circle(double x, double y, double r) = 0;
+            virtual void fgcolor(color fg) = 0;
+            virtual void bgcolor(color bg) = 0;
+            virtual void fontsize(int s) = 0;
+            virtual void text(const std::string & txt, int x, int y) = 0;
+            
         private: 
     };
 
@@ -107,6 +116,8 @@ namespace fgfx
             unsigned int h(void) { return m_h; };
             void w(unsigned int ws) { m_w = ws; };
             void h(unsigned int hs) { m_h = hs; };
+            void fontsize(int s);
+            void text(const std::string & txt, int x, int y);
 
         private:
             bool m_init;

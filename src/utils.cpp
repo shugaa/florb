@@ -18,6 +18,8 @@
 #define CLIPBOTTOM (4)  // 0100
 #define CLIPTOP    (8)  // 1000
 
+#define CIRCUMFERENCEKM (2*M_PI*6372.7982)
+
 point2d<double> utils::wsg842merc(const point2d<double> &wsg84)
 {
     if ((wsg84.x() > 180.0) || (wsg84.x() < -180.0))
@@ -124,9 +126,13 @@ double utils::dist_merc(const point2d<double> &p1, const point2d<double> &p2)
     if (p1 == p2)
         return 0.0;
 
-    double circ = 2*M_PI*6372.7982;
     double dstmerc = sqrt( pow(std::abs(p1.x()-p2.x()), 2.0) + pow(std::abs(p1.y()-p2.y()), 2.0)*0.9444444 );
-    return (dstmerc * (circ/360.0));
+    return (dstmerc * (CIRCUMFERENCEKM/360.0));
+}
+
+double utils::meters_per_pixel(unsigned int z, double lat)
+{
+    return (CIRCUMFERENCEKM * cos(lat*(M_PI/180.0)) / pow(2.0,(z+8))) * 1000.0;
 }
 
 time_t utils::iso8601_2timet(const std::string& iso)

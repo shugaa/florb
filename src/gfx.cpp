@@ -115,6 +115,20 @@ namespace fgfx
         fl_end_offscreen();
     };
 
+    void canvas::fontsize(int s)
+    {
+        fl_begin_offscreen(m_buf);
+        fl_font(FL_HELVETICA, s);
+        fl_end_offscreen();
+    };
+
+    void canvas::text(const std::string & txt, int x, int y)
+    {
+        fl_begin_offscreen(m_buf);
+        fl_draw(txt.c_str(), x, y-fl_descent()+fl_height());
+        fl_end_offscreen();
+    };
+
     void canvas::trycreate(void)
     {
         if (m_init)

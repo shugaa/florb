@@ -41,6 +41,9 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_markerlayer->add_event_listener(this);
     add_event_listener(m_markerlayer);
 
+    // Add a scale layer
+    m_scale = new scalelayer();
+
     // Add a gpsdlayer if enabled
     cfg_gpsd cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
     if (cfggpsd.enabled())
@@ -76,6 +79,12 @@ mapctrl::~mapctrl()
 
     if (m_gpxlayer)
         delete m_gpxlayer;
+
+    if (m_overlay)
+        delete m_overlay;
+
+    if (m_scale)
+        delete m_scale;
 
     if (m_markerlayer)
         delete m_markerlayer;
@@ -789,6 +798,10 @@ void mapctrl::draw()
     // Draw the overlay
     if (m_overlay)
         m_overlay->draw(m_viewport, m_offscreen);
+
+    // Draw the scale
+    if (m_scale)
+        m_scale->draw(m_viewport, m_offscreen);
 
     // Draw the gpx layer
     if (m_gpxlayer)

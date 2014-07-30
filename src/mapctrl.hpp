@@ -11,6 +11,7 @@
 #include "osmlayer.hpp"
 #include "gpxlayer.hpp"
 #include "markerlayer.hpp"
+#include "scalelayer.hpp"
 #include "gpsdlayer.hpp"
 #include "gfx.hpp"
 
@@ -109,6 +110,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         // Layers
         osmlayer *m_basemap;
         osmlayer *m_overlay;
+        scalelayer *m_scale;
         gpxlayer *m_gpxlayer;
         markerlayer *m_markerlayer;
         gpsdlayer *m_gpsdlayer;
