@@ -272,11 +272,9 @@ void mapctrl::basemap(
     }
 
     // Create a new basemap layer
-    
     try {
         m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
     } catch (std::runtime_error& e) {
-        delete m_basemap;
         m_basemap = NULL;
         throw e;
     }
@@ -285,6 +283,46 @@ void mapctrl::basemap(
     add_event_listener(m_basemap);
 
     // Redraw
+    refresh();
+}
+
+void mapctrl::overlay(
+                const std::string& name, 
+                const std::string& url, 
+                unsigned int zmin, 
+                unsigned int zmax, 
+                unsigned int parallel,
+                int imgtype)
+{
+    clear_overlay();
+
+    // Create a new overlay layer
+    try {
+        m_overlay = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
+    } catch (std::runtime_error& e) {
+        m_overlay = NULL;
+        throw e;
+    }
+
+    m_overlay->add_event_listener(this);
+    add_event_listener(m_overlay);
+
+    // Redraw
+    refresh();
+}
+
+void mapctrl::clear_overlay()
+{
+    osmlayer *lold = m_overlay;
+    m_overlay = NULL;
+
+    // Destroy the orig
+    if (lold)
+    {
+        remove_event_listener(lold);
+        delete lold;
+    }
+
     refresh();
 }
 
@@ -500,6 +538,8 @@ int mapctrl::handle_release(int event)
     // End of drag mode, allow downloading of tiles
     if (m_basemap)
         m_basemap->dlenable(true);
+    if (m_overlay)
+        m_overlay->dlenable(true);
 
     // Cursor reset
     fl_cursor(FL_CURSOR_CROSS);
@@ -538,7 +578,10 @@ int mapctrl::handle_drag(int event)
         m_mousepos.y(Fl::event_y()-y());
 
         // No tile downloading when dragging
-        m_basemap->dlenable(false);
+        if (m_basemap)
+            m_basemap->dlenable(false);
+        if (m_overlay)
+            m_overlay->dlenable(false);
 
         // Move the viewport accordingly and redraw
         m_viewport.move((long)dx, (long)dy); 
@@ -749,12 +792,15 @@ void mapctrl::draw()
 
     // Background-fill the canvas (there might be no basemap selected)
     //fl_rectf(0, 0, m_viewport.w(), m_viewport.h(), 80, 80, 80);
-    
     fl_rectf(0, 0, m_viewport.w(), m_viewport.h(), 0, 0, 200);
 
     // Draw the basemap
     if (m_basemap)
         m_basemap->draw(m_viewport, m_offscreen);
+
+    // Draw the overlay
+    if (m_overlay)
+        m_overlay->draw(m_viewport, m_offscreen);
 
     // Draw the gpx layer
     if (m_gpxlayer)

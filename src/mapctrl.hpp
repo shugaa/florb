@@ -23,7 +23,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         // FLTK event handling routine
         int handle(int event);
 
-        // Basemap configuration
+        // Map and overlay configuration
         void basemap(
                 const std::string& name, 
                 const std::string& url, 
@@ -31,6 +31,14 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
                 unsigned int zmax, 
                 unsigned int parallel,
                 int imgtype);
+        void overlay(
+                const std::string& name, 
+                const std::string& url, 
+                unsigned int zmin, 
+                unsigned int zmax, 
+                unsigned int parallel,
+                int imgtype);
+        void clear_overlay();
 
         // GPSd configuration
         bool gpsd_connected();
@@ -100,6 +108,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
 
         // Layers
         osmlayer *m_basemap;
+        osmlayer *m_overlay;
         gpxlayer *m_gpxlayer;
         markerlayer *m_markerlayer;
         gpsdlayer *m_gpsdlayer;

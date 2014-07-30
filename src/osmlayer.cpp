@@ -3,12 +3,34 @@
 #include "osmlayer.hpp"
 
 #define ONE_WEEK                (7*24*60*60)
+#define ONE_DAY                 (1*24*60*60)
 #define TILE_W                  (256)
 #define TILE_H                  (256)
 
 const std::string osmlayer::wcard_x = "{x}";
 const std::string osmlayer::wcard_y = "{y}";
 const std::string osmlayer::wcard_z = "{z}";
+
+const char osmlayer::tile_empty[] = \
+	"\x89\x50\x4E\x47\x0D\x0A\x1A\x0A\x00\x00\x00\x0D\x49\x48\x44\x52\x00\x00\x01\x00" \
+	"\x00\x00\x01\x00\x08\x06\x00\x00\x00\x5C\x72\xA8\x66\x00\x00\x00\x06\x62\x4B\x47" \
+	"\x44\x00\xFF\x00\xFF\x00\xFF\xA0\xBD\xA7\x93\x00\x00\x00\x09\x70\x48\x59\x73\x00" \
+	"\x00\x0B\x13\x00\x00\x0B\x13\x01\x00\x9A\x9C\x18\x00\x00\x01\x15\x49\x44\x41\x54" \
+	"\x78\xDA\xED\xC1\x31\x01\x00\x00\x00\xC2\xA0\xF5\x4F\xED\x6B\x08\xA0\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x78\x03\x01\x3C\x00\x01\xD8\x29\x43" \
+	"\x04\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82";
 
 class osmlayer::tileinfo
 {
@@ -36,9 +58,6 @@ osmlayer::osmlayer(
         unsigned int parallel,
         int imgtype) :
     layer(),                        // Base class constructor 
-    m_canvas_0(500, 500),           // Canvas for 'double buffering'. Will be resized as needed
-    m_canvas_1(500, 500),           // Canvas for 'double buffering'. Will be resized as needed
-    m_canvas_tmp(500,500),          // Temporary drawing canvas. Will be resized as needed
     m_name(nm),                     // Layer name
     m_url(url),                     // Tileserver URL
     m_zmin(zmin),                   // Min. zoomlevel supported by server
@@ -52,8 +71,11 @@ osmlayer::osmlayer(
 
     // Create cache
     cfg_cache cfgcache = settings::get_instance()["cache"].as<cfg_cache>();
-    m_cache = new sqlitecache(cfgcache.location());
-
+    try {
+        m_cache = new sqlitecache(cfgcache.location());
+    } catch (std::runtime_error& e) {
+        throw e;
+    }
     // Create a cache session for the given URL
     try {
         m_cache->sessionid(url);
@@ -113,21 +135,22 @@ void osmlayer::process_downloads()
             m_tileinfos.erase(it);
         }
 
-        time_t expires = dtmp.expires();
+        // If the download was not successful, we set the expiration date to
+        // one day in the future to retry the download in a timely fashion.
+        time_t expires = (dtmp.buf().size() != 0) ? 
+            dtmp.expires() : ONE_DAY;
         time_t now = time(NULL);
 
+        // We probably didn't get a valid expires header
         if (expires <= now)
             expires = now + ONE_WEEK;
 
-        if (dtmp.buf().size() != 0)
-        {
-            ret = true;
+        ret = true;
 
-            try {
-                m_cache->put(ti->z(), ti->x(), ti->y(), expires, dtmp.buf());
-            } catch (std::runtime_error& e) {
-                ret = false;
-            }
+        try {
+            m_cache->put(ti->z(), ti->x(), ti->y(), expires, dtmp.buf());
+        } catch (std::runtime_error& e) {
+            ret = false;
         }
 
         delete ti;
@@ -227,167 +250,19 @@ void osmlayer::draw(const viewport &vp, canvas &os)
     {
         // Simple white background. We might need to do something a little more
         // sophisticated in the future.
-        m_canvas_0.resize(vp.w(), vp.h());
-        m_canvas_0.fgcolor(color(255,255,255));
-        m_canvas_0.fillrect(0, 0, (int)vp.w(), (int)vp.h());
-        os.draw(m_canvas_0, 0, 0, (int)vp.w(), (int)vp.h(), 0, 0);
-
-        // Make sure the map is redrawn on zoomlevel change by invalidating the
-        // current local viewport
-        m_vp.w(0);
-        m_vp.h(0);
+        os.fgcolor(color(255,255,255));
+        os.fillrect(0, 0, (int)vp.w(), (int)vp.h());
     } else
     {
         // Regular tile drawing
-        update_map(vp);
-        os.draw(m_canvas_0, 0, 0, (int)vp.w(), (int)vp.h(), 0, 0);
+        drawvp(vp, os);
     }
-}
-
-void osmlayer::update_map(const viewport &vp)
-{
-   // the current layer view is dirty if it is incomplete (tiles are missing or
-   // outdated)
-   static bool dirty = true;
-
-   // Make sure the new viewport is any different from the last one before
-   // going through the hassle of drawing the map anew.
-   if ((m_vp != vp) || (dirty))
-   {
-     // Check if the old and new viewport intersect and eventually recycle any
-     // portion of the map image
-     viewport vp_inters(vp);
-     vp_inters.intersect(m_vp);
-
-     // Old and new viewport intersect, recycle old canvas map image buffer
-     if (((vp_inters.w() > 0) && (vp_inters.h() > 0)) && (!dirty))
-     {
-       // Resize the drawing buffer if it is too small
-       if ((m_canvas_1.w() < vp.w()) || (m_canvas_1.h() < vp.h()))
-           m_canvas_1.resize(vp.w(), vp.h());
-
-       m_canvas_1.draw(
-               m_canvas_0, 
-               vp_inters.x() - m_vp.x(), 
-               vp_inters.y() - m_vp.y(), 
-               vp_inters.w(), 
-               vp_inters.h(), 
-               vp_inters.x() - vp.x(), 
-               vp_inters.y() - vp.y());
-
-       // Draw any portion of the map image not covered by the old image
-       // buffer. Effectively, the rectangles left, right, above and below the
-       // intersection are drawn.
-       for (int i=0;i<4;i++) 
-       {
-         unsigned long x_tmp, y_tmp, w_tmp, h_tmp;
-
-         // Determine the respective rectangle coordinates
-         switch (i)
-         {
-           // Rectangle to the left if there is one
-           case 0:
-             if (vp_inters.x() <= vp.x())
-             {
-               continue;
-             }
-             x_tmp = vp.x();
-             y_tmp = vp.y();
-             w_tmp = vp_inters.x() - vp.x();
-             h_tmp = vp.h();
-             break;
-           // Rectangle to the right if there is one
-           case 1:
-             if ((vp_inters.x() + vp_inters.w()) >= (vp.x() + vp.w()))
-             {
-               continue;
-             }
-             x_tmp = vp_inters.x() + vp_inters.w();
-             y_tmp = vp.y();
-             w_tmp = (vp.x() + vp.w()) - (vp_inters.x() + vp_inters.w());
-             h_tmp = vp.h();
-             break;
-           // Rectangle above if there is one
-           case 2:
-             if (vp_inters.y() <= vp.y())
-             {
-               continue;
-             }
-             x_tmp = vp_inters.x();
-             y_tmp = vp.y();
-             w_tmp = vp_inters.w();
-             h_tmp = vp_inters.y() - vp.y();
-             break;
-           // Rectangle below if there is one
-           case 3:
-             if ((vp_inters.y() + vp_inters.h()) >= (vp.y() + vp.h()))
-             {
-               continue;
-             }
-             x_tmp = vp_inters.x();
-             y_tmp = vp_inters.y() + vp_inters.h();
-             w_tmp = vp_inters.w();
-             h_tmp = (vp.y() + vp.h()) - (vp_inters.y() + vp_inters.h());
-             break;
-           default:
-             ;
-         }
-
-         // Construct a temporary viewport for the respective rectangle
-         viewport vp_tmp(x_tmp, y_tmp, vp.z(), w_tmp, h_tmp);
-
-         // Resize the drawing buffer if it is too small
-         if ((m_canvas_tmp.w() < vp_tmp.w()) || (m_canvas_tmp.h() < vp_tmp.h()))
-             m_canvas_tmp.resize(vp_tmp.w(), vp_tmp.h());
-
-         // Draw the rectangle
-         if (!drawvp(vp_tmp, m_canvas_tmp))
-            dirty = true;
-
-         // Copy the dummy canvas image into the new map buffer
-         m_canvas_1.draw(
-            m_canvas_tmp, 
-            0, 0, 
-            vp_tmp.w(), vp_tmp.h(), 
-            vp_tmp.x() - vp.x(), vp_tmp.y() - vp.y());
-       }
-
-       // Make the new canvas buffer the current one. We can't just copy
-       // construct a temporary canvas object because it would free the
-       // internal buffer when it goes out of scope. So we have to switch all
-       // members manually here. 
-       canvas_storage buftmp = m_canvas_0.buf();
-       unsigned int wtmp = m_canvas_0.w();
-       unsigned int htmp = m_canvas_0.h();
-
-       m_canvas_0.buf(m_canvas_1.buf());
-       m_canvas_0.w(m_canvas_1.w());
-       m_canvas_0.h(m_canvas_1.h());
-
-       m_canvas_1.buf(buftmp);
-       m_canvas_1.w(wtmp);
-       m_canvas_1.h(htmp);
-     }
-     else
-     {
-       // Draw the entire map area and make the resulting canvas buffer the
-       // current one, it will have the required size (viewport size).
-       if ((m_canvas_0.w() < vp.w()) || (m_canvas_0.h() < vp.h()))
-           m_canvas_0.resize(vp.w(), vp.h());
-
-       dirty = !drawvp(vp, m_canvas_0);
-     }
-
-     /* Save the new viewport for later reference */
-     m_vp = vp;
-   }
 }
 
 bool osmlayer::drawvp(const viewport &vp, canvas &c)
 {
-    // Return whether the map images has tiles missing (false) or not (true)
+    // Return whether the map image has tiles missing (false) or not (true)
     bool ret = true;
-    unsigned int parallel = 0;
 
     // Get the x and y start tile index
     unsigned int tstartx = vp.x() / TILE_W;
@@ -407,7 +282,6 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
        for (px=pstartx, tx=tstartx; px<(int)vp.w(); px+=TILE_H, tx++)
        {
           // Get the tile
-
           int rc;
           try {
             rc = m_cache->get(vp.z(), tx, ty, m_imgbuf);
@@ -416,27 +290,17 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
           }
           
           // Draw the tile if we either have a valid or expired version of it...
-          if (rc != sqlitecache::NOTFOUND)
+          if ((rc != sqlitecache::NOTFOUND) && (m_imgbuf.size() != 0))
           {
               image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
               c.draw(img, px, py);
-          }
-          // ...otherwise draw placeholder image
-          else
-          {
-              c.fgcolor(color(200, 113, 113));
-              c.fillrect(px, py, TILE_W, TILE_H);
           }
 
           // Tile not in cache or expired, schedule for downloading
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {
-              //if (parallel < m_parallel)
-              {
-                  download_qtile(vp.z(), tx, ty);
-                  parallel++;
-              }
+              download_qtile(vp.z(), tx, ty);
               ret = false;
           }
        }

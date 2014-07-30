@@ -1,4 +1,5 @@
 #include "gfx.hpp"
+#include <iostream>
 
 canvas::canvas(unsigned int w, unsigned int h) :
     m_init(false), 
@@ -65,7 +66,25 @@ void canvas::draw(image &src, int dstx, int dsty)
     trycreate();
 
     fl_begin_offscreen(m_buf);
-    src.buf()->draw(dstx, dsty);
+    
+    // PNG alpha blending does not work with negative offsets and automatic
+    // clipping so we need to calculate offset and bounding box ourselves
+    int offsx = 0, offsy = 0;
+    int dw = (w()-dstx), dh = (h()-dsty);
+    if (dstx < 0)
+    {
+        offsx = -dstx;
+        dw = src.w() - offsx;
+        dstx = 0;
+    }
+    if (dsty < 0)
+    {
+        offsy = -dsty;
+        dh = src.h() - offsy;
+        dsty = 0;
+    }
+
+    src.buf()->draw(dstx, dsty, dw, dh, offsx, offsy);
     fl_end_offscreen();
 };
 
@@ -135,4 +154,24 @@ image::~image()
         delete m_buf;
     }
 };
+
+int image::w()
+{
+    if (m_init)
+    {
+        return m_buf->w();
+    }
+
+    return 0;
+}
+
+int image::h()
+{
+    if (m_init)
+    {
+        return m_buf->h();
+    }
+
+    return 0;
+}
 

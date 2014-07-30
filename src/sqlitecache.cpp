@@ -223,8 +223,6 @@ void sqlitecache::put(int z, int x, int y, time_t expires, const std::vector<cha
 {
     if (!m_db)
         return;
-    if (buf.size() == 0)
-        return;
     if ((z < 0) || (x < 0) || (y < 0))
         return;
     if (m_sid < 0)
@@ -461,24 +459,17 @@ int sqlitecache::get(int z, int x, int y, std::vector<char> &buf)
         tf.seekg(0, tf.end);
         size_t msize = tf.tellg();
         tf.seekg(0, tf.beg);
-        
-        if (msize <= 0)
-        {
-            tf.close();
-            rc = NOTFOUND;
-            break;
-        }
-
+       
         buf.resize(msize);
         tf.read(&(buf[0]), msize);
         tf.close();
-        
+
         time_t expires = sqlite3_column_int64(stmt, 0);
 
         // Tile found
         rc = FOUND;
 
-        // Check wheter this tile has expired
+        // Check whether this tile has expired
         time_t now = time(NULL);
         if (now > expires)
             rc = EXPIRED;

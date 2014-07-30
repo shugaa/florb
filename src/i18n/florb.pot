@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-23 13:20+0200\n"
+"POT-Creation-Date: 2014-07-30 12:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,19 +33,23 @@ msgstr ""
 msgid "Add tileserver"
 msgstr ""
 
+#: fluid/dlg_ui.cpp:936
+msgid "Base"
+msgstr ""
+
 #: fluid/dlg_settings.cpp:554
 msgid "Cache"
 msgstr ""
 
-#: sqlitecache.cpp:405
+#: sqlitecache.cpp:403
 msgid "Cache error: EXISTS"
 msgstr ""
 
-#: sqlitecache.cpp:494
+#: sqlitecache.cpp:485
 msgid "Cache error: GET"
 msgstr ""
 
-#: sqlitecache.cpp:348
+#: sqlitecache.cpp:346
 msgid "Cache error: PUT"
 msgstr ""
 
@@ -62,11 +66,11 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:858
+#: fluid/dlg_ui.cpp:863
 msgid "Clear current track"
 msgstr ""
 
-#: dlg_ui_ex.cpp:125 fluid/dlg_ui.cpp:878
+#: dlg_ui_ex.cpp:125 fluid/dlg_ui.cpp:883
 msgid "Delete waypoints"
 msgstr ""
 
@@ -112,7 +116,7 @@ msgstr ""
 msgid "Edit tileserver"
 msgstr ""
 
-#: dlg_ui_ex.cpp:124 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:868
+#: dlg_ui_ex.cpp:124 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:873
 msgid "Edit waypoints"
 msgstr ""
 
@@ -128,7 +132,7 @@ msgstr ""
 msgid "Enable GPSd"
 msgstr ""
 
-#: gpxlayer.cpp:467
+#: gpxlayer.cpp:469
 msgid "Error updating selected waypoints"
 msgstr ""
 
@@ -160,7 +164,7 @@ msgstr ""
 msgid "GPSd"
 msgstr ""
 
-#: dlg_ui_ex.cpp:131 fluid/dlg_ui.cpp:894
+#: dlg_ui_ex.cpp:131 fluid/dlg_ui.cpp:899
 msgid "Go to cursor"
 msgstr ""
 
@@ -184,7 +188,7 @@ msgstr ""
 msgid "Latitude [°]"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:832
+#: fluid/dlg_ui.cpp:837
 msgid "Load GPX file"
 msgstr ""
 
@@ -192,7 +196,7 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
-#: dlg_ui_ex.cpp:133 fluid/dlg_ui.cpp:904
+#: dlg_ui_ex.cpp:133 fluid/dlg_ui.cpp:909
 msgid "Lock to cursor"
 msgstr ""
 
@@ -220,7 +224,7 @@ msgstr ""
 msgid "Max. z"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:812
+#: fluid/dlg_ui.cpp:817
 msgid "Menu"
 msgstr ""
 
@@ -240,6 +244,10 @@ msgstr ""
 msgid "No devices found"
 msgstr ""
 
+#: dlg_ui_ex.cpp:158
+msgid "None"
+msgstr ""
+
 #: fluid/dlg_settings.cpp:619 fluid/dlg_tileserver.cpp:127
 #: fluid/dlg_garminul.cpp:74 fluid/dlg_editselection.cpp:76
 #: fluid/dlg_about.cpp:46 fluid/dlg_garmindl.cpp:65 fluid/dlg_search.cpp:67
@@ -248,6 +256,10 @@ msgstr ""
 
 #: dlg_ui_ex.cpp:114
 msgid "Open GPX"
+msgstr ""
+
+#: fluid/dlg_ui.cpp:945
+msgid "Overlay"
 msgstr ""
 
 #: dlg_tileserver_ex.cpp:52
@@ -266,7 +278,7 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: dlg_ui_ex.cpp:132 fluid/dlg_ui.cpp:915
+#: dlg_ui_ex.cpp:132 fluid/dlg_ui.cpp:920
 msgid "Record track"
 msgstr ""
 
@@ -278,7 +290,7 @@ msgstr ""
 msgid "Save GPX as"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:842
+#: fluid/dlg_ui.cpp:847
 msgid "Save current track"
 msgstr ""
 
@@ -314,7 +326,7 @@ msgstr ""
 msgid "Sim. downloads"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:948
+#: fluid/dlg_ui.cpp:966
 msgid "Slippy Map"
 msgstr ""
 
@@ -358,6 +370,6 @@ msgstr ""
 msgid "Upload to device"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:808
+#: fluid/dlg_ui.cpp:813
 msgid "florb"
 msgstr ""

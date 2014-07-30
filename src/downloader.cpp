@@ -212,8 +212,12 @@ void downloader::worker()
         // Start download
         rc = curl_easy_perform(curl_handle);
 
+        // Check http status code
+        long http_code = 0;
+        curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
+
         // Download failed
-        if (rc != 0)
+        if ((rc != 0) || (http_code >= 400))
             dl.buf().resize(0);
 
         m_mutex.lock();

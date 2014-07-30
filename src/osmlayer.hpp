@@ -33,11 +33,9 @@ class osmlayer : public layer
         class event_notify;
 
     private:
-        class tileinfo;
+        static const char tile_empty[];
 
-        canvas m_canvas_0;
-        canvas m_canvas_1;
-        canvas m_canvas_tmp;
+        class tileinfo;
 
         std::string m_name;
         std::string m_url;
@@ -47,24 +45,17 @@ class osmlayer : public layer
         int m_type;
         
         sqlitecache *m_cache;
-        viewport m_vp;
         std::vector<char> m_imgbuf;
-
-        static void cb_download(void *userdata);
         std::vector<tileinfo*> m_tileinfos;
-        void process_downloads();
-
         downloader* m_downloader;
         bool m_dlenable;
 
+        static void cb_download(void *userdata);
+        void process_downloads();
+
         bool drawvp(const viewport &viewport, canvas &c);
-        void update_map(const viewport &vp);
-
         void download_qtile(int z, int x, int y);
-
         bool evt_downloadcomplete(const downloader::event_complete *e);
-
-        static void testcb(void *ud);
 };
 
 class osmlayer::event_notify : public event_base

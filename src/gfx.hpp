@@ -68,6 +68,8 @@ class image
         image_storage buf(void) { return m_buf; };
         int type() { return m_type; };
         void buf(image_storage bufs) { m_buf = bufs; };
+        int w();
+        int h();
 
         enum {
             PNG,

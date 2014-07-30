@@ -136,7 +136,7 @@ void dlg_ui::create_ex(void)
     m_menuitem_help_about->label(_("About"));
 
     // Populate the Basemap selector
-    update_choice_basemap_ex();
+    update_choice_map_ex();
 
     // Show waypoint markers by default
     m_menuitem_track_showwpmarkers->set(); 
@@ -147,27 +147,34 @@ void dlg_ui::create_ex(void)
     m_mapctrl->add_event_listener(this);
 }
 
-void dlg_ui::update_choice_basemap_ex(void)
+void dlg_ui::update_choice_map_ex(void)
 {
     // Remember the currently selected item index if any, then clear the widget
-    int idx = (m_choice_basemap->value() >= 0) ? m_choice_basemap->value() : 0;
+    int idxbase = (m_choice_basemap->value() >= 0) ? m_choice_basemap->value() : 0;
+    int idxover = (m_choice_overlay->value() >= 0) ? m_choice_overlay->value() : 0;
+    
     m_choice_basemap->clear();
+    m_choice_overlay->clear();
+    m_choice_overlay->add(_("None"));
 
-    // Get the configured tileservers from the settings and populate the widget
+    // Get the configured tileservers from the settings and populate the widgets
     node section = settings::get_instance()["tileservers"];
     for(node::iterator it=section.begin(); it!=section.end(); ++it) {
         m_choice_basemap->add((*it).as<cfg_tileserver>().name().c_str());
+        m_choice_overlay->add((*it).as<cfg_tileserver>().name().c_str());
     }
 
     // If there are any connfigured tileservers at all...
     if (section.size() > 0)
     {
         // Invalid index, reset to default (first item)
-        if ((size_t)idx >= section.size())
-            idx = 0;
+        if ((size_t)idxbase >= section.size())
+            idxbase = 0;
+        if ((size_t)idxover >= (section.size()+1))
+            idxover = 0;
 
-        // Pick the tileserver config item at index idx
-        cfg_tileserver ts = section[idx].as<cfg_tileserver>(); 
+        // Pick the tileserver config item at index idxbase
+        cfg_tileserver ts = section[idxbase].as<cfg_tileserver>(); 
    
         // Try to create a basemap
         try {
@@ -182,8 +189,32 @@ void dlg_ui::update_choice_basemap_ex(void)
             fl_alert("%s", e.what()); 
         }
 
+        if (idxover > 0)
+        {
+            ts = section[idxover-1].as<cfg_tileserver>();
+
+            // Try to create a basemap
+            try {
+                m_mapctrl->overlay(
+                        ts.name(), 
+                        ts.url(), 
+                        ts.zmin(), 
+                        ts.zmax(), 
+                        ts.parallel(),
+                        ts.type()); 
+            } catch (std::runtime_error& e) {
+                fl_alert("%s", e.what()); 
+            }
+
+        }
+        else
+        {
+            m_mapctrl->clear_overlay();
+        }
+
         // Set the selected item index
-        m_choice_basemap->value(idx);
+        m_choice_basemap->value(idxbase);
+        m_choice_overlay->value(idxover);
 
         // Focus on the map
         m_mapctrl->take_focus();
@@ -362,7 +393,7 @@ void dlg_ui::settings_ex()
             m_mapctrl->gpsd_disconnect();
 
         // Update the list of tileservers
-        update_choice_basemap_ex();
+        update_choice_map_ex();
     }
 }
 
@@ -461,6 +492,38 @@ void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
                 tileservers[idx].type());
     } catch (std::runtime_error& e) {
         fl_alert("%s", e.what());        
+    }
+
+    // Map focus
+    m_mapctrl->take_focus();
+}
+
+void dlg_ui::cb_choice_overlay_ex(Fl_Widget *widget)
+{
+    // Get selected item index
+    int idx = m_choice_overlay->value();
+
+    if (idx > 0)
+    {
+        // Get all configured tileservers
+        std::vector<cfg_tileserver> tileservers(settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >());
+
+        // Try to create a basemap using the selected tile server configuration
+        try {
+            m_mapctrl->overlay(
+                    tileservers[idx-1].name(), 
+                    tileservers[idx-1].url(), 
+                    tileservers[idx-1].zmin(), 
+                    tileservers[idx-1].zmax(), 
+                    tileservers[idx-1].parallel(),
+                    tileservers[idx-1].type());
+        } catch (std::runtime_error& e) {
+            fl_alert("%s", e.what());        
+        }
+    }
+    else
+    {
+        m_mapctrl->clear_overlay();
     }
 
     // Map focus

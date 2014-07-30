@@ -84,7 +84,7 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void about_ex(void);} {private local
   }
-  decl {void update_choice_basemap_ex(void);} {private local
+  decl {void update_choice_map_ex(void);} {selected private local
   }
   decl {void showwpmarkers_ex(void);} {private local
   }
@@ -113,6 +113,8 @@ class dlg_ui {open : {public event_listener}
   decl {void cb_btn_deleteselection_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_choice_basemap_ex(Fl_Widget *widget);} {private local
+  }
+  decl {void cb_choice_overlay_ex(Fl_Widget *widget);} {private local
   }
   decl {void cb_menu_ex(Fl_Widget *widget);} {private local
   }
@@ -175,13 +177,18 @@ ui->cb_btn_deleteselection_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_basemap_ex(widget);} {}
   }
+  Function {cb_choice_overlay(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
+ui->cb_choice_overlay_ex(widget);} {}
+  }
   Function {dlg_ui()} {open
   } {
     Fl_Window m_window {
       label florb
       user_data this
       callback cb_close
-      private xywh {1960 231 805 565} type Double align 80 resizable visible
+      private xywh {1778 208 805 565} type Double align 80 resizable size_range {605 465 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
@@ -189,7 +196,7 @@ ui->cb_choice_basemap_ex(widget);} {}
         Fl_Menu_Bar m_menubar {
           label Menu
           user_data this
-          callback cb_menu open selected
+          callback cb_menu open
           private xywh {0 0 805 25} box FLAT_BOX
         } {
           Submenu m_menuitem_file {
@@ -369,13 +376,26 @@ ui->cb_choice_basemap_ex(widget);} {}
           Fl_Box {} {
             private xywh {261 29 5 25} box FLAT_BOX
           }
+          Fl_Box {} {
+            label Base
+            private xywh {267 29 87 25} align 16
+          }
           Fl_Choice m_choice_basemap {
             user_data this
             callback cb_choice_basemap open
-            private xywh {266 29 534 26} box BORDER_BOX down_box BORDER_BOX resizable
+            private xywh {354 29 180 26} box BORDER_BOX down_box BORDER_BOX labeltype NO_LABEL
           } {}
           Fl_Box {} {
-            private xywh {800 29 5 25}
+            label Overlay
+            private xywh {534 29 87 25} align 16
+          }
+          Fl_Choice m_choice_overlay {
+            user_data this
+            callback cb_choice_overlay open
+            private xywh {621 29 180 26} box BORDER_BOX down_box BORDER_BOX labeltype NO_LABEL
+          } {}
+          Fl_Box {} {
+            private xywh {800 29 5 25} resizable
           }
         }
         Fl_Box {} {
