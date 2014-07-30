@@ -54,7 +54,7 @@ class dlg_settings {open
   }
   decl {void cb_inp_port_ex(Fl_Widget *widget);} {private local
   }
-  decl {color colorchooser_ex(color c);} {private local
+  decl {fgfx::color colorchooser_ex(fgfx::color c);} {selected private local
   }
   decl {void tab_ui_setup_ex();} {private local
   }
@@ -64,8 +64,7 @@ class dlg_settings {open
   }
   decl {void tab_cache_setup_ex();} {private local
   }
-  Function {dlg_settings()} {open
-  } {
+  Function {dlg_settings()} {} {
     Fl_Window m_window {
       label Settings open
       private xywh {2225 177 500 295} type Double resizable modal size_range {500 295 0 0} visible
@@ -86,7 +85,7 @@ class dlg_settings {open
             private xywh {5 5 490 250} resizable
           } {
             Fl_Group {} {
-              label Interface open selected
+              label Interface open
               private xywh {10 25 480 225}
             } {
               Fl_Pack {} {open

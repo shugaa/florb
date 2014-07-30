@@ -20,7 +20,7 @@ class osmlayer : public layer
             unsigned int parallel,
             int imgtype);
         ~osmlayer();
-        void draw(const viewport &vp, canvas &c);
+        void draw(const viewport &vp, fgfx::canvas &c);
 
         int zoom_min() { return m_zmin; };
         int zoom_max() { return m_zmax; };
@@ -53,7 +53,7 @@ class osmlayer : public layer
         static void cb_download(void *userdata);
         void process_downloads();
 
-        bool drawvp(const viewport &viewport, canvas &c);
+        bool drawvp(const viewport &viewport, fgfx::canvas &c);
         void download_qtile(int z, int x, int y);
         bool evt_downloadcomplete(const downloader::event_complete *e);
 };

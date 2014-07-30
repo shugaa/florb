@@ -14,9 +14,9 @@ namespace YAML {
                 node["parallel"] = rhs.parallel();
 
                 node["type"] = "PNG";
-                if      (rhs.type() == image::PNG)
+                if      (rhs.type() == fgfx::image::PNG)
                     node["type"] = "PNG";
-                else if (rhs.type() == image::JPG)
+                else if (rhs.type() == fgfx::image::JPG)
                     node["type"] = "JPG";
 
                 return node;
@@ -44,12 +44,12 @@ namespace YAML {
 
                 if (node["type"])
                 {
-                    rhs.type(image::PNG);
+                    rhs.type(fgfx::image::PNG);
                     std::string imgtype = node["type"].as<std::string>();
                     if      (imgtype.compare("PNG") == 0)
-                        rhs.type(image::PNG);
+                        rhs.type(fgfx::image::PNG);
                     else if (imgtype.compare("JPG") == 0)
-                        rhs.type(image::JPG);
+                        rhs.type(fgfx::image::JPG);
                 }
 
                 return true;
@@ -126,19 +126,19 @@ namespace YAML {
                 }
 
                 if (node["markercolor"])
-                    rhs.markercolor(color(node["markercolor"].as<unsigned int>()));
+                    rhs.markercolor(fgfx::color(node["markercolor"].as<unsigned int>()));
                 
                 if (node["markercolorselected"])
-                    rhs.markercolorselected(color(node["markercolorselected"].as<unsigned int>()));
+                    rhs.markercolorselected(fgfx::color(node["markercolorselected"].as<unsigned int>()));
 
                 if (node["trackcolor"])
-                    rhs.trackcolor(color(node["trackcolor"].as<unsigned int>()));
+                    rhs.trackcolor(fgfx::color(node["trackcolor"].as<unsigned int>()));
 
                 if (node["selectioncolor"])
-                    rhs.selectioncolor(color(node["selectioncolor"].as<unsigned int>()));
+                    rhs.selectioncolor(fgfx::color(node["selectioncolor"].as<unsigned int>()));
 
                 if (node["gpscursorcolor"])
-                    rhs.gpscursorcolor(color(node["gpscursorcolor"].as<unsigned int>()));
+                    rhs.gpscursorcolor(fgfx::color(node["gpscursorcolor"].as<unsigned int>()));
                 
                 if (node["tracklinewidth"])
                     rhs.tracklinewidth(node["tracklinewidth"].as<unsigned int>());

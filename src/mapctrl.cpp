@@ -351,18 +351,7 @@ void mapctrl::goto_cursor()
     if (!m_gpsdlayer->valid())
         return;
 
-    // Convert GPS position to pixel position on the map for the current zoom
-    // level
-    point2d<unsigned long> ppx(utils::wsg842px(m_viewport.z(), m_gpsdlayer->pos()));
-
-    // Center the viewport over the GPS position
-    unsigned long x = (ppx.x() < (m_viewport.w()/2)) ? 0 : ppx.x()-(m_viewport.w()/2);
-    unsigned long y = (ppx.y() < (m_viewport.h()/2)) ? 0 : ppx.y()-(m_viewport.h()/2);
-    m_viewport.x(x);
-    m_viewport.y(y);
-
-    // Redraw
-    refresh();
+    goto_pos(m_gpsdlayer->pos());
 }
 
 point2d<double> mapctrl::mousepos()
@@ -788,11 +777,10 @@ void mapctrl::draw()
 
     // Create ancanvas drawing buffer and send all subsequent commands there
     m_offscreen.resize(m_viewport.w(), m_viewport.h());
-    fl_begin_offscreen(m_offscreen.buf());
 
     // Background-fill the canvas (there might be no basemap selected)
-    //fl_rectf(0, 0, m_viewport.w(), m_viewport.h(), 80, 80, 80);
-    fl_rectf(0, 0, m_viewport.w(), m_viewport.h(), 0, 0, 200);
+    m_offscreen.fgcolor(fgfx::color(0xc06e6e));
+    m_offscreen.fillrect(0,0, m_viewport.w(), m_viewport.h());
 
     // Draw the basemap
     if (m_basemap)
@@ -821,7 +809,6 @@ void mapctrl::draw()
     if (h() > (int)m_viewport.h())
         dpy = (h() - (int)m_viewport.h())/2;
 
-    fl_end_offscreen();
     fl_copy_offscreen(x()+dpx, y()+dpy, m_viewport.w(), m_viewport.h(), m_offscreen.buf(), 0, 0);
 }
 

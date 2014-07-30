@@ -185,13 +185,17 @@ bool gpsdlayer::handle_evt_gpsd(const gpsdclient::event_gpsd *e)
     return true;
 };
 
-void gpsdlayer::draw(const viewport &viewport, canvas &os)
+void gpsdlayer::draw(const viewport &viewport, fgfx::canvas &os)
 {
     if (!m_gpsdclient)
         return;
 
     if (!valid())
         return;
+
+    // TODO: Performance killer!!
+    cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
+    fgfx::color color_cursor(cfgui.gpscursorcolor());
 
     double t = track();
     double d2r = (M_PI/180.0);
@@ -208,7 +212,7 @@ void gpsdlayer::draw(const viewport &viewport, canvas &os)
     pxpos[1] -= viewport.y();
 
     // Draw cursor
-    os.fgcolor(color(0xff,0x00,0xb4));
+    os.fgcolor(color_cursor);
     os.line(pxpos.x()-p1.x(), pxpos.y()-p1.y(), pxpos.x()-p2.x(), pxpos.y()-p2.y(), 2);
     os.line(pxpos.x()-p2.x(), pxpos.y()-p2.y(), pxpos.x(), pxpos.y(), 2);
     os.line(pxpos.x(), pxpos.y(), pxpos.x()-p3.x(), pxpos.y()-p3.y(), 2);

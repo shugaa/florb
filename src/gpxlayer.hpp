@@ -23,7 +23,7 @@ class gpxlayer : public layer
         bool handle_evt_mouse(const layer::event_mouse* evt);
         bool handle_evt_key(const layer::event_key* evt);
 
-        void draw(const viewport& vp, canvas& os);
+        void draw(const viewport& vp, fgfx::canvas& os);
         void load_track(const std::string &path);
         void save_track(const std::string &path);
         void clear_track();

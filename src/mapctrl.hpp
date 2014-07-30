@@ -115,7 +115,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
 
         point2d<int> m_mousepos;
         viewport m_viewport;
-        canvas m_offscreen;
+        fgfx::canvas m_offscreen;
         bool m_lockcursor;
         bool m_recordtrack;
 

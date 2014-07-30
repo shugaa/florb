@@ -243,23 +243,20 @@ void osmlayer::download_qtile(int z, int x, int y)
         delete ti;
 }
 
-void osmlayer::draw(const viewport &vp, canvas &os)
+void osmlayer::draw(const viewport &vp, fgfx::canvas &os)
 {
-    // Zoomlevel not supported by this tile layer
     if ((vp.z() < m_zmin) || (vp.z() > m_zmax))
     {
-        // Simple white background. We might need to do something a little more
-        // sophisticated in the future.
-        os.fgcolor(color(255,255,255));
-        os.fillrect(0, 0, (int)vp.w(), (int)vp.h());
-    } else
+        // Zoomlevel not supported by this tile layer
+    } 
+    else
     {
         // Regular tile drawing
         drawvp(vp, os);
     }
 }
 
-bool osmlayer::drawvp(const viewport &vp, canvas &c)
+bool osmlayer::drawvp(const viewport &vp, fgfx::canvas &c)
 {
     // Return whether the map image has tiles missing (false) or not (true)
     bool ret = true;
@@ -292,7 +289,7 @@ bool osmlayer::drawvp(const viewport &vp, canvas &c)
           // Draw the tile if we either have a valid or expired version of it...
           if ((rc != sqlitecache::NOTFOUND) && (m_imgbuf.size() != 0))
           {
-              image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
+              fgfx::image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
               c.draw(img, px, py);
           }
 

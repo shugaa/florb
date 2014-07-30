@@ -387,10 +387,15 @@ void dlg_ui::settings_ex()
         
         // Connect / disconnect GPSD
         cfg_gpsd cfggpsd = s["gpsd"].as<cfg_gpsd>();
-        if (cfggpsd.enabled() && (!m_mapctrl->gpsd_connected()))
-            m_mapctrl->gpsd_connect(cfggpsd.host(), cfggpsd.port());
+        if (cfggpsd.enabled())
+        {
+            if (!m_mapctrl->gpsd_connected())
+                m_mapctrl->gpsd_connect(cfggpsd.host(), cfggpsd.port());
+        }
         else
+        {
             m_mapctrl->gpsd_disconnect();
+        }
 
         // Update the list of tileservers
         update_choice_map_ex();

@@ -568,15 +568,15 @@ bool gpxlayer::handle_evt_key(const layer::event_key* evt)
     return ret;
 }
 
-void gpxlayer::draw(const viewport &vp, canvas &os)
+void gpxlayer::draw(const viewport &vp, fgfx::canvas &os)
 {
     // TODO: Performance killer!!
     cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
 
-    color color_track(cfgui.trackcolor());
-    color color_point(cfgui.markercolor());
-    color color_point_hl(cfgui.markercolorselected());
-    color color_selector(cfgui.selectioncolor());
+    fgfx::color color_track(cfgui.trackcolor());
+    fgfx::color color_point(cfgui.markercolor());
+    fgfx::color color_point_hl(cfgui.markercolorselected());
+    fgfx::color color_selector(cfgui.selectioncolor());
     unsigned int linewidth = cfgui.tracklinewidth();
 
     point2d<double> pmerc_last;

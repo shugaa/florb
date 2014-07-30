@@ -23,7 +23,7 @@ class cfg_tileserver
             m_zmin(0),
             m_zmax(18),
             m_parallel(2),
-            m_type(image::PNG) {};
+            m_type(fgfx::image::PNG) {};
 
         const std::string& name() const { return m_name; }
         void name(const std::string& n) { m_name = n; }
@@ -95,38 +95,38 @@ class cfg_ui
 {
     public:
         cfg_ui() :
-            m_markercolor(color(0,0,0xff)),
-            m_markercolorselected(color(0,0xff,0)),
-            m_trackcolor(color(0xff,0,0)),
-            m_selectioncolor(color(0xff,0,0xff)),
-            m_gpscursorcolor(color(0xff,0,0xff)),
+            m_markercolor(fgfx::color(0,0,0xff)),
+            m_markercolorselected(fgfx::color(0,0xff,0)),
+            m_trackcolor(fgfx::color(0xff,0,0)),
+            m_selectioncolor(fgfx::color(0xff,0,0xff)),
+            m_gpscursorcolor(fgfx::color(0xff,0,0xff)),
             m_tracklinewidth(2) {};
     
-        color markercolor() const { return m_markercolor; }
-        void markercolor(color c) { m_markercolor = c; }
+        fgfx::color markercolor() const { return m_markercolor; }
+        void markercolor(fgfx::color c) { m_markercolor = c; }
 
-        color markercolorselected() const { return m_markercolorselected; }
-        void markercolorselected(color c) { m_markercolorselected = c; }
+        fgfx::color markercolorselected() const { return m_markercolorselected; }
+        void markercolorselected(fgfx::color c) { m_markercolorselected = c; }
 
-        color trackcolor() const { return m_trackcolor; }
-        void trackcolor(color c) { m_trackcolor = c; }
+        fgfx::color trackcolor() const { return m_trackcolor; }
+        void trackcolor(fgfx::color c) { m_trackcolor = c; }
 
-        color selectioncolor() const { return m_selectioncolor; }
-        void selectioncolor(color c) { m_selectioncolor = c; }
+        fgfx::color selectioncolor() const { return m_selectioncolor; }
+        void selectioncolor(fgfx::color c) { m_selectioncolor = c; }
 
-        color gpscursorcolor() const { return m_gpscursorcolor; }
-        void gpscursorcolor(color c) { m_gpscursorcolor = c; }
+        fgfx::color gpscursorcolor() const { return m_gpscursorcolor; }
+        void gpscursorcolor(fgfx::color c) { m_gpscursorcolor = c; }
 
         unsigned int tracklinewidth() const { return m_tracklinewidth; }
         void tracklinewidth(unsigned int w) { m_tracklinewidth = w; }
 
     private:
 
-        color m_markercolor;
-        color m_markercolorselected;
-        color m_trackcolor;
-        color m_selectioncolor;
-        color m_gpscursorcolor;
+        fgfx::color m_markercolor;
+        fgfx::color m_markercolorselected;
+        fgfx::color m_trackcolor;
+        fgfx::color m_selectioncolor;
+        fgfx::color m_gpscursorcolor;
         unsigned int m_tracklinewidth;
 
 };
