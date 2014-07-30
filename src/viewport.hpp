@@ -29,6 +29,11 @@ class viewport
         bool operator != (const viewport& vp) {
             return !cmp(vp);   
         }
+        bool operator < (const viewport& vp) {
+            if (m_w < vp.m_w) return true;
+            if (m_h < vp.m_h) return true;
+            return false;
+        }
 
         // unsigned long range for map dimensions: at least 0 to
         // 4294967295. So the maximum zoomlevel can be

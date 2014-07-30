@@ -76,7 +76,7 @@ void markerlayer::notify()
     fire(&e);
 }
 
-void markerlayer::draw(const viewport &viewport, fgfx::canvas &os)
+bool markerlayer::draw(const viewport &viewport, fgfx::canvas &os)
 {
     cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>();
 
@@ -104,5 +104,7 @@ void markerlayer::draw(const viewport &viewport, fgfx::canvas &os)
         os.circle(ppx.x(), ppx.y(), 5);
         os.circle(ppx.x(), ppx.y(), 6);
     }
+
+    return true;
 };
 

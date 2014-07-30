@@ -185,13 +185,13 @@ bool gpsdlayer::handle_evt_gpsd(const gpsdclient::event_gpsd *e)
     return true;
 };
 
-void gpsdlayer::draw(const viewport &viewport, fgfx::canvas &os)
+bool gpsdlayer::draw(const viewport &viewport, fgfx::canvas &os)
 {
     if (!m_gpsdclient)
-        return;
+        return true;
 
     if (!valid())
-        return;
+        return true;
 
     // TODO: Performance killer!!
     cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
@@ -217,5 +217,7 @@ void gpsdlayer::draw(const viewport &viewport, fgfx::canvas &os)
     os.line(pxpos.x()-p2.x(), pxpos.y()-p2.y(), pxpos.x(), pxpos.y(), 2);
     os.line(pxpos.x(), pxpos.y(), pxpos.x()-p3.x(), pxpos.y()-p3.y(), 2);
     os.line(pxpos.x()-p3.x(), pxpos.y()-p3.y(), pxpos.x()-p1.x(), pxpos.y()-p1.y(), 2);
+
+    return true;
 };
 

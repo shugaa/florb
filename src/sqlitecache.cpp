@@ -409,7 +409,7 @@ int sqlitecache::exists(int z, int x, int y)
 int sqlitecache::get(int z, int x, int y, std::vector<char> &buf)
 {
     if (!m_db)
-        return NOTFOUND;
+        throw std::runtime_error(_("Cache error: GET"));
     if ((z < 0) || (x < 0) || (y < 0))
         return NOTFOUND;
     if (m_sid < 0)
@@ -421,6 +421,7 @@ int sqlitecache::get(int z, int x, int y, std::vector<char> &buf)
 
     for (;;)
     {
+#if 1
         query = sqlite3_mprintf(stmt_get.c_str(), m_sid, z, x, y);
         if (query == NULL)
         {
@@ -441,6 +442,7 @@ int sqlitecache::get(int z, int x, int y, std::vector<char> &buf)
             rc = NOTFOUND;
             break;
         }
+#endif
 
         // Return the data
         std::ostringstream oss;
@@ -459,21 +461,24 @@ int sqlitecache::get(int z, int x, int y, std::vector<char> &buf)
         tf.seekg(0, tf.end);
         size_t msize = tf.tellg();
         tf.seekg(0, tf.beg);
-       
+        
         buf.resize(msize);
         tf.read(&(buf[0]), msize);
         tf.close();
-
+#if 1
         time_t expires = sqlite3_column_int64(stmt, 0);
+#endif
 
         // Tile found
         rc = FOUND;
 
+#if 1
         // Check whether this tile has expired
         time_t now = time(NULL);
         if (now > expires)
             rc = EXPIRED;
-            
+#endif
+
         break;
     }
 

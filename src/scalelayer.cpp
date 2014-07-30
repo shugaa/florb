@@ -14,7 +14,7 @@ scalelayer::~scalelayer()
 {
 };
 
-void scalelayer::draw(const viewport &viewport, fgfx::canvas &os)
+bool scalelayer::draw(const viewport &viewport, fgfx::canvas &os)
 {
     // Calculate coordinate in the center of the viewport
     point2d<unsigned long> ppx(viewport.x() + (viewport.w()/2), viewport.y() + (viewport.h()/2));
@@ -104,5 +104,7 @@ void scalelayer::draw(const viewport &viewport, fgfx::canvas &os)
 
     // Draw the info text
     os.text(oss.str(), 20, viewport.h()-34);
+
+    return true;
 };
 

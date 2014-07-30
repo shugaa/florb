@@ -568,7 +568,7 @@ bool gpxlayer::handle_evt_key(const layer::event_key* evt)
     return ret;
 }
 
-void gpxlayer::draw(const viewport &vp, fgfx::canvas &os)
+bool gpxlayer::draw(const viewport &vp, fgfx::canvas &os)
 {
     // TODO: Performance killer!!
     cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
@@ -674,6 +674,8 @@ void gpxlayer::draw(const viewport &vp, fgfx::canvas &os)
         os.line(ppx_current.x(), ppx_current.y(), ppx_current.x(), ppx_origin.y(), 1);
         os.line(ppx_current.x(), ppx_current.y(), ppx_origin.x(), ppx_current.y(), 1);
     }
+
+    return true;
 }
 
 void gpxlayer::parsetree(tinyxml2::XMLNode *parent)

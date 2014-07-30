@@ -13,7 +13,7 @@ class markerlayer : public layer
 
         class event_notify;
 
-        void draw(const viewport &viewport, fgfx::canvas &os);
+        bool draw(const viewport &viewport, fgfx::canvas &os);
 
         size_t add(const point2d<double> &pmerc);
         void add(const point2d<double> &pmerc, size_t id);

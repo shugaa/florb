@@ -14,7 +14,7 @@ class layer : public event_listener, public event_generator
         layer();
         virtual ~layer();
 
-        virtual void draw(const viewport &viewport, fgfx::canvas &c) = 0;
+        virtual bool draw(const viewport &viewport, fgfx::canvas &c) = 0;
         const std::string& name();
 
         static bool is_instance(layer* l);

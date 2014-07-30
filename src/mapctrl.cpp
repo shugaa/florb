@@ -13,8 +13,10 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_gpxlayer(NULL),
     m_gpsdlayer(NULL),
     m_mousepos(0, 0),
-    m_viewport((unsigned long)w, (unsigned long)h),
+    m_viewport(w, h),
+    m_viewport_map(0, 0),
     m_offscreen(w,h),
+    m_offscreen_map(w+256, h+256),
     m_lockcursor(false),
     m_recordtrack(false)
 {
@@ -291,6 +293,9 @@ void mapctrl::basemap(
     m_basemap->add_event_listener(this);
     add_event_listener(m_basemap);
 
+    // Invalidate map buffer
+    m_viewport_map.w(0);
+
     // Redraw
     refresh();
 }
@@ -331,6 +336,9 @@ void mapctrl::clear_overlay()
         remove_event_listener(lold);
         delete lold;
     }
+
+    // Invalidate map buffer
+    m_viewport_map.w(0);
 
     refresh();
 }
@@ -772,6 +780,9 @@ int mapctrl::handle(int event)
 
 void mapctrl::draw() 
 {
+    // Basemap and overlay rendering complete?
+    static bool map_dirty = true;
+
     // Make sure redraw() has been called previously
     if ((damage() & FL_DAMAGE_ALL) == 0) 
         return;
@@ -787,18 +798,58 @@ void mapctrl::draw()
     // Create ancanvas drawing buffer and send all subsequent commands there
     m_offscreen.resize(m_viewport.w(), m_viewport.h());
 
-    // Background-fill the canvas (there might be no basemap selected)
+    // Check whether the master viewport is well within the map viewport
+    viewport vp_tmp(m_viewport_map);
+    vp_tmp.intersect(m_viewport);
+
+    // No, it isn't
+    if (vp_tmp < m_viewport)
+    {
+        m_viewport_map = m_viewport; 
+        m_viewport_map.w(m_viewport_map.w()+256);
+        m_viewport_map.h(m_viewport_map.h()+256);
+        m_offscreen_map.resize(m_viewport_map.w(), m_viewport_map.h());
+        map_dirty = true;
+    }
+
+    // Map is dirty, force redraw
+    if (map_dirty)
+    {
+        //std::cout << "map dirty" << std::endl;
+
+        m_offscreen_map.fgcolor(fgfx::color(0xc06e6e));
+        m_offscreen_map.fillrect(0,0, m_viewport_map.w(), m_viewport_map.h());
+
+        map_dirty = false;
+
+        // Draw the basemap
+        if (m_basemap)
+        {
+            if (!m_basemap->draw(m_viewport_map, m_offscreen_map))
+                map_dirty = true;
+        }
+
+        // Draw the overlay
+        if (m_overlay)
+        {
+            if (!m_overlay->draw(m_viewport_map, m_offscreen_map))
+                map_dirty = true;
+        }
+    }
+
+    // Background-fill the master canvas
     m_offscreen.fgcolor(fgfx::color(0xc06e6e));
     m_offscreen.fillrect(0,0, m_viewport.w(), m_viewport.h());
 
-    // Draw the basemap
-    if (m_basemap)
-        m_basemap->draw(m_viewport, m_offscreen);
-
-    // Draw the overlay
-    if (m_overlay)
-        m_overlay->draw(m_viewport, m_offscreen);
-
+    // Copy map offscreen to master offscreen
+    m_offscreen.draw(
+        m_offscreen_map,
+        m_viewport.x()-m_viewport_map.x(),
+        m_viewport.y()-m_viewport_map.y(),
+        m_offscreen.w(),
+        m_offscreen.h(),
+        0,0);
+            
     // Draw the scale
     if (m_scale)
         m_scale->draw(m_viewport, m_offscreen);

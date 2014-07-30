@@ -243,17 +243,16 @@ void osmlayer::download_qtile(int z, int x, int y)
         delete ti;
 }
 
-void osmlayer::draw(const viewport &vp, fgfx::canvas &os)
+bool osmlayer::draw(const viewport &vp, fgfx::canvas &os)
 {
     if ((vp.z() < m_zmin) || (vp.z() > m_zmax))
     {
         // Zoomlevel not supported by this tile layer
+        return true;
     } 
-    else
-    {
-        // Regular tile drawing
-        drawvp(vp, os);
-    }
+
+    // Regular tile drawing
+    return drawvp(vp, os);
 }
 
 bool osmlayer::drawvp(const viewport &vp, fgfx::canvas &c)

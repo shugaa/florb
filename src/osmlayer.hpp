@@ -20,7 +20,7 @@ class osmlayer : public layer
             unsigned int parallel,
             int imgtype);
         ~osmlayer();
-        void draw(const viewport &vp, fgfx::canvas &c);
+        bool draw(const viewport &vp, fgfx::canvas &c);
 
         int zoom_min() { return m_zmin; };
         int zoom_max() { return m_zmax; };
