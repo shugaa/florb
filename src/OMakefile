@@ -4,18 +4,19 @@ PROGRAM = florb
 # Check if prefix is defined
 if $(not $(defined PREFIX))
 	PREFIX = /usr
-	LOCALEDIR = $(PREFIX)/share/locale
 	export
-else
-	LOCALEDIR = $(PREFIX)/share/locale
-	export
+
+LOCALEDIR = $(PREFIX)/share/locale
+RESOURCEDIR = $(PREFIX)/share/res
 
 # Absolute path for prefix
 LOCALEDIR = $(absname $(LOCALEDIR))
 
-# Compiler and linker flags
+# Compiler flags
 CXX = $(shell fltk-config --cxx)
-CXXFLAGS = -std=c++11 -g -Wall -O2 -funroll-loops -DLOCALEDIR=\"$(LOCALEDIR)\" \
+CXXFLAGS = -std=c++11 -Wall -O2 -funroll-loops \
+	-DLOCALEDIR=\"$(LOCALEDIR)\" \
+	-DRESOURCEDIR=\"$(RESOURCEDIR)\" \
     $(shell fltk-config --use-images --cxxflags) \
 	$(shell curl-config --cflags) \
 	$(shell pkg-config --cflags sqlite3) \
@@ -24,7 +25,13 @@ CXXFLAGS = -std=c++11 -g -Wall -O2 -funroll-loops -DLOCALEDIR=\"$(LOCALEDIR)\" \
 	$(shell pkg-config --cflags x11) \
 	$(shell pkg-config --cflags xpm) \
 	$(shell pkg-config --cflags yaml-cpp)
-	
+
+# Do a debug build if requested
+if $(defined DEBUG)
+	CXXFLAGS += -g
+	export
+
+#Linker flags
 LDFLAGS = \
 	$(shell fltk-config --use-images --ldflags) \
 	$(shell curl-config --libs) \
@@ -72,13 +79,20 @@ version.hpp: ../.git/HEAD ../.git/index ./mkversionhpp.sh
 
 # Build the program
 CGeneratedFiles($(addsuffix .cpp, $(OBJS_FLUID)) version.hpp)
-CXXProgram($(PROGRAM), $(OBJS))
+CXXProgram($(PROGRAM)$(EXE), $(OBJS))
 .DEFAULT: $(PROGRAM)$(EXE)
+
+# debug build
+debug:
+
 
 # install target
 install:
 	mkdir($(PREFIX)/bin/ -p)
 	install $(PROGRAM) $(PREFIX)/bin/
+	mkdir -p $(RESOURCEDIR)
+	install ../LICENSE.txt $(RESOURCEDIR)
+	install ../doc/keys.txt $(RESOURCEDIR)
 	foreach(t => ..., $(basename $(TRANSLATIONS)))
 		mkdir -p $(LOCALEDIR)/$(t)/LC_MESSAGES/
 		install ./i18n/$(t)/florb.mo $(LOCALEDIR)/$(t)/LC_MESSAGES/
