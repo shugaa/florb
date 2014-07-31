@@ -22,6 +22,7 @@ namespace fgfx
             virtual unsigned int w() = 0;
             virtual unsigned int h() = 0;
             virtual void fillrect(int x, int y, int w, int h) = 0;
+            virtual void rect(int x, int y, int w, int h) = 0; 
             virtual void line(int x1, int y1, int x2, int y2, int linewidth) = 0;
             virtual void circle(double x, double y, double r) = 0;
             virtual void fgcolor(color fg) = 0;
@@ -108,6 +109,7 @@ namespace fgfx
             void draw(canvas& src, int srcx, int srcy, int srcw, int srch, int dstx, int dsty);
             void draw(image &src, int dstx, int dsty);
             void fillrect(int x, int y, int w, int h);
+            void rect(int x, int y, int w, int h); 
             void line(int x1, int y1, int x2, int y2, int linewidth);
             void circle(double x, double y, double r);
             canvas_storage buf(void) { trycreate(); return m_buf; };

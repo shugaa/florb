@@ -84,12 +84,11 @@ bool scalelayer::draw(const viewport &viewport, fgfx::canvas &os)
     os.fontsize(12);
 
     // Draw the scale itself
-    os.line(
+    os.rect(
         20,
         viewport.h()-20, 
-        20+slp, 
-        viewport.h()-20, 
-        3);
+        slp, 
+        5);
 
     // Generate the info text
     std::string unit("m");

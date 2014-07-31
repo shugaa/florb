@@ -98,6 +98,14 @@ namespace fgfx
         fl_end_offscreen();
     };
 
+    void canvas::rect(int x, int y, int w, int h)
+    {
+        fl_color(m_fgcolor.r(), m_fgcolor.g(), m_fgcolor.b());
+        fl_begin_offscreen(m_buf);
+        fl_rect(x, y, w, h); 
+        fl_end_offscreen();
+    }
+
     void canvas::line(int x1, int y1, int x2, int y2, int linewidth)
     {
         fl_color(m_fgcolor.r(), m_fgcolor.g(), m_fgcolor.b());
