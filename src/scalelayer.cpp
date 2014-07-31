@@ -58,14 +58,34 @@ bool scalelayer::draw(const viewport &viewport, fgfx::canvas &os)
             delta = 100.0;
 
             // <= 1.5 km
-            if ((slm + delta) <= 1500.0)
+            if ((slm + delta) <= 2000.0)
             {
                 slm += delta;
                 break;
             }
 
             // 500 m increase
-            delta = 500.0;
+            delta = 1000.0;
+
+            // <= 10.0 km
+            if ((slm + delta) <= 10000.0)
+            {
+                slm += delta;
+                break;
+            }
+
+            // 1000 m increase
+            delta = 5000.0;
+
+            // <= 100.0 km
+            if ((slm + delta) <= 100000.0)
+            {
+                slm += delta;
+                break;
+            }
+
+            // 50000 m increase
+            delta = 50000.0;
             slm += delta;
 
             break;
