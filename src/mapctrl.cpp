@@ -18,7 +18,8 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     m_offscreen(w,h),
     m_offscreen_map(w+256, h+256),
     m_lockcursor(false),
-    m_recordtrack(false)
+    m_recordtrack(false),
+    m_dragmode(false)
 {
     // Register event handlers for layer events
     register_event_handler<mapctrl, gpsdlayer::event_status>(this, &mapctrl::gpsd_evt_status);
@@ -547,6 +548,8 @@ int mapctrl::handle_release(int event)
     if (m_overlay)
         m_overlay->dlenable(true);
 
+    m_dragmode = false;
+
     // Cursor reset
     fl_cursor(FL_CURSOR_CROSS);
 
@@ -588,6 +591,8 @@ int mapctrl::handle_drag(int event)
             m_basemap->dlenable(false);
         if (m_overlay)
             m_overlay->dlenable(false);
+
+        m_dragmode=true;
 
         // Move the viewport accordingly and redraw
         m_viewport.move((long)dx, (long)dy); 
@@ -782,6 +787,23 @@ void mapctrl::draw()
 {
     // Basemap and overlay rendering complete?
     static bool map_dirty = true;
+    static bool dirty_before_drag = false;
+
+    // If the map was dirty before a drag operation, we need to make sure it is
+    // still dirty afterwards.
+    if (m_dragmode)
+    {
+        if (map_dirty)
+            dirty_before_drag = true;
+    }
+    else
+    {
+        if (dirty_before_drag)
+        {
+            map_dirty = true;
+            dirty_before_drag = false;
+        }
+    }
 
     // Make sure redraw() has been called previously
     if ((damage() & FL_DAMAGE_ALL) == 0) 
@@ -805,18 +827,25 @@ void mapctrl::draw()
     // No, it isn't
     if (vp_tmp < m_viewport)
     {
-        m_viewport_map = m_viewport; 
-        m_viewport_map.w(m_viewport_map.w()+256);
-        m_viewport_map.h(m_viewport_map.h()+256);
-        m_offscreen_map.resize(m_viewport_map.w(), m_viewport_map.h());
-        map_dirty = true;
+        // Only recreate the map viewport if not dragging.
+        if (!m_dragmode)
+        {
+            m_viewport_map = m_viewport; 
+            m_viewport_map.w(m_viewport_map.w()+256);
+            m_viewport_map.h(m_viewport_map.h()+256);
+            m_offscreen_map.resize(m_viewport_map.w(), m_viewport_map.h());
+            vp_tmp = m_viewport;
+            map_dirty = true;
+        }
+        else
+        {
+            map_dirty = false;
+        }
     }
 
     // Map is dirty, force redraw
     if (map_dirty)
     {
-        //std::cout << "map dirty" << std::endl;
-
         m_offscreen_map.fgcolor(fgfx::color(0xc06e6e));
         m_offscreen_map.fillrect(0,0, m_viewport_map.w(), m_viewport_map.h());
 
@@ -844,11 +873,12 @@ void mapctrl::draw()
     // Copy map offscreen to master offscreen
     m_offscreen.draw(
         m_offscreen_map,
-        m_viewport.x()-m_viewport_map.x(),
-        m_viewport.y()-m_viewport_map.y(),
-        m_offscreen.w(),
-        m_offscreen.h(),
-        0,0);
+        vp_tmp.x() - m_viewport_map.x(),
+        vp_tmp.y() - m_viewport_map.y(),
+        vp_tmp.w(),
+        vp_tmp.h(),
+        vp_tmp.x() - m_viewport.x(),
+        vp_tmp.y() - m_viewport.y());
             
     // Draw the scale
     if (m_scale)

@@ -122,6 +122,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         fgfx::canvas m_offscreen_map;
         bool m_lockcursor;
         bool m_recordtrack;
+        bool m_dragmode;
 
     protected:
         void draw();
