@@ -22,13 +22,19 @@ bool dlg_garmindl::show_ex()
 {
     shell sh;
     sh.run("gpsbabel -i garmin -f usb:-1");
+
+    m_choice_device->clear();
+
     std::string tmp;
     while(sh.readln(tmp))
     {
+        std::cout << tmp << std::endl;
+
         // Very basic gpsbabel output validation (check first item integer)
         std::istringstream conv(utils::str_split(tmp, " ")[0]);
         int devidx;
-        if (!(conv >> devidx))
+        conv >> devidx;
+        if ((conv.rdstate() & (std::istringstream::failbit|std::istringstream::badbit)) != 0)
             break;
 
         m_choice_device->add(tmp.c_str());
@@ -41,6 +47,11 @@ bool dlg_garmindl::show_ex()
         m_choice_device->add(_("No devices found"));
         m_btn_download->deactivate();
         m_choice_device->deactivate();
+    }
+    else
+    {
+        m_btn_download->activate();
+        m_choice_device->activate();
     }
 
     m_choice_device->value(0);

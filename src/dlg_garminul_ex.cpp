@@ -13,6 +13,8 @@ void dlg_garminul::create_ex()
 
 void dlg_garminul::show_ex()
 {
+    m_choice_device->clear();
+
     shell sh;
     sh.run("gpsbabel -i garmin -f usb:-1");
     std::string tmp;
@@ -21,7 +23,8 @@ void dlg_garminul::show_ex()
         // Very basic gpsbabel output validation (check first item integer)
         std::istringstream conv(utils::str_split(tmp, " ")[0]);
         int devidx;
-        if (!(conv >> devidx))
+        conv >> devidx;
+        if ((conv.rdstate() & (std::istringstream::failbit|std::istringstream::badbit)) != 0)
             break;
 
         m_choice_device->add(tmp.c_str());
@@ -35,6 +38,12 @@ void dlg_garminul::show_ex()
         m_btn_upload->deactivate();
         m_input_title->deactivate();
         m_choice_device->deactivate();
+    }
+    else
+    {
+        m_btn_upload->activate();
+        m_input_title->activate();
+        m_choice_device->activate();
     }
 
     m_choice_device->value(0);
