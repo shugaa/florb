@@ -31,6 +31,13 @@ void dlg_editselection::show_ex()
         m_box_lon->deactivate();
         m_box_lat->deactivate();
     }
+    else
+    {
+        m_txtin_lon->activate();
+        m_txtin_lat->activate();
+        m_box_lon->activate();
+        m_box_lat->activate();
+    }
 
     m_window->show();
 
