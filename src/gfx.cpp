@@ -112,6 +112,7 @@ namespace fgfx
         fl_line_style(FL_SOLID, linewidth, NULL);
         fl_begin_offscreen(m_buf);
         fl_line(x1, y1, x2, y2);
+        fl_line_style(0);
         fl_end_offscreen();
     };
 
