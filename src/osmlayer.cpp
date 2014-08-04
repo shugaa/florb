@@ -316,7 +316,6 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas &c)
           {
               download_qtile(vp.z(), tx, ty);
               ret = false;
-              std::cout << "qtile" << std::endl;
           }
        }
     }
