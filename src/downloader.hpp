@@ -34,8 +34,9 @@ class downloader : public event_generator
 
                 const std::string& url() const { return m_url; };
                 void *userdata() const { return m_userdata; };
-                const std::vector<char>& buf() const { return m_buf; };
+                std::vector<char>& buf() { return m_buf; };
                 const time_t& expires() const { return m_expires; };
+                long httprc() const { return m_httprc; }
 
                 bool operator==(const download& d) const
                 {
@@ -53,6 +54,7 @@ class downloader : public event_generator
             protected:
                 std::vector<char> m_buf;
                 time_t m_expires;
+                long m_httprc;
                 
             private:
                 std::string m_url;
@@ -69,6 +71,7 @@ class downloader : public event_generator
                     download(url, userdata),
                     m_dldr(dldr) {};
                 ~download_internal() {};
+                void httprc(long rc) { m_httprc = rc; }
 
                 downloader* dldr() const { return m_dldr; };
                 std::vector<char>& buf() { return m_buf; };

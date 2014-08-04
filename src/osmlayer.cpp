@@ -4,6 +4,7 @@
 
 #define ONE_WEEK                (7*24*60*60)
 #define ONE_DAY                 (1*24*60*60)
+#define FIVE_MIN                (5*60)
 #define TILE_W                  (256)
 #define TILE_H                  (256)
 
@@ -135,15 +136,32 @@ void osmlayer::process_downloads()
             m_tileinfos.erase(it);
         }
 
-        // If the download was not successful, we set the expiration date to
-        // one day in the future to retry the download in a timely fashion.
-        time_t expires = (dtmp.buf().size() != 0) ? 
-            dtmp.expires() : ONE_DAY;
-        time_t now = time(NULL);
+        time_t expires, now = time(NULL);
 
-        // We probably didn't get a valid expires header
-        if (expires <= now)
-            expires = now + ONE_WEEK;
+        // Download failed for some reason, allow retry in 5 minutes
+        if (dtmp.buf().size() == 0)
+        {
+            expires = now + FIVE_MIN;
+        }
+        else
+        {
+            // Erroneous HTTP status code, Retry in one day
+            if (dtmp.httprc() >= 400)
+            {
+                expires = now + ONE_DAY;
+                dtmp.buf().resize(0);
+            }
+            // Use the expiry date from the HTTP header
+            else
+            {
+                expires = dtmp.expires();
+
+                // Default expiry of one week if we got no or an invalid expiry
+                // date
+                if (expires <= now)
+                    expires = now + ONE_WEEK;
+            }
+        }
 
         ret = true;
 
@@ -298,6 +316,7 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas &c)
           {
               download_qtile(vp.z(), tx, ty);
               ret = false;
+              std::cout << "qtile" << std::endl;
           }
        }
     }
