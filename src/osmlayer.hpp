@@ -21,7 +21,7 @@ class osmlayer : public layer
             int imgtype);
         ~osmlayer();
         bool draw(const viewport &vp, fgfx::canvas &c);
-        bool downloadvp(const viewport& vp, double& coverage);
+        bool download(const viewport& vp, double& coverage);
         void nice(long ms);
 
         int zoom_min() { return m_zmin; };

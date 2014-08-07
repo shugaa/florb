@@ -122,6 +122,10 @@ void osmlayer::nice(long ms)
 
 void osmlayer::process_downloads()
 {
+    // Don't proces any downloads if disabled
+    if (!m_dlenable)
+        return;
+
     bool ret = false; 
 
     // Cache all downloaded tiles
@@ -192,6 +196,9 @@ void osmlayer::dlenable(bool e)
     m_dlenable = e;
     if (e)
     {
+        // Process any pending downloads
+        process_downloads();
+
         //Kickstart the downloader
         event_notify ev;
         fire(&ev);
@@ -279,7 +286,7 @@ bool osmlayer::draw(const viewport &vp, fgfx::canvas &os)
     return drawvp(vp, &os);
 }
 
-bool osmlayer::downloadvp(const viewport &vp, double& coverage)
+bool osmlayer::download(const viewport &vp, double& coverage)
 {
     bool rc = drawvp(vp, NULL);
     coverage = m_coverage;
@@ -305,7 +312,7 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
     unsigned long tx, ty;
 
     // Coverage statistics
-    unsigned long ttotal = 0, tok = 0;
+    unsigned long ttotal = 0, tnok = 0;
 
     for (py=0, ty=tstarty; py<(vp.h()+dy); py+=TILE_W, ty++)
     {
@@ -323,8 +330,6 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
           if ((rc != sqlitecache::NOTFOUND) && 
               (m_imgbuf.size() != 0))
           {
-              tok++;
-
               if (c != NULL)
               {
                   fgfx::image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
@@ -336,7 +341,7 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {
-              //tmissing++;
+              tnok++;
               download_qtile(vp.z(), tx, ty);
               ret = false;
           }
@@ -345,7 +350,7 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
        }
     }
 
-    m_coverage = (double)tok/(double)ttotal; 
+    m_coverage = (double)(ttotal-tnok)/(double)ttotal; 
 
     return ret;
 }

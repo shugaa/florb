@@ -338,7 +338,7 @@ void dlg_bulkdl::startdl_ex()
     // Tell the layer to download this viewport. On success proceed to the next
     // requested zoom level
     double coverage;
-    if (osml->downloadvp(vp_tmp, coverage))
+    if (osml->download(vp_tmp, coverage))
     {
         // Reset UI
         oss << "100 %";
