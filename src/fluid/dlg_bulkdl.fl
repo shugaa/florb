@@ -66,8 +66,8 @@ dlg->cb_btn_download_ex(widget);} {}
   Function {dlg_bulkdl(mapctrl *m)} {open
   } {
     Fl_Window m_window {
-      label {Bulk download} open
-      private xywh {1702 246 380 190} type Double resizable modal size_range {380 160 0 0} visible
+      label {Bulk download} open selected
+      private xywh {1702 246 380 190} type Double resizable modal size_range {380 190 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 380 192} type HORIZONTAL resizable
@@ -116,7 +116,7 @@ dlg->cb_btn_download_ex(widget);} {}
               label {Delay [ms]}
               private xywh {5 65 130 25} align 20
             }
-            Fl_Input m_input_nice {selected
+            Fl_Input m_input_nice {
               private xywh {135 65 240 25} type Int resizable
             }
           }

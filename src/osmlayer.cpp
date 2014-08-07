@@ -346,7 +346,6 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
     }
 
     m_coverage = (double)tok/(double)ttotal; 
-    std::cout << "m_coverage: " << m_coverage*100.0 << std::endl;
 
     return ret;
 }

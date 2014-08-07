@@ -106,8 +106,6 @@ bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
 
 bool dlg_ui::mapctrl_evt_endselect_ex(const mapctrl::event_endselect *e)
 {
-    std::cout << "x: " << e->vp().x() << " y: " <<  e->vp().y() << " w: " << e->vp().w() << " h: " << e->vp().h() << std::endl;
-
     if (!m_dlg_bulkdl)
         m_dlg_bulkdl = new dlg_bulkdl(m_mapctrl);
 

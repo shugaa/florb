@@ -32,7 +32,6 @@ bool areaselectlayer::handle_evt_mouse(const layer::event_mouse* evt)
 {
     if (!enabled())
     {
-        std::cout << "not enabled" << std::endl;
         return false;
     }
 

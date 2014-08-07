@@ -292,7 +292,7 @@ void dlg_bulkdl::startdl_ex()
 
             // Set nice value
             long ms;
-            if (!utils::fromstr(m_input_nice->value(), ms))
+            if (!utils::fromstr(m_input_nice->value(), ms) || (ms < 0))
             {
                 fl_alert(_("Invalid delay"));
                 rc = false;
@@ -306,7 +306,7 @@ void dlg_bulkdl::startdl_ex()
             break;
         }
 
-        // COuld not create / initialize osmlayer
+        // Could not create / initialize osmlayer
         if (!rc)
         {
             cancel_ex(true);
