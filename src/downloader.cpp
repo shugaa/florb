@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <boost/bind.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <FL/Fl.H>
 
 #include "utils.hpp"
@@ -9,6 +10,7 @@
 
 downloader::downloader(int nthreads) : 
     m_timeout(10),
+    m_nice(0),
     m_threadblock(0),
     m_exit(false)
 {
@@ -61,6 +63,13 @@ downloader::~downloader()
         delete (*it)->t();
         delete (*it);
     }
+}
+
+void downloader::nice(long ms)
+{
+    m_mutex.lock();
+    m_nice = ms;
+    m_mutex.unlock();
 }
 
 void downloader::timeout(size_t sec)
@@ -228,6 +237,14 @@ void downloader::worker()
         // Fire event
         event_complete ce(this);
         fire(&ce);
+
+        // Sleep
+        long ms;
+        m_mutex.lock();
+        ms = m_nice;
+        m_mutex.unlock();
+        if (ms > 0)
+            boost::this_thread::sleep(boost::posix_time::milliseconds(ms));
     }
 
     curl_easy_cleanup(curl_handle);

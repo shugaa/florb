@@ -3,8 +3,10 @@
 
 #include <ctime>
 #include <vector>
+#include <sstream>
 #include <libintl.h>
 #include <FL/Fl_Window.H>
+#include <boost/lexical_cast.hpp>
 #include "point.hpp"
 
 #define _(STRING) gettext(STRING)
@@ -32,6 +34,19 @@ class utils
 
         static std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
         static std::size_t str_count(const std::string& str, const std::string& token);
+        static void str_replace(std::string& str, const std::string& s, const std::string& r);
+    
+        template <class T>
+        static bool fromstr(const std::string& s, T& out)
+        {
+            try {
+                out = boost::lexical_cast<T>(s);
+            } catch (const boost::bad_lexical_cast &e) {
+                return false;
+            }
+
+            return true;
+        };
 
         static std::string pathsep();
         static std::string userdir();

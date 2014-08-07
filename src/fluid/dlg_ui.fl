@@ -38,6 +38,9 @@ decl {\#include "dlg_settings.hpp"} {public global
 decl {\#include "dlg_about.hpp"} {public global
 } 
 
+decl {\#include "dlg_bulkdl.hpp"} {public global
+} 
+
 decl {int main_ex(int argc, char* argv[]);} {private global
 } 
 
@@ -57,6 +60,8 @@ class dlg_ui {open : {public event_listener}
   decl {dlg_editselection *m_dlg_editselection;} {private local
   }
   decl {dlg_about *m_dlg_about;} {private local
+  }
+  decl {dlg_bulkdl *m_dlg_bulkdl;} {selected private local
   }
   decl {void create_ex(void);} {private local
   }
@@ -84,13 +89,15 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void about_ex(void);} {private local
   }
-  decl {void update_choice_map_ex(void);} {selected private local
+  decl {void update_choice_map_ex(void);} {private local
   }
   decl {void showwpmarkers_ex(void);} {private local
   }
   decl {void garmindl_ex(void);} {private local
   }
   decl {void garminul_ex(void);} {private local
+  }
+  decl {void bulkdl_ex(void);} {private local
   }
   decl {void show_ex(int argc, char *argv[]);} {private local
   }
@@ -121,6 +128,8 @@ class dlg_ui {open : {public event_listener}
   decl {void cb_close_ex(Fl_Widget *widget);} {private local
   }
   decl {bool mapctrl_evt_notify_ex(const mapctrl::event_notify *e);} {private local
+  }
+  decl {bool mapctrl_evt_endselect_ex(const mapctrl::event_endselect *e);} {private local
   }
   Function {cb_close(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
@@ -187,8 +196,8 @@ ui->cb_choice_overlay_ex(widget);} {}
     Fl_Window m_window {
       label florb
       user_data this
-      callback cb_close
-      private xywh {1778 208 805 565} type Double align 80 resizable size_range {605 465 0 0} visible
+      callback cb_close open
+      private xywh {1303 232 805 565} type Double align 80 resizable size_range {605 465 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
@@ -227,6 +236,10 @@ ui->cb_choice_overlay_ex(widget);} {}
             MenuItem m_menuitem_edit_search {
               label Suchen
               private xywh {15 15 100 20} shortcut 0x40066
+            }
+            MenuItem m_menuitem_edit_bulkdl {
+              label {Bulk download}
+              private xywh {25 25 100 20}
             }
           }
           Submenu m_menuitem_track {

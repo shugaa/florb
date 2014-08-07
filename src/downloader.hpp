@@ -18,6 +18,7 @@ class downloader : public event_generator
         void timeout(size_t sec);
         bool queue(const std::string& url, void* userdata);
         size_t qsize();
+        void nice(long ms);
 
         class event_complete;
 
@@ -107,6 +108,7 @@ class downloader : public event_generator
 
         std::vector<workerinfo*> m_workers;
         size_t m_timeout;
+        long m_nice;
 
         boost::interprocess::interprocess_semaphore m_threadblock;
         boost::interprocess::interprocess_mutex m_mutex;

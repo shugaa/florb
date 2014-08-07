@@ -15,9 +15,10 @@ class layer : public event_listener, public event_generator
         virtual ~layer();
 
         virtual bool draw(const viewport &viewport, fgfx::canvas &c) = 0;
-        const std::string& name();
+        const std::string& name() const;
 
         static bool is_instance(layer* l);
+        void enable(bool en);
 
         // Predefined layer events
         class event_mouse;
@@ -25,8 +26,10 @@ class layer : public event_listener, public event_generator
     private:
         static std::set<layer*> m_instances;
         std::string m_name;
+        bool m_enabled;
         
     protected:
+        bool enabled() const;
         void name(const std::string &name);
 };
 

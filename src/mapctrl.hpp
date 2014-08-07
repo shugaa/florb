@@ -13,6 +13,7 @@
 #include "markerlayer.hpp"
 #include "scalelayer.hpp"
 #include "gpsdlayer.hpp"
+#include "areaselectlayer.hpp"
 #include "gfx.hpp"
 
 class mapctrl : public Fl_Widget, public event_listener, public event_generator
@@ -73,8 +74,13 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         size_t marker_add(const point2d<double> &pmerc);
         void marker_remove(size_t id);
 
+        // Area selection
+        void select_area(const std::string& caption);
+        void select_clear();
+
         // Event classes
         class event_notify;
+        class event_endselect;
     private:
         // Pixel delta for keyborad map motion commands
         static const int PXMOTION = 15;
@@ -107,6 +113,10 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         // Marker layer event handlers
         bool marker_evt_notify(const markerlayer::event_notify *e);
 
+        // Area selection layer event handlers
+        bool areaselect_evt_done(const areaselectlayer::event_done *e);
+        bool areaselect_evt_notify(const areaselectlayer::event_notify *e);
+
         // Layers
         osmlayer *m_basemap;
         osmlayer *m_overlay;
@@ -114,6 +124,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         gpxlayer *m_gpxlayer;
         markerlayer *m_markerlayer;
         gpsdlayer *m_gpsdlayer;
+        areaselectlayer *m_areaselectlayer;
 
         point2d<int> m_mousepos;
         viewport m_viewport;
@@ -133,6 +144,17 @@ class mapctrl::event_notify : public event_base
     public:
         event_notify() {};
         ~event_notify() {};
+};
+
+class mapctrl::event_endselect : public event_base
+{
+    public:
+        event_endselect(const viewport& vp) : m_vp(vp) {};
+        ~event_endselect() {};
+
+        const viewport& vp() const { return m_vp; };
+    private:
+        viewport m_vp;
 };
 
 #endif // MAPCTRL_HPP

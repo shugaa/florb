@@ -21,6 +21,8 @@ class osmlayer : public layer
             int imgtype);
         ~osmlayer();
         bool draw(const viewport &vp, fgfx::canvas &c);
+        bool downloadvp(const viewport& vp, double& coverage);
+        void nice(long ms);
 
         int zoom_min() { return m_zmin; };
         int zoom_max() { return m_zmax; };
@@ -49,11 +51,12 @@ class osmlayer : public layer
         std::vector<tileinfo*> m_tileinfos;
         downloader* m_downloader;
         bool m_dlenable;
+        double m_coverage;
 
         static void cb_download(void *userdata);
         void process_downloads();
 
-        bool drawvp(const viewport &viewport, fgfx::canvas &c);
+        bool drawvp(const viewport &viewport, fgfx::canvas *c);
         void download_qtile(int z, int x, int y);
         bool evt_downloadcomplete(const downloader::event_complete *e);
 };

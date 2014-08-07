@@ -5,7 +5,8 @@
 std::set<layer*> layer::m_instances;
 
 layer::layer() :
-    m_name("N/A")
+    m_name("N/A"),
+    m_enabled(true)
 {
     m_instances.insert(this);
 };
@@ -16,14 +17,24 @@ layer::~layer()
     m_instances.erase(m_instances.find(this));
 };
 
-const std::string& layer::name()
+const std::string& layer::name() const
 {
     return m_name;
+};
+
+bool layer::enabled() const
+{
+    return m_enabled;
 };
 
 void layer::name(const std::string &name)
 {
     m_name = name;
+};
+
+void layer::enable(bool en)
+{
+    m_enabled = en;
 };
 
 bool layer::is_instance(layer* l)

@@ -1,0 +1,183 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include <string>} {public global
+} 
+
+decl {\#include <vector>} {public global
+} 
+
+decl {\#include <boost/interprocess/sync/interprocess_mutex.hpp>} {public global
+} 
+
+decl {\#include "mapctrl.hpp"} {public global
+} 
+
+decl {\#include "osmlayer.hpp"} {public global
+} 
+
+class dlg_bulkdl {open : {public event_listener}
+} {
+  decl {bool show_ex();} {private local
+  }
+  decl {void create_ex();} {private local
+  }
+  decl {void cb_btn_download_ex(Fl_Widget *widget);} {private local
+  }
+  decl {bool osm_evt_notify_ex(const osmlayer::event_notify *e);} {private local
+  }
+  decl {void startdl_ex();} {private local
+  }
+  decl {void cancel_ex(bool c);} {private local
+  }
+  decl {bool cancel_ex();} {private local
+  }
+  decl {void active_ex(bool a);} {private local
+  }
+  decl {bool active_ex();} {private local
+  }
+  decl {std::vector<unsigned int> parse_zoomlevels_ex();} {private local
+  }
+  decl {static void cb_startdl_ex(void *userdata);} {private local
+  }
+  decl {static void cb_window_ex(Fl_Widget *w, void *userdata);} {private local
+  }
+  decl {boost::interprocess::interprocess_mutex m_mutex;} {private local
+  }
+  decl {mapctrl *m_mapctrl;} {private local
+  }
+  decl {viewport m_vp;} {private local
+  }
+  decl {std::vector<unsigned int> m_zoomlevels;} {private local
+  }
+  decl {bool m_cancel;} {private local
+  }
+  decl {bool m_active;} {private local
+  }
+  Function {cb_btn_download(Fl_Widget *widget, void *userdata)} {private return_type {static void}
+  } {
+    code {dlg_bulkdl *dlg = static_cast<dlg_bulkdl*>(userdata);
+dlg->cb_btn_download_ex(widget);} {}
+  }
+  Function {dlg_bulkdl(mapctrl *m)} {open
+  } {
+    Fl_Window m_window {
+      label {Bulk download} open
+      private xywh {1702 246 380 190} type Double resizable modal size_range {380 160 0 0} visible
+    } {
+      Fl_Pack {} {open
+        private xywh {0 0 380 192} type HORIZONTAL resizable
+      } {
+        Fl_Box {} {
+          private xywh {0 0 5 192}
+        }
+        Fl_Pack {} {open
+          private xywh {5 0 370 192} resizable
+        } {
+          Fl_Box {} {
+            private xywh {5 0 370 5}
+          }
+          Fl_Pack {} {
+            private xywh {5 5 370 25} type HORIZONTAL
+          } {
+            Fl_Box {} {
+              label Map
+              private xywh {5 5 130 25} align 20
+            }
+            Fl_Choice m_choice_map {open
+              private xywh {135 5 240 25} down_box BORDER_BOX resizable
+            } {}
+          }
+          Fl_Box {} {
+            private xywh {5 30 370 5}
+          }
+          Fl_Pack {} {
+            private xywh {5 35 370 25} type HORIZONTAL
+          } {
+            Fl_Box {} {
+              label {Zoom levels}
+              private xywh {5 35 130 25} align 20
+            }
+            Fl_Input m_input_zoomlevels {
+              private xywh {135 35 240 25} resizable
+            }
+          }
+          Fl_Box {} {
+            private xywh {5 60 370 5}
+          }
+          Fl_Pack {} {open
+            private xywh {5 65 370 25} type HORIZONTAL
+          } {
+            Fl_Box {} {
+              label {Delay [ms]}
+              private xywh {5 65 130 25} align 20
+            }
+            Fl_Input m_input_nice {selected
+              private xywh {135 65 240 25} type Int resizable
+            }
+          }
+          Fl_Box {} {
+            private xywh {5 90 370 5}
+          }
+          Fl_Pack {} {open
+            private xywh {5 95 370 25} type HORIZONTAL
+          } {
+            Fl_Button m_btn_download {
+              label Download
+              user_data this
+              callback cb_btn_download
+              xywh {5 95 370 25} resizable
+            }
+          }
+          Fl_Box {} {
+            private xywh {5 120 370 5}
+          }
+          Fl_Progress m_progress_status {
+            xywh {5 125 370 25} box BORDER_BOX selection_color 179
+          }
+          Fl_Box {} {
+            private xywh {5 150 370 5} resizable
+          }
+          Fl_Box {} {
+            private xywh {5 155 370 2} box ENGRAVED_BOX
+          }
+          Fl_Box {} {
+            private xywh {5 157 370 5}
+          }
+          Fl_Pack {} {open
+            private xywh {5 162 370 25} type HORIZONTAL
+          } {
+            Fl_Box {} {
+              private xywh {5 162 265 25} resizable
+            }
+            Fl_Button m_btn_ok {
+              label OK
+              private xywh {270 162 105 25}
+            }
+          }
+          Fl_Box {} {
+            private xywh {5 187 370 5}
+          }
+        }
+        Fl_Box {} {
+          private xywh {375 0 5 192}
+        }
+      }
+    }
+    code {m_mapctrl = m;
+create_ex();} {}
+  }
+  Function {~dlg_bulkdl()} {} {
+    code {if (m_window)
+    delete(m_window);} {}
+  }
+  Function {show(const viewport& vp)} {open return_type bool
+  } {
+    code {m_vp = vp;
+return show_ex();} {}
+  }
+} 

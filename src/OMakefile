@@ -82,10 +82,6 @@ CGeneratedFiles($(addsuffix .cpp, $(OBJS_FLUID)) version.hpp)
 CXXProgram($(PROGRAM)$(EXE), $(OBJS))
 .DEFAULT: $(PROGRAM)$(EXE)
 
-# debug build
-debug:
-
-
 # install target
 install:
 	mkdir($(PREFIX)/bin/ -p)

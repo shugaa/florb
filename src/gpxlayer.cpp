@@ -69,16 +69,19 @@ bool gpxlayer::key(const layer::event_key* evt)
 
 bool gpxlayer::press(const layer::event_mouse* evt)
 {
+    point2d<unsigned long> pxabs;
+    pxabs[0] = evt->pos().x() < 0 ? 0 : (unsigned long)evt->pos().x();
+    pxabs[1] = evt->pos().y() < 0 ? 0 : (unsigned long)evt->pos().y();
+
     // Mouse push outside viewport area
-    if ((evt->pos().x() < 0) || (evt->pos().y() < 0))
-        return false;
-    if ((evt->pos().x() >= (int)evt->vp().w()) || (evt->pos().y() >= (int)evt->vp().h()))
-        return false;
+    if (pxabs.x() >= evt->vp().w())
+        pxabs[0] = evt->vp().w()-1;
+    if (pxabs.y() >= evt->vp().h())
+        pxabs[1] = evt->vp().h()-1;
 
     // Convert to absolute map coordinate
-    point2d<unsigned long> pxabs;
-    pxabs.x(evt->pos().x() + evt->vp().x());
-    pxabs.y(evt->pos().y() + evt->vp().y());
+    pxabs.x(pxabs.x() + evt->vp().x());
+    pxabs.y(pxabs.y() + evt->vp().y());
 
     // Clear current selection
     m_selection.waypoints.clear();
@@ -517,6 +520,8 @@ gpxlayer::~gpxlayer()
 bool gpxlayer::handle_evt_mouse(const layer::event_mouse* evt)
 {
     // Only the left mouse button is of interest
+    if (!enabled())
+        return false;
     if (evt->button() != layer::event_mouse::BUTTON_LEFT)
         return false;
 
@@ -546,7 +551,10 @@ bool gpxlayer::handle_evt_mouse(const layer::event_mouse* evt)
 }
 
 bool gpxlayer::handle_evt_key(const layer::event_key* evt)
-{
+{   
+    if (!enabled())
+        return false;
+
     int ret = false;
 
     switch (evt->action())

@@ -238,15 +238,27 @@ std::vector<std::string> utils::str_split(const std::string& str, const std::str
 
 std::size_t utils::str_count(const std::string& str, const std::string& token)
 {
+    if (token.length() == 0)
+        return 0;
+
     std::size_t ret = 0, offs = 0;
 
-    while ((offs < str.length()) && (offs = str.find(token, offs) != std::string::npos))
+    while ((offs = str.find(token, offs)) != std::string::npos)
     {
         offs += token.length();
         ret++;
     }
 
     return ret;
+}
+
+void utils::str_replace(std::string& str, const std::string& s, const std::string& r)
+{
+    std::size_t offs = 0;
+    while ((offs = str.find(s, 0)) != std::string::npos)
+    {
+        str.replace(offs, s.length(), r);
+    }
 }
 
 // Cohen–Sutherland clipping algorithm

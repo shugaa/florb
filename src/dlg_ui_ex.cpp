@@ -1,5 +1,6 @@
 #include <sstream>
 #include <Fl/Fl_File_Chooser.H>
+#include <FL/fl_ask.H>
 #include <curl/curl.h>
 #include <locale.h>
 #include <cstdlib>
@@ -103,6 +104,20 @@ bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
     return true;
 }
 
+bool dlg_ui::mapctrl_evt_endselect_ex(const mapctrl::event_endselect *e)
+{
+    std::cout << "x: " << e->vp().x() << " y: " <<  e->vp().y() << " w: " << e->vp().w() << " h: " << e->vp().h() << std::endl;
+
+    if (!m_dlg_bulkdl)
+        m_dlg_bulkdl = new dlg_bulkdl(m_mapctrl);
+
+    m_dlg_bulkdl->show(e->vp());
+
+    m_mapctrl->select_clear();
+
+    return true;
+}
+
 void dlg_ui::create_ex(void)
 {
     // Set the window icon
@@ -144,6 +159,7 @@ void dlg_ui::create_ex(void)
 
     // Start listening to mapctrl events
     register_event_handler<dlg_ui, mapctrl::event_notify>(this, &dlg_ui::mapctrl_evt_notify_ex);
+    register_event_handler<dlg_ui, mapctrl::event_endselect>(this, &dlg_ui::mapctrl_evt_endselect_ex);
     m_mapctrl->add_event_listener(this);
 }
 
@@ -279,6 +295,13 @@ void dlg_ui::savetrack_ex()
     } catch (std::runtime_error& e) {
         fl_alert("%s", e.what());
     }
+}
+
+void dlg_ui::bulkdl_ex()
+{
+    // Clear all waypoints
+    fl_alert(_("Select the desired area on the map now"));
+    m_mapctrl->select_area(_("Select download area"));
 }
 
 void dlg_ui::cleartrack_ex()
@@ -562,6 +585,10 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
     else if (mit == m_menuitem_edit_search) {
         search_ex();
     }
+    // Edit sumbemnu
+    else if (mit == m_menuitem_edit_bulkdl) {
+        bulkdl_ex();
+    }
 
     // Track submenu
     else if (mit == m_menuitem_track_clear) {
@@ -626,6 +653,7 @@ void dlg_ui::hide_ex()
     if (m_dlg_editselection)    delete m_dlg_editselection;
     if (m_dlg_settings)         delete m_dlg_settings;
     if (m_dlg_about)            delete m_dlg_about;
+    if (m_dlg_bulkdl)           delete m_dlg_bulkdl;
 
     // Delete the main window
     delete(m_window);

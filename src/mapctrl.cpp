@@ -27,30 +27,57 @@ mapctrl::mapctrl(int x, int y, int w, int h, const char *label) :
     register_event_handler<mapctrl, osmlayer::event_notify>(this, &mapctrl::osm_evt_notify);
     register_event_handler<mapctrl, gpxlayer::event_notify>(this, &mapctrl::gpx_evt_notify);
     register_event_handler<mapctrl, markerlayer::event_notify>(this, &mapctrl::marker_evt_notify);
+    register_event_handler<mapctrl, areaselectlayer::event_done>(this, &mapctrl::areaselect_evt_done);
+    register_event_handler<mapctrl, areaselectlayer::event_notify>(this, &mapctrl::areaselect_evt_notify);
 
     // Add a GPX layer
-    m_gpxlayer = new gpxlayer();
-    if (!m_gpxlayer)
-        throw 0;
+    try {
+        m_gpxlayer = new gpxlayer();
+    } catch (...) {
+        m_gpxlayer = NULL;
+        throw std::runtime_error(_("GPX error"));
+    }
 
     m_gpxlayer->add_event_listener(this);
     add_event_listener(m_gpxlayer);
 
     // Add a marker layer
-    m_markerlayer = new markerlayer();
-    if (!m_markerlayer)
-        throw 0;
+    try {
+        m_markerlayer = new markerlayer();
+    } catch (...) {
+        m_markerlayer = NULL;
+        throw std::runtime_error(_("Marker error"));
+    }
 
     m_markerlayer->add_event_listener(this);
     add_event_listener(m_markerlayer);
 
     // Add a scale layer
-    m_scale = new scalelayer();
+    try {
+        m_scale = new scalelayer();
+    } catch (...) {
+        m_scale = NULL;
+        throw std::runtime_error(_("Scale error"));
+    }
+
+    // Add an area selection layer
+    try {
+        m_areaselectlayer = new areaselectlayer();
+    } catch (...) {
+        m_areaselectlayer = NULL;
+        throw std::runtime_error(_("Selection error"));
+    }
+
+    m_areaselectlayer->enable(false);
+    m_areaselectlayer->add_event_listener(this);
+    add_event_listener(m_areaselectlayer);
 
     // Add a gpsdlayer if enabled
     cfg_gpsd cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
     if (cfggpsd.enabled())
-        gpsd_connect(cfggpsd.host(), cfggpsd.port());  
+    {
+        gpsd_connect(cfggpsd.host(), cfggpsd.port());
+    }
 
     // Restore previous viewport
     cfg_viewport cfgvp = settings::get_instance()["viewport"].as<cfg_viewport>();
@@ -94,6 +121,9 @@ mapctrl::~mapctrl()
 
     if (m_gpsdlayer)
         delete m_gpsdlayer;
+
+    if (m_areaselectlayer)
+        delete m_areaselectlayer;
 }
 
 void mapctrl::goto_pos(const point2d<double> &pwsg84)
@@ -128,6 +158,20 @@ void mapctrl::marker_remove(size_t id)
         throw std::runtime_error(_("Marker error"));
 
     m_markerlayer->remove(id);
+}
+
+void mapctrl::select_area(const std::string& caption)
+{
+    // Disabe gpxlayer
+    m_gpxlayer->enable(false);
+
+    // Enable areaselectlayer
+    m_areaselectlayer->enable(true);
+}
+
+void mapctrl::select_clear()
+{
+    m_areaselectlayer->clear();
 }
 
 void mapctrl::gpx_loadtrack(const std::string& path)
@@ -224,7 +268,13 @@ void mapctrl::gpsd_connect(const std::string& host, const std::string& port)
     if (m_gpsdlayer)
         gpsd_disconnect();
 
-    m_gpsdlayer = new gpsdlayer(host, port);
+    try {
+        m_gpsdlayer = new gpsdlayer(host, port);
+    } catch (...) {
+        m_gpsdlayer = NULL;
+        throw std::runtime_error(_("GPSd error"));
+    }
+
     m_gpsdlayer->add_event_listener(this);
 }
 
@@ -483,6 +533,27 @@ bool mapctrl::gpx_evt_notify(const gpxlayer::event_notify *e)
 }
 
 bool mapctrl::marker_evt_notify(const markerlayer::event_notify *e)
+{
+    refresh();
+    return true;
+}
+
+bool mapctrl::areaselect_evt_done(const areaselectlayer::event_done *e)
+{
+    // disable areaselectlayer
+    m_areaselectlayer->enable(false);
+
+    // Enable gpxlayer
+    m_gpxlayer->enable(true);
+
+    // Fire event
+    event_endselect en(e->vp());
+    fire(&en);    
+
+    return true;
+}
+
+bool mapctrl::areaselect_evt_notify(const areaselectlayer::event_notify *e)
 {
     refresh();
     return true;
@@ -881,20 +952,20 @@ void mapctrl::draw()
         vp_tmp.y() - m_viewport.y());
             
     // Draw the scale
-    if (m_scale)
-        m_scale->draw(m_viewport, m_offscreen);
+    m_scale->draw(m_viewport, m_offscreen);
 
     // Draw the gpx layer
-    if (m_gpxlayer)
-        m_gpxlayer->draw(m_viewport, m_offscreen);
+    m_gpxlayer->draw(m_viewport, m_offscreen);
 
     // Draw the marker layer
-    if (m_markerlayer)
-        m_markerlayer->draw(m_viewport, m_offscreen);
+    m_markerlayer->draw(m_viewport, m_offscreen);
 
     // Draw the gpsd layer
     if (m_gpsdlayer)
         m_gpsdlayer->draw(m_viewport, m_offscreen);
+
+    // Draw the areaselect layer
+    m_areaselectlayer->draw(m_viewport, m_offscreen);
 
     // Blit the generated viewport canvas onto the widget (centered)
     int dpx = 0, dpy = 0;

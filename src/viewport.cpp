@@ -30,7 +30,8 @@ viewport::viewport(unsigned long x, unsigned long y, unsigned int z, unsigned lo
     m_y(y), 
     m_z(z), 
     m_w(w), 
-    m_h(h)
+    m_h(h),
+    m_dim(utils::dim(z))
 {
 };
 
@@ -39,7 +40,8 @@ viewport::viewport() :
     m_y(0), 
     m_z(0), 
     m_w(0), 
-    m_h(0)
+    m_h(0),
+    m_dim(utils::dim(0))
 {
 };
 

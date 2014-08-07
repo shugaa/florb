@@ -28,13 +28,9 @@ bool dlg_garmindl::show_ex()
     std::string tmp;
     while(sh.readln(tmp))
     {
-        std::cout << tmp << std::endl;
-
         // Very basic gpsbabel output validation (check first item integer)
-        std::istringstream conv(utils::str_split(tmp, " ")[0]);
-        int devidx;
-        conv >> devidx;
-        if ((conv.rdstate() & (std::istringstream::failbit|std::istringstream::badbit)) != 0)
+        int conv;
+        if (!utils::fromstr(utils::str_split(tmp, " ")[0], conv))
             break;
 
         m_choice_device->add(tmp.c_str());

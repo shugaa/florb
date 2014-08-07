@@ -65,7 +65,8 @@ osmlayer::osmlayer(
     m_zmax(zmax),                   // Max. zoomlevel supported by server
     m_parallel(parallel),           // Number of simultaneous downloads
     m_type(imgtype),                // Tile image data type
-    m_dlenable(true)                // Allow tile downloading
+    m_dlenable(true),               // Allow tile downloading
+    m_coverage(0.0)                 // Coverage for the last draw operation
 {
     // Set map layer name
     name(m_name);
@@ -113,6 +114,11 @@ osmlayer::~osmlayer()
     // Destroy the cache
     delete m_cache;
 };
+
+void osmlayer::nice(long ms)
+{
+    m_downloader->nice(ms);
+}
 
 void osmlayer::process_downloads()
 {
@@ -270,55 +276,77 @@ bool osmlayer::draw(const viewport &vp, fgfx::canvas &os)
     } 
 
     // Regular tile drawing
-    return drawvp(vp, os);
+    return drawvp(vp, &os);
 }
 
-bool osmlayer::drawvp(const viewport &vp, fgfx::canvas &c)
+bool osmlayer::downloadvp(const viewport &vp, double& coverage)
+{
+    bool rc = drawvp(vp, NULL);
+    coverage = m_coverage;
+    return rc;
+}
+
+bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
 {
     // Return whether the map image has tiles missing (false) or not (true)
     bool ret = true;
 
     // Get the x and y start tile index
-    unsigned int tstartx = vp.x() / TILE_W;
-    unsigned int tstarty = vp.y() / TILE_H;
+    unsigned long tstartx = vp.x() / TILE_W;
+    unsigned long tstarty = vp.y() / TILE_H;
     
-    // If the vp does not exactly hit the tile edge, there is an offset
-    // for drawing the individual tiles.
-    int pstartx = -((int)(vp.x() % TILE_W));
-    int pstarty = -((int)(vp.y() % TILE_H));
+    // If the vp does not exactly hit the tile edge, there is an offset for
+    // drawing the individual tiles.
+    unsigned int dx = (unsigned int)(vp.x() % TILE_W);
+    unsigned int dy = (unsigned int)(vp.y() % TILE_H);
 
-    // Start at offset and draw up to vp.w() and vp.h()
-    int px, py;
-    unsigned int tx, ty;
+    // Start at 0 and draw up to vp.w() and vp.h() plus the respective delta
+    unsigned long px, py;
+    unsigned long tx, ty;
 
-    for (py=pstarty, ty=tstarty; py<(int)vp.h(); py+=TILE_W, ty++)
+    // Coverage statistics
+    unsigned long ttotal = 0, tok = 0;
+
+    for (py=0, ty=tstarty; py<(vp.h()+dy); py+=TILE_W, ty++)
     {
-       for (px=pstartx, tx=tstartx; px<(int)vp.w(); px+=TILE_H, tx++)
+       for (px=0, tx=tstartx; px<(vp.w()+dx); px+=TILE_H, tx++)
        {
           // Get the tile
           int rc;
           try {
-            rc = m_cache->get(vp.z(), tx, ty, m_imgbuf);
+              rc = m_cache->get(vp.z(), tx, ty, m_imgbuf);
           } catch (std::runtime_error& e) {
-            rc = sqlitecache::NOTFOUND;
+              rc = sqlitecache::NOTFOUND;
           }
           
           // Draw the tile if we either have a valid or expired version of it...
-          if ((rc != sqlitecache::NOTFOUND) && (m_imgbuf.size() != 0))
+          if ((rc != sqlitecache::NOTFOUND) && 
+              (m_imgbuf.size() != 0))
           {
-              fgfx::image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
-              c.draw(img, px, py);
+              tok++;
+
+              if (c != NULL)
+              {
+                  fgfx::image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
+                  c->draw(img, (int)px-(int)dx, (int)py-(int)dy);
+              }
           }
 
           // Tile not in cache or expired, schedule for downloading
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {
+              //tmissing++;
               download_qtile(vp.z(), tx, ty);
               ret = false;
           }
+
+          ttotal++;
        }
     }
+
+    m_coverage = (double)tok/(double)ttotal; 
+    std::cout << "m_coverage: " << m_coverage*100.0 << std::endl;
 
     return ret;
 }
