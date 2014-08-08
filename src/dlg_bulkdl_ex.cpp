@@ -314,7 +314,7 @@ void dlg_bulkdl::startdl_ex()
             return;
         }
     }
-    
+
     // Calculate mercator coordinates for the requested download viewport and
     // convert them back for the current zoom level
     point2d<double> pmerc1(utils::px2merc(m_vp.z(), point2d<unsigned long>(m_vp.x(), m_vp.y())));
@@ -346,6 +346,7 @@ void dlg_bulkdl::startdl_ex()
 
         m_progress_status->label(plabel.c_str());
         m_progress_status->value(100);
+        Fl::check();
 
         // Increas the zoom level index and start over
         levelidx++;
@@ -359,6 +360,7 @@ void dlg_bulkdl::startdl_ex()
 
     m_progress_status->label(plabel.c_str());
     m_progress_status->value((int)(coverage*100.0));
+    Fl::check();
 }
 
 bool dlg_bulkdl::osm_evt_notify_ex(const osmlayer::event_notify *e)

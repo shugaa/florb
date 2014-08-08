@@ -45,18 +45,18 @@ class osmlayer : public layer
         unsigned int m_zmax;
         unsigned int m_parallel;
         int m_type;
+        unsigned long m_downloaded;
         
         sqlitecache *m_cache;
         std::vector<char> m_imgbuf;
         std::vector<tileinfo*> m_tileinfos;
         downloader* m_downloader;
         bool m_dlenable;
-        double m_coverage;
 
         static void cb_download(void *userdata);
         void process_downloads();
 
-        bool drawvp(const viewport &viewport, fgfx::canvas *c);
+        bool drawvp(const viewport &viewport, fgfx::canvas *c, unsigned long *ttotal, unsigned long *tnok);
         void download_qtile(int z, int x, int y);
         bool evt_downloadcomplete(const downloader::event_complete *e);
 };

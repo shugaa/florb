@@ -108,7 +108,7 @@ bool dlg_ui::mapctrl_evt_endselect_ex(const mapctrl::event_endselect *e)
 {
     if (!m_dlg_bulkdl)
         m_dlg_bulkdl = new dlg_bulkdl(m_mapctrl);
-
+    
     m_dlg_bulkdl->show(e->vp());
 
     m_mapctrl->select_clear();

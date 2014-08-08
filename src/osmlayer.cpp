@@ -7,6 +7,7 @@
 #define FIVE_MIN                (5*60)
 #define TILE_W                  (256)
 #define TILE_H                  (256)
+#define DLQSIZE                 (100)
 
 const std::string osmlayer::wcard_x = "{x}";
 const std::string osmlayer::wcard_y = "{y}";
@@ -65,8 +66,7 @@ osmlayer::osmlayer(
     m_zmax(zmax),                   // Max. zoomlevel supported by server
     m_parallel(parallel),           // Number of simultaneous downloads
     m_type(imgtype),                // Tile image data type
-    m_dlenable(true),               // Allow tile downloading
-    m_coverage(0.0)                 // Coverage for the last draw operation
+    m_dlenable(true)               // Allow tile downloading
 {
     // Set map layer name
     name(m_name);
@@ -182,6 +182,7 @@ void osmlayer::process_downloads()
         }
 
         delete ti;
+        m_downloaded++;
     }
 
     if (ret) 
@@ -228,6 +229,8 @@ bool osmlayer::evt_downloadcomplete(const downloader::event_complete *e)
 void osmlayer::download_qtile(int z, int x, int y)
 {
     if (!m_dlenable)
+        return;
+    if (m_downloader->qsize() > DLQSIZE)
         return;
 
     // Check whether the requested tile is already being processed
@@ -283,18 +286,33 @@ bool osmlayer::draw(const viewport &vp, fgfx::canvas &os)
     } 
 
     // Regular tile drawing
-    return drawvp(vp, &os);
+    return drawvp(vp, &os, NULL, NULL);
 }
 
 bool osmlayer::download(const viewport &vp, double& coverage)
 {
-    bool rc = drawvp(vp, NULL);
-    coverage = m_coverage;
+    static unsigned long ttotal = 0;
+    static unsigned long tnok = 0;
+    bool rc = false;
+    
+    // Downloader inactive, try to process more tiles
+    if (m_downloader->qsize() == 0)
+    {
+        m_downloaded = 0;
+        rc = drawvp(vp, NULL, &ttotal, &tnok);
+    }
+   
+    // Update statistics
+    coverage = (double)(ttotal-(tnok-m_downloaded))/(double)ttotal;
     return rc;
 }
 
-bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
+bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c, unsigned long *ttotal, unsigned long *tnok)
 {
+    // Reset statistics
+    if (ttotal != NULL) (*ttotal) = 0;
+    if (tnok != NULL) (*tnok) = 0;
+
     // Return whether the map image has tiles missing (false) or not (true)
     bool ret = true;
 
@@ -311,9 +329,6 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
     unsigned long px, py;
     unsigned long tx, ty;
 
-    // Coverage statistics
-    unsigned long ttotal = 0, tnok = 0;
-
     for (py=0, ty=tstarty; py<(vp.h()+dy); py+=TILE_W, ty++)
     {
        for (px=0, tx=tstartx; px<(vp.w()+dx); px+=TILE_H, tx++)
@@ -321,16 +336,19 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
           // Get the tile
           int rc;
           try {
-              rc = m_cache->get(vp.z(), tx, ty, m_imgbuf);
+              if (c == NULL)
+                  rc = m_cache->exists(vp.z(), tx, ty);  
+              else
+                  rc = m_cache->get(vp.z(), tx, ty, m_imgbuf);
           } catch (std::runtime_error& e) {
               rc = sqlitecache::NOTFOUND;
           }
           
           // Draw the tile if we either have a valid or expired version of it...
-          if ((rc != sqlitecache::NOTFOUND) && 
-              (m_imgbuf.size() != 0))
+          if (c != NULL)
           {
-              if (c != NULL)
+              if ((rc != sqlitecache::NOTFOUND) && 
+                  (m_imgbuf.size() != 0))
               {
                   fgfx::image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
                   c->draw(img, (int)px-(int)dx, (int)py-(int)dy);
@@ -341,16 +359,14 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c)
           if ((rc == sqlitecache::EXPIRED) || 
               (rc == sqlitecache::NOTFOUND))
           {
-              tnok++;
+              if (tnok != NULL) (*tnok)++;
               download_qtile(vp.z(), tx, ty);
               ret = false;
           }
 
-          ttotal++;
+          if (ttotal != NULL) (*ttotal)++;
        }
     }
-
-    m_coverage = (double)(ttotal-tnok)/(double)ttotal; 
 
     return ret;
 }

@@ -888,7 +888,7 @@ void mapctrl::draw()
     // to be generated.
     fl_rectf(x(), y(), w(), h(), 80, 80, 80);
 
-    // Create ancanvas drawing buffer and send all subsequent commands there
+    // resize the offscreent o match the viewport
     m_offscreen.resize(m_viewport.w(), m_viewport.h());
 
     // Check whether the master viewport is well within the map viewport

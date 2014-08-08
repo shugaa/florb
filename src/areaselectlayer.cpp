@@ -116,7 +116,7 @@ bool areaselectlayer::release(const layer::event_mouse* evt)
 
 void areaselectlayer::done()
 {
-    static event_done e(m_vp);
+    event_done e(m_vp);
     fire(&e);
 }
 
