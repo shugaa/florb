@@ -11,6 +11,7 @@
 downloader::downloader(int nthreads) : 
     m_timeout(10),
     m_nice(0),
+    m_stat(0),
     m_threadblock(0),
     m_exit(false)
 {
@@ -69,6 +70,22 @@ void downloader::nice(long ms)
 {
     m_mutex.lock();
     m_nice = ms;
+    m_mutex.unlock();
+}
+
+std::size_t downloader::stat()
+{
+    m_mutex.lock();
+    std::size_t ret = m_stat;
+    m_mutex.unlock();
+
+    return ret;
+}
+
+void downloader::stat(std::size_t s)
+{
+    m_mutex.lock();
+    m_stat = s;
     m_mutex.unlock();
 }
 
@@ -230,8 +247,13 @@ void downloader::worker()
         if (rc != 0)
             dl.buf().resize(0);
 
+        // Configures sleep time
+        long ms;
+
         m_mutex.lock();
         m_done.push_back(dl);
+        m_stat++;
+        ms = m_nice;
         m_mutex.unlock();
 
         // Fire event
@@ -239,10 +261,6 @@ void downloader::worker()
         fire(&ce);
 
         // Sleep
-        long ms;
-        m_mutex.lock();
-        ms = m_nice;
-        m_mutex.unlock();
         if (ms > 0)
             boost::this_thread::sleep(boost::posix_time::milliseconds(ms));
     }

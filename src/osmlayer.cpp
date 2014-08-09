@@ -182,7 +182,6 @@ void osmlayer::process_downloads()
         }
 
         delete ti;
-        m_downloaded++;
     }
 
     if (ret) 
@@ -298,12 +297,13 @@ bool osmlayer::download(const viewport &vp, double& coverage)
     // Downloader inactive, try to process more tiles
     if (m_downloader->qsize() == 0)
     {
-        m_downloaded = 0;
+        // Reset download statistics and try to draw the viewport anew.
+        m_downloader->stat(0);
         rc = drawvp(vp, NULL, &ttotal, &tnok);
     }
    
     // Update statistics
-    coverage = (double)(ttotal-(tnok-m_downloaded))/(double)ttotal;
+    coverage = (double)(ttotal-(tnok-m_downloader->stat()))/(double)ttotal;
     return rc;
 }
 

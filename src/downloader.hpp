@@ -19,79 +19,17 @@ class downloader : public event_generator
         bool queue(const std::string& url, void* userdata);
         size_t qsize();
         void nice(long ms);
+        std::size_t stat();
+        void stat(std::size_t s);
 
         class event_complete;
-
-        class download
-        {
-            public:
-                download() :
-                    m_userdata(NULL) {};
-                download(const std::string& url, void *userdata) :
-                    m_expires(0),
-                    m_url(url),
-                    m_userdata(userdata) {};
-                virtual ~download() {};
-
-                const std::string& url() const { return m_url; };
-                void *userdata() const { return m_userdata; };
-                std::vector<char>& buf() { return m_buf; };
-                const time_t& expires() const { return m_expires; };
-                long httprc() const { return m_httprc; }
-
-                bool operator==(const download& d) const
-                {
-                    return (m_url == d.m_url);
-                };
-                bool operator<(const download& d) const
-                {
-                    return (m_url < d.m_url);
-                };
-                bool operator>(const download& d) const
-                {
-                    return (m_url > d.m_url);
-                };
-
-            protected:
-                std::vector<char> m_buf;
-                time_t m_expires;
-                long m_httprc;
-                
-            private:
-                std::string m_url;
-                void* m_userdata;
-        };       
+        class download;
 
         bool get(download& dl);
 
     private:
-        class download_internal : public download
-        {
-            public:
-                download_internal(downloader* dldr, const std::string& url, void *userdata) :
-                    download(url, userdata),
-                    m_dldr(dldr) {};
-                ~download_internal() {};
-                void httprc(long rc) { m_httprc = rc; }
-
-                downloader* dldr() const { return m_dldr; };
-                std::vector<char>& buf() { return m_buf; };
-                time_t& expires() { return m_expires; };
-
-            private:
-                downloader* m_dldr;
-        };
-        class workerinfo
-        {   
-            public:
-                workerinfo(boost::thread* t) :
-                    m_t(t) {};
-
-                boost::thread* t() const { return m_t; };
-
-            private:
-                boost::thread *m_t;
-        };
+        class download_internal;
+        class workerinfo;
 
         void worker();
 
@@ -109,11 +47,81 @@ class downloader : public event_generator
         std::vector<workerinfo*> m_workers;
         size_t m_timeout;
         long m_nice;
+        std::size_t m_stat;
 
         boost::interprocess::interprocess_semaphore m_threadblock;
         boost::interprocess::interprocess_mutex m_mutex;
 
         bool m_exit;
+};
+
+class downloader::download
+{
+    public:
+        download() :
+            m_userdata(NULL) {};
+        download(const std::string& url, void *userdata) :
+            m_expires(0),
+            m_url(url),
+            m_userdata(userdata) {};
+        virtual ~download() {};
+
+        const std::string& url() const { return m_url; };
+        void *userdata() const { return m_userdata; };
+        std::vector<char>& buf() { return m_buf; };
+        const time_t& expires() const { return m_expires; };
+        long httprc() const { return m_httprc; }
+
+        bool operator==(const download& d) const
+        {
+            return (m_url == d.m_url);
+        };
+        bool operator<(const download& d) const
+        {
+            return (m_url < d.m_url);
+        };
+        bool operator>(const download& d) const
+        {
+            return (m_url > d.m_url);
+        };
+
+    protected:
+        std::vector<char> m_buf;
+        time_t m_expires;
+        long m_httprc;
+
+    private:
+        std::string m_url;
+        void* m_userdata;
+};
+
+class downloader::download_internal : public download
+{
+    public:
+        download_internal(downloader* dldr, const std::string& url, void *userdata) :
+            download(url, userdata),
+            m_dldr(dldr) {};
+        ~download_internal() {};
+        void httprc(long rc) { m_httprc = rc; }
+
+        downloader* dldr() const { return m_dldr; };
+        std::vector<char>& buf() { return m_buf; };
+        time_t& expires() { return m_expires; };
+
+    private:
+        downloader* m_dldr;
+};
+
+class downloader::workerinfo
+{   
+    public:
+        workerinfo(boost::thread* t) :
+            m_t(t) {};
+
+        boost::thread* t() const { return m_t; };
+
+    private:
+        boost::thread *m_t;
 };
 
 class downloader::event_complete : public event_base

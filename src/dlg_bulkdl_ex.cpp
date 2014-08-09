@@ -14,7 +14,7 @@ void dlg_bulkdl::create_ex()
     // Don't use default window callback
     m_window->callback(cb_window_ex);
 
-    // Configure UI
+    // Initialize UI
     m_progress_status->minimum(0);
     m_progress_status->maximum(99);
     m_input_zoomlevels->value("0;1;2-3");
@@ -26,38 +26,6 @@ void dlg_bulkdl::create_ex()
 
     // Register event handler for osmlayer notify events
     register_event_handler<dlg_bulkdl, osmlayer::event_notify>(this, &dlg_bulkdl::osm_evt_notify_ex);
-}
-
-bool dlg_bulkdl::cancel_ex()
-{
-    m_mutex.lock();
-    bool ret = m_cancel;
-    m_mutex.unlock();
-
-    return ret;
-}
-
-void dlg_bulkdl::cancel_ex(bool c)
-{
-    m_mutex.lock();
-    m_cancel = c;
-    m_mutex.unlock();
-}
-
-bool dlg_bulkdl::active_ex()
-{
-    m_mutex.lock();
-    bool ret = m_active;
-    m_mutex.unlock();
-
-    return ret;
-}
-
-void dlg_bulkdl::active_ex(bool a)
-{
-    m_mutex.lock();
-    m_active = a;
-    m_mutex.unlock();
 }
 
 bool dlg_bulkdl::show_ex()
@@ -190,9 +158,8 @@ void dlg_bulkdl::cb_btn_download_ex(Fl_Widget *widget)
         return;
     }
 
-    std::vector<unsigned int> zoomlevels;
-
     // Parse requested zoom levels
+    std::vector<unsigned int> zoomlevels;
     try {
         m_zoomlevels = parse_zoomlevels_ex();
     } catch (std::runtime_error& e) {
@@ -220,6 +187,9 @@ void dlg_bulkdl::cb_startdl_ex(void *userdata)
 
 void dlg_bulkdl::cb_window_ex(Fl_Widget *w, void *userdata)
 {
+    // The default window callback hides the window (which is not what we want)
+    // and then calls the default widget callback. Use this to skip the
+    // undesired hide().
     Fl_Widget::default_callback(w, userdata);
 }
 
@@ -228,7 +198,7 @@ void dlg_bulkdl::startdl_ex()
     static std::size_t levelidx = 0;
     static osmlayer *osml = NULL;
 
-    // All done or canceled
+    // All done or canceled. Clean up and reset UI
     if ((levelidx >= m_zoomlevels.size()) || (cancel_ex()))
     {
         // Reset zoom level index
@@ -277,12 +247,12 @@ void dlg_bulkdl::startdl_ex()
 
             try {
                 osml = new osmlayer(
-                        cfgtileserver.name(), 
-                        cfgtileserver.url(), 
-                        cfgtileserver.zmin(), 
-                        cfgtileserver.zmax(), 
-                        1,
-                        cfgtileserver.type());
+                    cfgtileserver.name(), 
+                    cfgtileserver.url(), 
+                    cfgtileserver.zmin(), 
+                    cfgtileserver.zmax(), 
+                    1,
+                    cfgtileserver.type());
             } catch (std::runtime_error &e) {
                 fl_alert(e.what());
                 osml = NULL;
@@ -333,7 +303,7 @@ void dlg_bulkdl::startdl_ex()
 
     static std::string plabel;
     std::ostringstream oss;
-    oss << "Zoom " << m_zoomlevels[levelidx] << ": ";
+    oss << _("Zoom ") << m_zoomlevels[levelidx] << ": ";
 
     // Tell the layer to download this viewport. On success proceed to the next
     // requested zoom level
@@ -343,10 +313,8 @@ void dlg_bulkdl::startdl_ex()
         // Reset UI
         oss << "100 %";
         plabel = oss.str();
-
         m_progress_status->label(plabel.c_str());
         m_progress_status->value(100);
-        Fl::check();
 
         // Increas the zoom level index and start over
         levelidx++;
@@ -355,12 +323,11 @@ void dlg_bulkdl::startdl_ex()
     }
 
     // The current map is still incomplete, update UI with current status
-    oss << (int)(coverage*100.0) << "%";
+    oss << (int)(coverage*100.0) << " %";
     plabel = oss.str();
 
     m_progress_status->label(plabel.c_str());
     m_progress_status->value((int)(coverage*100.0));
-    Fl::check();
 }
 
 bool dlg_bulkdl::osm_evt_notify_ex(const osmlayer::event_notify *e)
@@ -368,5 +335,37 @@ bool dlg_bulkdl::osm_evt_notify_ex(const osmlayer::event_notify *e)
     // osmlayer has new tiles
     Fl::awake(cb_startdl_ex, this);
     return true;
+}
+
+bool dlg_bulkdl::cancel_ex()
+{
+    m_mutex.lock();
+    bool ret = m_cancel;
+    m_mutex.unlock();
+
+    return ret;
+}
+
+void dlg_bulkdl::cancel_ex(bool c)
+{
+    m_mutex.lock();
+    m_cancel = c;
+    m_mutex.unlock();
+}
+
+bool dlg_bulkdl::active_ex()
+{
+    m_mutex.lock();
+    bool ret = m_active;
+    m_mutex.unlock();
+
+    return ret;
+}
+
+void dlg_bulkdl::active_ex(bool a)
+{
+    m_mutex.lock();
+    m_active = a;
+    m_mutex.unlock();
 }
 

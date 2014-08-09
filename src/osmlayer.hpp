@@ -45,7 +45,6 @@ class osmlayer : public layer
         unsigned int m_zmax;
         unsigned int m_parallel;
         int m_type;
-        unsigned long m_downloaded;
         
         sqlitecache *m_cache;
         std::vector<char> m_imgbuf;
