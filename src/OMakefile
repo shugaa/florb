@@ -19,7 +19,6 @@ CXXFLAGS = -std=c++11 -Wall -O2 -funroll-loops \
 	-DRESOURCEDIR=\"$(RESOURCEDIR)\" \
     $(shell fltk-config --use-images --cxxflags) \
 	$(shell curl-config --cflags) \
-	$(shell pkg-config --cflags sqlite3) \
 	$(shell pkg-config --cflags tinyxml2) \
 	$(shell pkg-config --cflags libgps) \
 	$(shell pkg-config --cflags x11) \
@@ -35,7 +34,6 @@ if $(defined DEBUG)
 LDFLAGS = \
 	$(shell fltk-config --use-images --ldflags) \
 	$(shell curl-config --libs) \
-	$(shell pkg-config --libs sqlite3) \
 	$(shell pkg-config --libs tinyxml2) \
 	$(shell pkg-config --libs libgps) \
 	$(shell pkg-config --libs x11) \
