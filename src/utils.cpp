@@ -199,6 +199,11 @@ std::string utils::filestem(const std::string& path)
     return boost::filesystem::path(path).stem().string();
 }
 
+std::string utils::extension(const std::string& path)
+{
+    return boost::filesystem::path(path).extension().string();
+}
+
 void utils::touch(const std::string& path)
 {
     std::fstream f(path, std::ios::out|std::ios::app);

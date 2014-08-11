@@ -12,11 +12,13 @@ class dlg_tileserver {open
 } {
   decl {cfg_tileserver m_cfgtileserver;} {private local
   }
-  decl {std::string m_title;} {selected private local
+  decl {std::string m_title;} {private local
   }
-  decl {bool show_ex();} {private local
+  decl {bool show_ex(bool add);} {selected private local
   }
   decl {void create_ex();} {private local
+  }
+  decl {bool handle_ok_ex(bool add);} {private local
   }
   decl {cfg_tileserver tileserver_ex();} {private local
   }
@@ -34,8 +36,7 @@ dlg->cb_spinner_zmin_ex(widget);} {}
     code {dlg_tileserver *dlg = static_cast<dlg_tileserver*>(userdata);
 dlg->cb_spinner_zmax_ex(widget);} {}
   }
-  Function {dlg_tileserver(const std::string& title, const cfg_tileserver& c)} {open
-  } {
+  Function {dlg_tileserver(const std::string& title, const cfg_tileserver& c)} {} {
     Fl_Window m_window {
       label {Edit tileserver}
       private xywh {2231 351 380 220} type Double hide resizable modal size_range {380 220 0 0}
@@ -194,9 +195,9 @@ create_ex();} {}
     code {if (m_window)
     delete(m_window);} {}
   }
-  Function {show()} {return_type bool
+  Function {show(bool add)} {open return_type bool
   } {
-    code {return show_ex();} {}
+    code {return show_ex(add);} {}
   }
   Function {tileserver()} {return_type cfg_tileserver
   } {

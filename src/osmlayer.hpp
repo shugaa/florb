@@ -5,7 +5,7 @@
 #include "layer.hpp"
 #include "viewport.hpp"
 #include "downloader.hpp"
-#include "sqlitecache.hpp"
+#include "cache.hpp"
 #include "gfx.hpp"
 #include "settings.hpp"
 
@@ -46,7 +46,7 @@ class osmlayer : public layer
         unsigned int m_parallel;
         int m_type;
         
-        sqlitecache *m_cache;
+        cache *m_cache;
         std::vector<char> m_imgbuf;
         std::vector<tileinfo*> m_tileinfos;
         downloader* m_downloader;

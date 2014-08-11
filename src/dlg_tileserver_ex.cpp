@@ -10,7 +10,7 @@ void dlg_tileserver::create_ex()
     m_window->label(m_title.c_str());
 }
 
-bool dlg_tileserver::show_ex()
+bool dlg_tileserver::show_ex(bool add)
 {
     // Populate the image type selection widget
     m_choice_imgtype->add("PNG");
@@ -40,36 +40,64 @@ bool dlg_tileserver::show_ex()
     // Show the window
     m_window->show();
 
-    bool ok = false;
     for (;;) {
         Fl_Widget *o = Fl::readqueue();
         if (!o) Fl::wait();
         else if (o == m_btn_ok)     
         {
-             // Make sure name is not empty
-            if (strlen(m_input_name->value()) == 0)
-            {
-                fl_alert("%s", _("Please provide a name for this server!"));
-                continue;
-            }
-
-            // Make sure url is not empty
-            if (strlen(m_input_url->value()) == 0)
-            {
-                fl_alert("%s", _("Please specify the download url for this server!"));
-                continue;
-            }
-            
-            ok=true;
-            break;
+            if (handle_ok_ex(add))
+                break;
         }
         else if (o == m_btn_cancel) {break;}
         else if (o == m_window)     {break;}
     }
 
-    // OK button, save the form data
-    if (ok)
+    m_window->hide();
+    return true;
+}
+
+bool dlg_tileserver::handle_ok_ex(bool add)
+{
+    bool ret = true;
+
+    for (;;)
     {
+        // Make sure name is not empty
+        if (strlen(m_input_name->value()) == 0)
+        {
+            fl_alert("%s", _("Please provide a name for this server!"));
+            ret = false;
+            break;
+        }
+
+        // Make sure url is not empty
+        if (strlen(m_input_url->value()) == 0)
+        {
+            fl_alert("%s", _("Please specify the download url for this server!"));
+            ret = false;
+            break;
+        }
+
+        // Make sure there is no other tile server with the same name
+        if (add)
+        {
+            node section = settings::get_instance()["tileservers"];
+            for(node::iterator it=section.begin(); it!=section.end(); ++it) 
+            {
+                if ((*it).as<cfg_tileserver>().name() == std::string(m_input_name->value()))
+                {
+                    ret = false;
+                    break;
+                }
+            } 
+        }
+
+        if (!ret)
+        {
+            fl_alert(_("A tile server with the same name already exists."));
+            break;
+        }
+
         switch (m_choice_imgtype->value())
         {
             case 0:
@@ -87,10 +115,11 @@ bool dlg_tileserver::show_ex()
         m_cfgtileserver.zmin(m_spinner_zmin->value());
         m_cfgtileserver.zmax(m_spinner_zmax->value());
         m_cfgtileserver.parallel(m_spinner_parallel->value());
+
+        break;
     }
 
-    m_window->hide();
-    return ok;
+    return ret;
 }
 
 cfg_tileserver dlg_tileserver::tileserver_ex()

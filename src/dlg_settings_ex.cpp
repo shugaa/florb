@@ -136,7 +136,7 @@ void dlg_settings::cb_btn_addserver_ex(Fl_Widget *widget)
     ts.url("{x}{y}{z}");
 
     dlg_tileserver dlg(_("Add tile server"), ts);
-    if(dlg.show())
+    if(dlg.show(true))
     {
         m_cfgtileservers.push_back(dlg.tileserver());
         tab_tileservers_setup_ex();
@@ -162,7 +162,7 @@ void dlg_settings::cb_btn_editserver_ex(Fl_Widget *widget)
         return;
 
     dlg_tileserver dlg(_("Edit tile server"), m_cfgtileservers[idx-1]);
-    if(dlg.show())
+    if(dlg.show(false))
     {
         m_cfgtileservers[idx-1] = dlg.tileserver();
         tab_tileservers_setup_ex();

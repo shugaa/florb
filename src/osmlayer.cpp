@@ -74,15 +74,8 @@ osmlayer::osmlayer(
     // Create cache
     cfg_cache cfgcache = settings::get_instance()["cache"].as<cfg_cache>();
     try {
-        m_cache = new sqlitecache(cfgcache.location());
+        m_cache = new cache(cfgcache.location(), nm, utils::extension(url));
     } catch (std::runtime_error& e) {
-        throw e;
-    }
-    // Create a cache session for the given URL
-    try {
-        m_cache->sessionid(url);
-    } catch (std::runtime_error& e) {
-        delete m_cache;
         throw e;
     }
 
@@ -341,13 +334,13 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c, unsigned long *ttotal
               else
                   rc = m_cache->get(vp.z(), tx, ty, m_imgbuf);
           } catch (std::runtime_error& e) {
-              rc = sqlitecache::NOTFOUND;
+              rc = cache::NOTFOUND;
           }
           
           // Draw the tile if we either have a valid or expired version of it...
           if (c != NULL)
           {
-              if ((rc != sqlitecache::NOTFOUND) && 
+              if ((rc != cache::NOTFOUND) && 
                   (m_imgbuf.size() != 0))
               {
                   fgfx::image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
@@ -356,8 +349,8 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c, unsigned long *ttotal
           }
 
           // Tile not in cache or expired, schedule for downloading
-          if ((rc == sqlitecache::EXPIRED) || 
-              (rc == sqlitecache::NOTFOUND))
+          if ((rc == cache::EXPIRED) || 
+              (rc == cache::NOTFOUND))
           {
               if (tnok != NULL) (*tnok)++;
               download_qtile(vp.z(), tx, ty);
