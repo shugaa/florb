@@ -13,3 +13,19 @@ If you have all the required dependencies installed, this will build florb. Inst
     omake install
 
 And you're done...
+
+How to translate florb:
+
+Create src/i18n/your_LOCALE, e.g. 
+
+    mkdir src/i18n/fr_FR 
+    
+for a French translation. Then run
+
+    omake i18nupdate
+
+This will create a florb.po template in the respective directory which you can
+then edit to add your translation. When you're done run
+
+    omake i18ncompile
+    omake install
