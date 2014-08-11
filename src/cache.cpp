@@ -118,9 +118,6 @@ int cache::exists(int z, int x, int y)
         std::ostringstream oss;
         oss << m_url << sep << m_session << sep << z << sep << x << sep << y << m_ext; 
 
-        std::ostringstream ossdat(oss.str());
-        ossdat << dbextension; 
-
         std::ifstream tf;
         tf.open(oss.str().c_str(), std::ios::in);
 
@@ -133,7 +130,8 @@ int cache::exists(int z, int x, int y)
 
         rc = FOUND;
 
-        tf.open(ossdat.str().c_str(), std::ios::in);
+        oss << dbextension;
+        tf.open(oss.str().c_str(), std::ios::in);
         if (!tf.is_open())
         {
             rc = EXPIRED;
