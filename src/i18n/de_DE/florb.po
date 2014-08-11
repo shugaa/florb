@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-09 13:25+0200\n"
-"PO-Revision-Date: 2014-08-09 13:26+0100\n"
+"POT-Creation-Date: 2014-08-11 13:46+0200\n"
+"PO-Revision-Date: 2014-08-11 13:47+0100\n"
 "Last-Translator: Björn Rehm <bjoern@shugaa.de>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -18,6 +18,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.5.4\n"
+
+#: dlg_tileserver_ex.cpp:97
+msgid "A tile server with the same name already exists."
+msgstr "Ein gleichnamiger Kachelserver existiert bereits."
 
 #: dlg_ui_ex.cpp:149
 msgid "About"
@@ -47,21 +51,17 @@ msgstr "Kartendownload"
 msgid "Cache"
 msgstr "Cache"
 
-#: sqlitecache.cpp:403
+#: cache.cpp:156
 msgid "Cache error: EXISTS"
 msgstr "Cache-Fehler: EXISTS"
 
-#: sqlitecache.cpp:412 sqlitecache.cpp:490
+#: cache.cpp:217
 msgid "Cache error: GET"
 msgstr "Cache-Fehler: GET"
 
-#: sqlitecache.cpp:346
+#: cache.cpp:105
 msgid "Cache error: PUT"
 msgstr "Cache-Fehler: PUT"
-
-#: sqlitecache.cpp:218
-msgid "Cache error: SESSIONID"
-msgstr "Cache-Fehler: SESSIONID"
 
 #: dlg_bulkdl_ex.cpp:171 fluid/dlg_settings.cpp:615
 #: fluid/dlg_tileserver.cpp:123 fluid/dlg_editselection.cpp:80
@@ -147,7 +147,7 @@ msgstr "GPSd aktivieren"
 msgid "Error updating selected waypoints"
 msgstr "Fehler beim Aktualisieren der Wegpunkte"
 
-#: sqlitecache.cpp:71 sqlitecache.cpp:78 sqlitecache.cpp:132
+#: cache.cpp:44
 msgid "Failed to open / create cache database"
 msgstr "Konnte Cache nicht öffnen / erzeugen"
 
@@ -298,11 +298,11 @@ msgstr "GPX laden"
 msgid "Overlay"
 msgstr "Overlay"
 
-#: dlg_tileserver_ex.cpp:52
+#: dlg_tileserver_ex.cpp:68
 msgid "Please provide a name for this server!"
 msgstr "Bitte einen Namen für diesen Server angeben!"
 
-#: dlg_tileserver_ex.cpp:59
+#: dlg_tileserver_ex.cpp:76
 msgid "Please specify the download url for this server!"
 msgstr "Bitte eine URL für diesen Server angeben!"
 
@@ -433,6 +433,9 @@ msgstr "Zoomstufen"
 #: fluid/dlg_ui.cpp:815
 msgid "florb"
 msgstr "florb"
+
+#~ msgid "Cache error: SESSIONID"
+#~ msgstr "Cache-Fehler: SESSIONID"
 
 #~ msgid "New GPX track"
 #~ msgstr "Neuer GPS Track"

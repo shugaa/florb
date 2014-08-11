@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-09 13:25+0200\n"
+"POT-Creation-Date: 2014-08-11 13:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: dlg_tileserver_ex.cpp:97
+msgid "A tile server with the same name already exists."
+msgstr ""
 
 #: dlg_ui_ex.cpp:149
 msgid "About"
@@ -45,20 +49,16 @@ msgstr ""
 msgid "Cache"
 msgstr ""
 
-#: sqlitecache.cpp:403
+#: cache.cpp:156
 msgid "Cache error: EXISTS"
 msgstr ""
 
-#: sqlitecache.cpp:412 sqlitecache.cpp:490
+#: cache.cpp:217
 msgid "Cache error: GET"
 msgstr ""
 
-#: sqlitecache.cpp:346
+#: cache.cpp:105
 msgid "Cache error: PUT"
-msgstr ""
-
-#: sqlitecache.cpp:218
-msgid "Cache error: SESSIONID"
 msgstr ""
 
 #: dlg_bulkdl_ex.cpp:171 fluid/dlg_settings.cpp:615
@@ -145,7 +145,7 @@ msgstr ""
 msgid "Error updating selected waypoints"
 msgstr ""
 
-#: sqlitecache.cpp:71 sqlitecache.cpp:78 sqlitecache.cpp:132
+#: cache.cpp:44
 msgid "Failed to open / create cache database"
 msgstr ""
 
@@ -296,11 +296,11 @@ msgstr ""
 msgid "Overlay"
 msgstr ""
 
-#: dlg_tileserver_ex.cpp:52
+#: dlg_tileserver_ex.cpp:68
 msgid "Please provide a name for this server!"
 msgstr ""
 
-#: dlg_tileserver_ex.cpp:59
+#: dlg_tileserver_ex.cpp:76
 msgid "Please specify the download url for this server!"
 msgstr ""
 
