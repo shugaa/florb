@@ -70,13 +70,22 @@ void dlg_settings::cb_btn_gpscursorcolor_ex(Fl_Widget *widget)
 
 void dlg_settings::cb_inp_trackwidth_ex(Fl_Widget *widget)
 {
-    if (strlen(m_input_trackwidth->value()) > 0)
+    /* Nothing entered, nothing to save */
+    if (strlen(m_input_trackwidth->value()) <= 0)
+        return;
+
+    /* Disallow negative numbers */
+    if (m_input_trackwidth->value()[0] == '-')
     {
-        std::istringstream val(m_input_trackwidth->value());
-        unsigned int nr;
-        val >> nr;
-        m_cfgui.tracklinewidth(nr);
+        std::string s(m_input_trackwidth->value());
+        m_input_trackwidth->value(s.substr(1,s.length()-1).c_str());
+        m_input_trackwidth->position(0);
     }
+
+    /* Save new value */
+    unsigned int tw = 2;
+    utils::fromstr(m_input_trackwidth->value(), tw);
+    m_cfgui.tracklinewidth(tw);
 }
 
 void dlg_settings::cb_btn_location_ex(Fl_Widget *widget)
