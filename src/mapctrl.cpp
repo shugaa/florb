@@ -130,8 +130,12 @@ void mapctrl::goto_pos(const point2d<double> &pwsg84)
 {
     // set previous position
     point2d<unsigned long> ppx(utils::wsg842px(zoom(), pwsg84));
-    m_viewport.x(ppx.x() - (m_viewport.w()/2));
-    m_viewport.y(ppx.y() - (m_viewport.h()/2));
+
+    unsigned long dx = m_viewport.w()/2;
+    unsigned long dy = m_viewport.h()/2;
+
+    m_viewport.x((ppx.x() >= dx) ? (ppx.x()-dx) : 0);
+    m_viewport.y((ppx.y() >= dy) ? (ppx.y()-dy) : 0);
 
     refresh();
 }
