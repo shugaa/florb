@@ -1,4 +1,4 @@
-#include <sstream>
+#include <FL/fl_ask.H>
 #include "fluid/dlg_editselection.hpp"
 
 void dlg_editselection::show_ex()
@@ -41,23 +41,23 @@ void dlg_editselection::show_ex()
 
     m_window->show();
 
-    int r = 0;
     for (;;) {
         Fl_Widget *o = Fl::readqueue();
         if (!o) Fl::wait();
-        else if (o == m_btn_ok)     {r=1;break;}
-        else if (o == m_btn_cancel) {r=2;break;}
-        else if (o == m_window)     {r=3;break;}
+        else if (o == m_btn_ok)     
+        {
+            if (handle_ok_ex(waypoints))
+                break;
+        }
+        else if (o == m_btn_cancel) {break;}
+        else if (o == m_window)     {break;}
     }
 
-    if (r != 1) {
-        m_window->hide();
-        return;
-    }
+    m_window->hide();
+}
 
-    // OK, store
-    std::istringstream is;
-
+bool dlg_editselection::handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints)
+{
     if (waypoints.size() > 1)
     {
         // Update elevation only, common for every selected
@@ -65,34 +65,33 @@ void dlg_editselection::show_ex()
         std::vector<gpxlayer::waypoint>::iterator it;
         for (it=waypoints.begin();it!=waypoints.end();++it)
         {
-            double ele;
-
-            is.str(m_txtin_ele->value());
-            is >> ele;
-            is.clear();
-
+            double ele = 0;
+            utils::fromstr(m_txtin_ele->value(), ele);
             (*it).elevation(ele);
         }
     }
     else
     {
-        double lat, lon, ele;
-        is.str(m_txtin_lon->value());
-        is >> lon;
-        is.clear();
-        is.str(m_txtin_lat->value());
-        is >> lat;
-        is.clear();
-        is.str(m_txtin_ele->value());
-        is >> ele;
+        double lat = 0, lon = 0, ele = 0;
+        utils::fromstr(m_txtin_lon->value(), lon);
+        utils::fromstr(m_txtin_lat->value(), lat);
+        utils::fromstr(m_txtin_ele->value(), ele);
 
         waypoints[0].lon(lon);
         waypoints[0].lat(lat);
         waypoints[0].elevation(ele);
     }
 
-    m_mapctrl->gpx_selection_set(waypoints);
+    try {
+        m_mapctrl->gpx_selection_set(waypoints);
+    } catch (std::out_of_range& e) {
+        fl_alert(e.what());
+        return false;
+    } catch (std::runtime_error& e) {
+        fl_alert(e.what());
+        return false;
+    }
 
-    m_window->hide();
+    return true;
 }
 

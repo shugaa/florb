@@ -17,6 +17,8 @@ class dlg_editselection {open
   }
   decl {void show_ex();} {private local
   }
+  decl {bool handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints);} {selected private local
+  }
   Function {dlg_editselection(mapctrl *m)} {open
   } {
     Fl_Window m_window {
