@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-11 13:46+0200\n"
+"POT-Creation-Date: 2014-08-12 13:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "About / License"
 msgstr ""
 
-#: dlg_settings_ex.cpp:138
+#: dlg_settings_ex.cpp:147
 msgid "Add tile server"
 msgstr ""
 
@@ -49,11 +49,11 @@ msgstr ""
 msgid "Cache"
 msgstr ""
 
-#: cache.cpp:156
+#: cache.cpp:154
 msgid "Cache error: EXISTS"
 msgstr ""
 
-#: cache.cpp:217
+#: cache.cpp:215
 msgid "Cache error: GET"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: dlg_settings_ex.cpp:164
+#: dlg_settings_ex.cpp:173
 msgid "Edit tile server"
 msgstr ""
 
@@ -177,7 +177,7 @@ msgstr ""
 msgid "GPSd"
 msgstr ""
 
-#: mapctrl.cpp:275
+#: mapctrl.cpp:279
 msgid "GPSd error"
 msgstr ""
 
@@ -203,6 +203,18 @@ msgstr ""
 
 #: dlg_bulkdl_ex.cpp:267
 msgid "Invalid delay"
+msgstr ""
+
+#: utils.cpp:28
+msgid "Invalid latitude"
+msgstr ""
+
+#: utils.cpp:26
+msgid "Invalid longitude"
+msgstr ""
+
+#: utils.cpp:69 utils.cpp:94
+msgid "Invalid pixel position"
 msgstr ""
 
 #: dlg_bulkdl_ex.cpp:146
@@ -249,7 +261,7 @@ msgstr ""
 msgid "Marker color (selected)"
 msgstr ""
 
-#: mapctrl.cpp:49 mapctrl.cpp:142 mapctrl.cpp:150 mapctrl.cpp:158
+#: mapctrl.cpp:49 mapctrl.cpp:146 mapctrl.cpp:154 mapctrl.cpp:162
 msgid "Marker error"
 msgstr ""
 
@@ -265,7 +277,7 @@ msgstr ""
 msgid "Min. z"
 msgstr ""
 
-#: dlg_settings_ex.cpp:135
+#: dlg_settings_ex.cpp:144
 msgid "My tileserver"
 msgstr ""
 
@@ -336,11 +348,11 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#: dlg_settings_ex.cpp:85 fluid/dlg_settings.cpp:571
+#: dlg_settings_ex.cpp:94 fluid/dlg_settings.cpp:571
 msgid "Select cache directory"
 msgstr ""
 
-#: dlg_settings_ex.cpp:235
+#: dlg_settings_ex.cpp:244
 msgid "Select color"
 msgstr ""
 

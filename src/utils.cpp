@@ -23,9 +23,9 @@
 point2d<double> utils::wsg842merc(const point2d<double> &wsg84)
 {
     if ((wsg84.x() > 180.0) || (wsg84.x() < -180.0))
-        throw std::out_of_range("Invalid longitude");
+        throw std::out_of_range(_("Invalid longitude"));
     if ((wsg84.y() > 90.0) || (wsg84.y() < -90.0))
-        throw std::out_of_range("Invalid latitude");
+        throw std::out_of_range(_("Invalid latitude"));
 
     // Anything above 85 degrees N or S is infinity in the mercator projection,
     // clip here.
@@ -66,7 +66,7 @@ point2d<double> utils::px2wsg84(unsigned int z, const point2d<unsigned long> &px
 
     // Make sure the coordinate is on the map
     if ((px.x() > dimxy) || (px.y() > dimxy))
-        throw std::out_of_range("Invalid pixel position");
+        throw std::out_of_range(_("Invalid pixel position"));
 
     // Unit conversion
     point2d<double> mdeg(
@@ -91,7 +91,7 @@ point2d<double> utils::px2merc(unsigned int z, const point2d<unsigned long> &px)
     // Make sure the coordinate is on the map
     if ((px.x() >= dimxy) || (px.y() >= dimxy))
     {
-        throw std::out_of_range("Invalid pixel position");
+        throw std::out_of_range(_("Invalid pixel position"));
     }
 
     double x = (px.x() == 0) ? 0.0 : (360.0/((double)(dimxy-1)/(double)px.x()));
@@ -110,7 +110,6 @@ double utils::dist(const point2d<double> &p1, const point2d<double> &p2)
         return 0.0;
 
     double d2r = (M_PI/180.0);
-
     double lon1 = p1.x()*d2r;
     double lat1 = p1.y()*d2r;
     double lon2 = p2.x()*d2r;

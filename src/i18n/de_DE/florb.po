@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-11 13:46+0200\n"
-"PO-Revision-Date: 2014-08-11 15:37+0100\n"
+"POT-Creation-Date: 2014-08-12 13:29+0200\n"
+"PO-Revision-Date: 2014-08-12 13:30+0100\n"
 "Last-Translator: Björn Rehm <bjoern@shugaa.de>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -31,7 +31,7 @@ msgstr "Über florb"
 msgid "About / License"
 msgstr "Über florb / Lizenz"
 
-#: dlg_settings_ex.cpp:138
+#: dlg_settings_ex.cpp:147
 msgid "Add tile server"
 msgstr "Kachelserver hinzufügen"
 
@@ -51,11 +51,11 @@ msgstr "Kartendownload"
 msgid "Cache"
 msgstr "Cache"
 
-#: cache.cpp:156
+#: cache.cpp:154
 msgid "Cache error: EXISTS"
 msgstr "Cache-Fehler: EXISTS"
 
-#: cache.cpp:217
+#: cache.cpp:215
 msgid "Cache error: GET"
 msgstr "Cache-Fehler: GET"
 
@@ -119,7 +119,7 @@ msgstr "Von Gerät herunterladen"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: dlg_settings_ex.cpp:164
+#: dlg_settings_ex.cpp:173
 msgid "Edit tile server"
 msgstr "Kachelserver bearbeiten"
 
@@ -179,7 +179,7 @@ msgstr "Farbe GPS cursor"
 msgid "GPSd"
 msgstr "GPSd"
 
-#: mapctrl.cpp:275
+#: mapctrl.cpp:279
 msgid "GPSd error"
 msgstr "GPSd Fehler"
 
@@ -206,6 +206,18 @@ msgstr "Oberfläche"
 #: dlg_bulkdl_ex.cpp:267
 msgid "Invalid delay"
 msgstr "Ungültige Verzögerung"
+
+#: utils.cpp:28
+msgid "Invalid latitude"
+msgstr "Ungültige Breitenangabe"
+
+#: utils.cpp:26
+msgid "Invalid longitude"
+msgstr "Ungültige Längenangabe"
+
+#: utils.cpp:69 utils.cpp:94
+msgid "Invalid pixel position"
+msgstr "Ungültiger Pixelwert"
 
 #: dlg_bulkdl_ex.cpp:146
 msgid "Invalid zoomlevel specified for this map."
@@ -251,7 +263,7 @@ msgstr "Farbe Marker"
 msgid "Marker color (selected)"
 msgstr "Farbe Marker (ausgewählt)"
 
-#: mapctrl.cpp:49 mapctrl.cpp:142 mapctrl.cpp:150 mapctrl.cpp:158
+#: mapctrl.cpp:49 mapctrl.cpp:146 mapctrl.cpp:154 mapctrl.cpp:162
 msgid "Marker error"
 msgstr "Markerfehler"
 
@@ -267,7 +279,7 @@ msgstr "Menü"
 msgid "Min. z"
 msgstr "Min. z"
 
-#: dlg_settings_ex.cpp:135
+#: dlg_settings_ex.cpp:144
 msgid "My tileserver"
 msgstr "Mein Tileserver"
 
@@ -338,11 +350,11 @@ msgstr "Maßstabfehler"
 msgid "Search"
 msgstr "Suchen"
 
-#: dlg_settings_ex.cpp:85 fluid/dlg_settings.cpp:571
+#: dlg_settings_ex.cpp:94 fluid/dlg_settings.cpp:571
 msgid "Select cache directory"
 msgstr "Cache Verzeichnis auswählen"
 
-#: dlg_settings_ex.cpp:235
+#: dlg_settings_ex.cpp:244
 msgid "Select color"
 msgstr "Farbe wählen"
 
