@@ -52,12 +52,21 @@ LDFLAGS = \
 # already generated .cpp files.
 OBJS_FLUID = $(rootname $(find . -name *.fl))
 OBJS_CPP   = $(rootname $(find . -name *.cpp))
-OBJS       = $(set $(OBJS_FLUID) $(OBJS_CPP))
+OBJS_RES   = $(set res/LICENSE.txt)
+OBJS       = $(set $(OBJS_FLUID) $(OBJS_CPP) $(OBJS_RES))
+
+# Generate linkable resource objects
+#foreach(r => ..., $(OBJS_RES))
+#	ld -r -b binary -o $(r).o $(r)
 
 # Find all translations
 TRANSLATIONS =
     foreach(d => ..., $(find ./i18n/ -regex [a-z]{2\,2}_[A-Z]{2\,2}))
 		value $(d)
+
+# Rules for generating linkable resource objects
+res/LICENSE.txt.o: res/LICENSE.txt
+	$(LD) -r -b binary -o $@ $<
 
 # Generate version string (version.hpp) from repository information
 version.hpp: ../.git/HEAD ../.git/index ./mkversionhpp.sh
@@ -76,7 +85,7 @@ version.hpp: ../.git/HEAD ../.git/index ./mkversionhpp.sh
 	INCLUDES[] += ../
 
 # Build the program
-CGeneratedFiles($(addsuffix .cpp, $(OBJS_FLUID)) version.hpp)
+CGeneratedFiles($(addsuffix .cpp, $(OBJS_FLUID)) $(addsuffix .o, $(OBJS_RES)) version.hpp)
 CXXProgram($(PROGRAM)$(EXE), $(OBJS))
 .DEFAULT: $(PROGRAM)$(EXE)
 

@@ -6,6 +6,13 @@
 #include "version.hpp"
 #include "fluid/dlg_about.hpp"
 
+extern "C" 
+{
+    extern char _binary_res_LICENSE_txt_start;
+    extern char _binary_res_LICENSE_txt_end;
+    extern char _binary_res_LICENSE_txt_size;
+}
+
 void dlg_about::create_ex()
 {
     // Set the window icon
@@ -14,20 +21,11 @@ void dlg_about::create_ex()
     m_buf = new Fl_Text_Buffer();
     
     std::string v(std::string("Version: ") + std::string(FLORB_PROGSTR));
+    std::string l(&_binary_res_LICENSE_txt_start, (size_t)&_binary_res_LICENSE_txt_size);
 
     m_buf->append(v.c_str());
     m_buf->append("\n\n");
-
-    std::ostringstream oss;
-    oss << RESOURCEDIR << utils::pathsep() << "/LICENSE.txt";
-    std::ifstream licfile(oss.str());
-
-    std::string line;
-    while (std::getline(licfile, line))
-    {
-        line += "\n";
-        m_buf->append(line.c_str());
-    }
+    m_buf->append(l.c_str());
 
     m_display->buffer(m_buf);
 }
