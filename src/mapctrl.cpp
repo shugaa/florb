@@ -533,6 +533,11 @@ bool mapctrl::osm_evt_notify(const osmlayer::event_notify *e)
 bool mapctrl::gpx_evt_notify(const gpxlayer::event_notify *e)
 {
     refresh();
+
+    // Make sure the trip display is updated
+    event_notify en;
+    fire(&en);
+
     return true;
 }
 
