@@ -28,7 +28,6 @@ downloader::downloader(int nthreads) :
             for (int j=0;j<i;j++)
             {
                 m_workers[j]->t()->join();
-                delete m_workers[j]->t();
                 delete m_workers[j];
             }
 
@@ -61,7 +60,6 @@ downloader::~downloader()
     for (it=m_workers.begin();it!=m_workers.end();++it)
     {
         (*it)->t()->join();
-        delete (*it)->t();
         delete (*it);
     }
 }
@@ -71,6 +69,17 @@ void downloader::nice(long ms)
     m_mutex.lock();
     m_nice = ms;
     m_mutex.unlock();
+}
+
+long downloader::nice()
+{   
+    long ret;
+
+    m_mutex.lock();
+    ret = m_nice;
+    m_mutex.unlock();
+
+    return ret;
 }
 
 std::size_t downloader::stat()
@@ -94,6 +103,17 @@ void downloader::timeout(size_t sec)
     m_mutex.lock();
     m_timeout = sec;
     m_mutex.unlock();
+}
+
+size_t downloader::timeout()
+{
+    size_t ret;
+
+    m_mutex.lock();
+    ret = m_timeout;
+    m_mutex.unlock();
+
+    return ret;
 }
 
 bool downloader::queue(const std::string& url, void* userdata)
@@ -136,7 +156,7 @@ bool downloader::queue(const std::string& url, void* userdata)
     m_mutex.unlock();
 
     // One more item on the list, post the counter semaphore
-    if (newitem == true) 
+    if (newitem) 
     {
         m_threadblock.post();
     }
@@ -209,15 +229,15 @@ void downloader::worker()
     curl_easy_setopt(curl_handle, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(curl_handle, CURLOPT_DNS_USE_GLOBAL_CACHE, 0);
 
-    m_mutex.lock();
-    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, m_timeout);
-    curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, m_timeout); 
-    m_mutex.unlock();
+    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, timeout());
+    curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, timeout()); 
 
     for (;;)
     {
+        // Wait for request
         m_threadblock.wait();
 
+        // Exit?
         if (do_exit())
             break;
 
@@ -230,30 +250,26 @@ void downloader::worker()
         // Clear the buffer
         dl.buf().resize(0);
         
-        int rc;
         curl_easy_setopt(curl_handle, CURLOPT_URL, dl.url().c_str());
         curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &dl);
         curl_easy_setopt(curl_handle, CURLOPT_WRITEHEADER, &dl);
 
         // Start download
-        rc = curl_easy_perform(curl_handle);
+        if (curl_easy_perform(curl_handle) != 0)
+        {
+            // Download failed return an empty buffer
+            dl.buf().resize(0);
+        }
 
         // Check http status code
         long httprc = 0;
         curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &httprc);
         dl.httprc(httprc);
 
-        // Download failed return an empty buffer
-        if (rc != 0)
-            dl.buf().resize(0);
-
-        // Configures sleep time
-        long ms;
-
+        // Finish download and update statistics
         m_mutex.lock();
         m_done.push_back(dl);
         m_stat++;
-        ms = m_nice;
         m_mutex.unlock();
 
         // Fire event
@@ -261,8 +277,8 @@ void downloader::worker()
         fire(&ce);
 
         // Sleep
-        if (ms > 0)
-            boost::this_thread::sleep(boost::posix_time::milliseconds(ms));
+        if (nice() > 0)
+            boost::this_thread::sleep(boost::posix_time::milliseconds(nice()));
     }
 
     curl_easy_cleanup(curl_handle);

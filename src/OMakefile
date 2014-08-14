@@ -9,8 +9,9 @@ if $(not $(defined PREFIX))
 LOCALEDIR = $(PREFIX)/share/locale
 RESOURCEDIR = $(PREFIX)/share/res
 
-# Absolute path for prefix
+# Absolute path for locale and resource directories
 LOCALEDIR = $(absname $(LOCALEDIR))
+RESOURCEDIR = $(absname $(RESOURCEDIR))
 
 # Compiler flags
 CXX = $(shell fltk-config --cxx)
@@ -55,10 +56,6 @@ OBJS_CPP   = $(rootname $(find . -name *.cpp))
 OBJS_RES   = $(set res/LICENSE.txt)
 OBJS       = $(set $(OBJS_FLUID) $(OBJS_CPP) $(OBJS_RES))
 
-# Generate linkable resource objects
-#foreach(r => ..., $(OBJS_RES))
-#	ld -r -b binary -o $(r).o $(r)
-
 # Find all translations
 TRANSLATIONS =
     foreach(d => ..., $(find ./i18n/ -regex [a-z]{2\,2}_[A-Z]{2\,2}))
@@ -94,8 +91,7 @@ install:
 	mkdir($(PREFIX)/bin/ -p)
 	install $(PROGRAM) $(PREFIX)/bin/
 	mkdir -p $(RESOURCEDIR)
-	install ../LICENSE.txt $(RESOURCEDIR)
-	install ../doc/keys.txt $(RESOURCEDIR)
+	#install ../LICENSE.txt $(RESOURCEDIR)
 	foreach(t => ..., $(basename $(TRANSLATIONS)))
 		mkdir -p $(LOCALEDIR)/$(t)/LC_MESSAGES/
 		install ./i18n/$(t)/florb.mo $(LOCALEDIR)/$(t)/LC_MESSAGES/

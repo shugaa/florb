@@ -16,9 +16,11 @@ class downloader : public event_generator
         ~downloader();
 
         void timeout(size_t sec);
+        size_t timeout();
         bool queue(const std::string& url, void* userdata);
         size_t qsize();
         void nice(long ms);
+        long nice();
         std::size_t stat();
         void stat(std::size_t s);
 
@@ -117,6 +119,11 @@ class downloader::workerinfo
     public:
         workerinfo(boost::thread* t) :
             m_t(t) {};
+        ~workerinfo()
+        {
+            if (m_t)
+                delete m_t;
+        }
 
         boost::thread* t() const { return m_t; };
 
