@@ -5,6 +5,7 @@
 #include <iterator>
 #include "gfx.hpp"
 #include "utils.hpp"
+#include "unit.hpp"
 
 // The YAML namespace defines an enumerator "None". This clashes with a
 // definition of "None" in X.h which is included by FLTK. So if there is any
@@ -152,6 +153,20 @@ class cfg_viewport
         double m_lon;
         double m_lat;
         unsigned int m_z;
+};
+
+// Units configuration class
+class cfg_units
+{
+    public:
+        cfg_units() :
+            m_system_length(unit::METRIC) {};
+    
+        int system_length() const { return m_system_length; }
+        void system_length(int sl) { m_system_length = sl; }
+
+    private:    
+        int m_system_length; 
 };
 
 // Forward declaration of YAML-cpp node container and iterator container

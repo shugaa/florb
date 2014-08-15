@@ -9,6 +9,7 @@
 #include "settings.hpp"
 #include "gpsdclient.hpp"
 #include "utils.hpp"
+#include "unit.hpp"
 #include "fluid/dlg_ui.hpp"
 
 static dlg_ui *ui;
@@ -54,9 +55,11 @@ void sighandler_ex(int sig)
 
 bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
 {
+    cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
+
     std::ostringstream ss; 
 
-    ss << "Zoom: " << m_mapctrl->zoom();
+    ss << _("Zoom: ") << m_mapctrl->zoom();
     m_txtout_zoom->value(ss.str().c_str());
 
     point2d<double> pos = m_mapctrl->mousepos();
@@ -64,28 +67,39 @@ bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
     ss.setf(std::ios::fixed, std::ios::floatfield);
 
     ss.str("");
-    ss << "Lon: " << pos.x() << "°";
+    ss << _("Lon: ") << pos.x() << "°";
     m_txtout_lon->value(ss.str().c_str());
 
     ss.str("");
-    ss << "Lat: " << pos.y() << "°";
+    ss << _("Lat: ") << pos.y() << "°";
     m_txtout_lat->value(ss.str().c_str());
+
+    int dst = unit::KM;
+    switch (cfgunits.system_length())
+    {
+        case (unit::METRIC):
+            dst = unit::KM;
+            break;
+        case (unit::IMPERIAL):
+            dst = unit::ENGLISH_MILE;
+            break;
+        case (unit::NAUTICAL):
+            dst = unit::SEA_MILE;
+            break;
+        default:
+            break;
+    }
 
     ss.precision(2);
     ss.setf(std::ios::fixed, std::ios::floatfield);
     ss.str("");
-    ss << "Trip: " << m_mapctrl->gpx_trip() << "km";
+    ss << _("Trip: ") << unit::convert(unit::KM, dst, m_mapctrl->gpx_trip()) << " " << unit::sistr(dst);
     m_txtout_trip->value(ss.str().c_str());
 
     if (m_mapctrl->gpsd_connected())
     {
-        m_box_fix->color(FL_YELLOW);
-
         switch(m_mapctrl->gpsd_mode())
         {
-            case (gpsdclient::FIX_NONE):
-                m_box_fix->label("?");
-                break;
             case (gpsdclient::FIX_2D):
                 m_box_fix->color(FL_GREEN);
                 m_box_fix->label("2D");
@@ -94,11 +108,15 @@ bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
                 m_box_fix->color(FL_GREEN);
                 m_box_fix->label("3D");
                 break;
+            default:
+                m_box_fix->color(FL_YELLOW);
+                m_box_fix->label("?");
+                break;
         }
     } else
     {
         m_box_fix->color(FL_RED);
-        m_box_fix->label("GPS");
+        m_box_fix->label(_("GPS"));
     }
 
     return true;
@@ -150,6 +168,10 @@ void dlg_ui::create_ex(void)
 
     // Populate the Basemap selector
     update_choice_map_ex();
+
+    // GPS status
+    m_box_fix->color(FL_RED);
+    m_box_fix->label(_("GPS"));
 
     // Show waypoint markers by default
     m_menuitem_track_showwpmarkers->set(); 

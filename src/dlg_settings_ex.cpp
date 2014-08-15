@@ -4,6 +4,7 @@
 #include <Fl/Fl_File_Chooser.H>
 #include "settings.hpp"
 #include "utils.hpp"
+#include "unit.hpp"
 #include "fluid/dlg_settings.hpp"
 #include "fluid/dlg_tileserver.hpp"
 
@@ -16,11 +17,13 @@ void dlg_settings::create_ex()
     m_cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
     m_cfgtileservers = settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >();
     m_cfgcache = settings::get_instance()["cache"].as<cfg_cache>();
+    m_cfgunits = settings::get_instance()["units"].as<cfg_units>();
 
     tab_ui_setup_ex();
     tab_gpsd_setup_ex(); 
     tab_tileservers_setup_ex(); 
     tab_cache_setup_ex();
+    tab_units_setup_ex();
 }
 
 void dlg_settings::cb_btn_markercolor_ex(Fl_Widget *widget)
@@ -108,6 +111,12 @@ void dlg_settings::cb_btn_location_ex(Fl_Widget *widget)
     m_output_location->value(m_cfgcache.location().c_str());
 }
 
+void dlg_settings::cb_units_choice_distances_ex(Fl_Widget *widget)
+{
+    int v = m_units_choice_distances->value();
+    m_cfgunits.system_length(v);
+}
+
 void dlg_settings::cb_inp_server_ex(Fl_Widget *widget)
 {
     std::string str(m_input_server->value());
@@ -193,6 +202,32 @@ void dlg_settings::tab_cache_setup_ex()
     m_output_location->value(m_cfgcache.location().c_str());
 }
 
+void dlg_settings::tab_units_setup_ex()
+{
+    int conf = m_cfgunits.system_length();
+
+    for (int i=0;i<unit::ENUM_SYSTEM_END;i++)
+    {
+        switch (i)
+        {
+            case (unit::METRIC):
+                m_units_choice_distances->add(_("Metric"));
+                break;
+            case (unit::IMPERIAL):
+                m_units_choice_distances->add(_("Imperial"));
+                break;
+            case (unit::NAUTICAL):
+                m_units_choice_distances->add(_("Nautical"));
+                break;
+            default:
+                break;
+        }
+
+        if (i == conf)
+            m_units_choice_distances->value(i);
+    }
+}
+
 void dlg_settings::tab_gpsd_setup_ex()
 {
     m_input_server->value(m_cfggpsd.host().c_str());
@@ -276,6 +311,7 @@ bool dlg_settings::show_ex()
         settings::get_instance()["gpsd"] = m_cfggpsd;
         settings::get_instance()["tileservers"] = m_cfgtileservers;
         settings::get_instance()["cache"] = m_cfgcache;
+        settings::get_instance()["units"] = m_cfgunits;
     }
 
     m_window->hide();

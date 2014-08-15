@@ -77,6 +77,26 @@ namespace YAML {
         };
 
     template<>
+        struct convert<cfg_units> {
+            static Node encode(const cfg_units& rhs) {
+                Node node;
+                node["system_length"] = rhs.system_length();
+                return node;
+            }
+
+            static bool decode(const Node& node, cfg_units& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                    return true;
+
+                if (node["system_length"])
+                    rhs.system_length(node["system_length"].as<int>());
+                
+                return true;
+            }
+        };
+
+    template<>
         struct convert<cfg_gpsd> {
             static Node encode(const cfg_gpsd& rhs) {
                 Node node;
@@ -312,6 +332,10 @@ void settings::defaults(const std::string& path)
     // Viewport default configuration
     cfg_viewport cfgvp = m_rootnode["viewport"].as<cfg_viewport>();
     m_rootnode["viewport"] = cfgvp;
+
+    // Units default configuration
+    cfg_units cfgunits = m_rootnode["units"].as<cfg_units>();
+    m_rootnode["units"] = cfgunits;
 }
 
 node::node(const std::string& path)
@@ -408,6 +432,7 @@ template cfg_cache node::as<cfg_cache>() const;
 template cfg_gpsd node::as<cfg_gpsd>() const;
 template cfg_ui node::as<cfg_ui>() const;
 template cfg_viewport node::as<cfg_viewport>() const;
+template cfg_units node::as<cfg_units>() const;
 
 template void node::push_back<int>(const int& rhs);
 template void node::push_back<std::string>(const std::string& rhs);
@@ -423,4 +448,5 @@ template node& node::operator=<cfg_gpsd> (const cfg_gpsd& rhs);
 template node& node::operator=<cfg_ui> (const cfg_ui& rhs);
 template node& node::operator=<cfg_cache> (const cfg_cache& rhs);
 template node& node::operator=<cfg_viewport> (const cfg_viewport& rhs);
+template node& node::operator=<cfg_units> (const cfg_units& rhs);
 

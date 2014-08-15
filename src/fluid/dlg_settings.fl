@@ -24,6 +24,8 @@ class dlg_settings {open
   }
   decl {cfg_cache m_cfgcache;} {private local
   }
+  decl {cfg_units m_cfgunits;} {private local
+  }
   decl {bool show_ex();} {private local
   }
   decl {void create_ex();} {private local
@@ -54,7 +56,9 @@ class dlg_settings {open
   }
   decl {void cb_inp_port_ex(Fl_Widget *widget);} {private local
   }
-  decl {fgfx::color colorchooser_ex(fgfx::color c);} {selected private local
+  decl {void cb_units_choice_distances_ex(Fl_Widget *widget);} {private local
+  }
+  decl {fgfx::color colorchooser_ex(fgfx::color c);} {private local
   }
   decl {void tab_ui_setup_ex();} {private local
   }
@@ -64,10 +68,13 @@ class dlg_settings {open
   }
   decl {void tab_cache_setup_ex();} {private local
   }
-  Function {dlg_settings()} {} {
+  decl {void tab_units_setup_ex();} {private local
+  }
+  Function {dlg_settings()} {open
+  } {
     Fl_Window m_window {
       label Settings open
-      private xywh {2225 177 500 295} type Double resizable modal size_range {500 295 0 0} visible
+      private xywh {1662 210 500 295} type Double resizable modal size_range {500 295 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 500 297} resizable
@@ -85,7 +92,7 @@ class dlg_settings {open
             private xywh {5 5 490 250} resizable
           } {
             Fl_Group {} {
-              label Interface open
+              label Interface selected
               private xywh {10 25 480 225}
             } {
               Fl_Pack {} {open
@@ -223,7 +230,7 @@ class dlg_settings {open
               }
             }
             Fl_Group {} {
-              label GPSd open
+              label GPSd
               private xywh {10 25 480 225} hide
             } {
               Fl_Pack {} {open
@@ -362,6 +369,34 @@ class dlg_settings {open
                 }
               }
             }
+            Fl_Group {} {
+              label Units open
+              private xywh {10 25 480 225} hide
+            } {
+              Fl_Pack {} {open
+                private xywh {10 25 480 225}
+              } {
+                Fl_Box {} {
+                  private xywh {10 25 480 5}
+                }
+                Fl_Pack {} {open
+                  private xywh {10 30 480 25} type HORIZONTAL
+                } {
+                  Fl_Box {} {
+                    label Entfernungen
+                    private xywh {10 30 245 25} align 20
+                  }
+                  Fl_Choice m_units_choice_distances {
+                    user_data this
+                    callback cb_units_choice_distances open
+                    private xywh {255 30 235 25} down_box BORDER_BOX resizable
+                  } {}
+                }
+                Fl_Box {} {
+                  private xywh {10 55 480 195} resizable
+                }
+              }
+            }
           }
           Fl_Box {} {
             private xywh {495 5 5 250}
@@ -486,5 +521,10 @@ dlg->cb_btn_editserver_ex(widget);} {}
   } {
     code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
 dlg->cb_btn_location_ex(widget);} {}
+  }
+  Function {cb_units_choice_distances(Fl_Widget *widget, void *userdata)} {open private return_type {static void}
+  } {
+    code {dlg_settings *dlg = reinterpret_cast<dlg_settings*>(userdata);
+dlg->cb_units_choice_distances_ex(widget);} {}
   }
 } 

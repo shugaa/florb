@@ -3,6 +3,8 @@
 #include "gfx.hpp"
 #include "utils.hpp"
 #include "point.hpp"
+#include "unit.hpp"
+#include "settings.hpp"
 #include "scalelayer.hpp"
 
 scalelayer::scalelayer()
@@ -111,15 +113,35 @@ bool scalelayer::draw(const viewport &viewport, fgfx::canvas &os)
         5);
 
     // Generate the info text
-    std::string unit("m");
+    int usrc = unit::M;
     if (slm >= 1000.0)
     {
         slm /= 1000.0;
-        unit = "km";
+        usrc = unit::KM;
+    }
+
+    cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
+
+    int udst = unit::KM;
+    switch (cfgunits.system_length())
+    {
+        case (unit::METRIC):
+            udst = (usrc == unit::M) ? unit::M : unit::KM;
+            break;
+        case (unit::IMPERIAL):
+            udst = (usrc == unit::M) ? unit::FOOT : unit::ENGLISH_MILE;
+            break;
+        case (unit::NAUTICAL):
+            udst = (usrc == unit::M) ? unit::FOOT : unit::SEA_MILE;
+            break;
+        default:
+            break;
     }
 
     std::ostringstream oss;
-    oss << slm << " " << unit;
+    oss.precision(1);
+    oss.setf(std::ios::fixed, std::ios::floatfield);
+    oss << unit::convert(usrc, udst, slm) << " " << unit::sistr(udst);
 
     // Draw the info text
     os.text(oss.str(), 20, viewport.h()-34);
