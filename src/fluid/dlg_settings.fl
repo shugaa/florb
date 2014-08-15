@@ -92,8 +92,8 @@ class dlg_settings {open
             private xywh {5 5 490 250} resizable
           } {
             Fl_Group {} {
-              label Interface selected
-              private xywh {10 25 480 225}
+              label Interface
+              private xywh {10 25 480 225} hide
             } {
               Fl_Pack {} {open
                 private xywh {10 25 480 225}
@@ -371,7 +371,7 @@ class dlg_settings {open
             }
             Fl_Group {} {
               label Units open
-              private xywh {10 25 480 225} hide
+              private xywh {10 25 480 225}
             } {
               Fl_Pack {} {open
                 private xywh {10 25 480 225}
@@ -383,7 +383,7 @@ class dlg_settings {open
                   private xywh {10 30 480 25} type HORIZONTAL
                 } {
                   Fl_Box {} {
-                    label Entfernungen
+                    label Distances selected
                     private xywh {10 30 245 25} align 20
                   }
                   Fl_Choice m_units_choice_distances {
