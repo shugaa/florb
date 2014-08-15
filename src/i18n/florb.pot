@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-15 20:27+0200\n"
+"POT-Creation-Date: 2014-08-15 20:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -486,4 +486,32 @@ msgstr ""
 
 #: fluid/dlg_ui.cpp:815
 msgid "florb"
+msgstr ""
+
+#: unit.cpp:14
+msgid "ft"
+msgstr ""
+
+#: unit.cpp:13
+msgid "in"
+msgstr ""
+
+#: unit.cpp:8
+msgid "km"
+msgstr ""
+
+#: unit.cpp:7
+msgid "m"
+msgstr ""
+
+#: unit.cpp:9 unit.cpp:10
+msgid "mi"
+msgstr ""
+
+#: unit.cpp:11
+msgid "sm"
+msgstr ""
+
+#: unit.cpp:12
+msgid "yd"
 msgstr ""

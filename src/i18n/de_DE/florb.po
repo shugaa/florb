@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-15 20:27+0200\n"
-"PO-Revision-Date: 2014-08-15 20:27+0100\n"
+"POT-Creation-Date: 2014-08-15 20:36+0200\n"
+"PO-Revision-Date: 2014-08-15 20:36+0100\n"
 "Last-Translator: Björn Rehm <bjoern@shugaa.de>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -489,6 +489,34 @@ msgstr "Zoom: "
 #: fluid/dlg_ui.cpp:815
 msgid "florb"
 msgstr "florb"
+
+#: unit.cpp:14
+msgid "ft"
+msgstr "ft"
+
+#: unit.cpp:13
+msgid "in"
+msgstr "in"
+
+#: unit.cpp:8
+msgid "km"
+msgstr "km"
+
+#: unit.cpp:7
+msgid "m"
+msgstr "m"
+
+#: unit.cpp:9 unit.cpp:10
+msgid "mi"
+msgstr "mi"
+
+#: unit.cpp:11
+msgid "sm"
+msgstr "sm"
+
+#: unit.cpp:12
+msgid "yd"
+msgstr "yd"
 
 #~ msgid "Cache error: SESSIONID"
 #~ msgstr "Cache-Fehler: SESSIONID"

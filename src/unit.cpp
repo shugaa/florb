@@ -4,14 +4,14 @@
 
 const unit::si unit::m_si_length[] =
 {
-    {M,             "m"},
-    {KM,            "km"},
-    {ENGLISH_MILE,  "mi"},
-    {US_MILE,       "mi"},
-    {SEA_MILE,      "sm"},
-    {YARD,          "yd"},
-    {INCH,          "in"},
-    {FOOT,          "ft"},
+    {M,             _("m")},
+    {KM,            _("km")},
+    {ENGLISH_MILE,  _("mi")},
+    {US_MILE,       _("mi")},
+    {SEA_MILE,      _("sm")},
+    {YARD,          _("yd")},
+    {INCH,          _("in")},
+    {FOOT,          _("ft")},
 };
 
 const unit::conv unit::m_conv_length[] =
@@ -73,7 +73,7 @@ std::string unit::gen_sistr(int spec, const unit::si *ssi, size_t len)
     if (!found)
         throw std::runtime_error(_("Invalid unit conversion"));
 
-    return ret;
+    return _(ret.c_str());
 }
 
 double unit::convert(unit::length src, unit::length dst, double val)
