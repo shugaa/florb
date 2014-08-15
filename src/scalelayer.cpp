@@ -113,28 +113,26 @@ bool scalelayer::draw(const viewport &viewport, fgfx::canvas &os)
         5);
 
     // Generate the info text
-    int usrc = unit::M;
+    unit::length usrc = unit::length::M;
     if (slm >= 1000.0)
     {
         slm /= 1000.0;
-        usrc = unit::KM;
+        usrc = unit::length::KM;
     }
 
     cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
 
-    int udst = unit::KM;
+    unit::length udst = unit::length::KM;
     switch (cfgunits.system_length())
     {
-        case (unit::METRIC):
-            udst = (usrc == unit::M) ? unit::M : unit::KM;
+        case (cfg_units::system::IMPERIAL):
+            udst = (usrc == unit::length::M) ? unit::length::FOOT : unit::length::ENGLISH_MILE;
             break;
-        case (unit::IMPERIAL):
-            udst = (usrc == unit::M) ? unit::FOOT : unit::ENGLISH_MILE;
-            break;
-        case (unit::NAUTICAL):
-            udst = (usrc == unit::M) ? unit::FOOT : unit::SEA_MILE;
+        case (cfg_units::system::NAUTICAL):
+            udst = (usrc == unit::length::M) ? unit::length::FOOT : unit::length::SEA_MILE;
             break;
         default:
+            udst = (usrc == unit::length::M) ? unit::length::M : unit::length::KM;
             break;
     }
 

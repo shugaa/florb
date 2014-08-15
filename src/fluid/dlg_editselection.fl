@@ -17,12 +17,12 @@ class dlg_editselection {open
   }
   decl {void show_ex();} {private local
   }
-  decl {bool handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints);} {selected private local
+  decl {bool handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints);} {private local
   }
   Function {dlg_editselection(mapctrl *m)} {open
   } {
     Fl_Window m_window {
-      label {Edit waypoints}
+      label {Edit waypoints} open
       private xywh {1631 297 220 180} type Double modal visible
     } {
       Fl_Pack {} {open
@@ -56,8 +56,8 @@ class dlg_editselection {open
               label Latitude
               private xywh {5 70 210 25} type Float labeltype NO_LABEL labelsize 12 align 5
             }
-            Fl_Box {} {
-              label {Elevation [m]}
+            Fl_Box m_box_elevation {
+              label {Elevation [m]} selected
               private xywh {5 95 210 20} labelsize 12 align 20
             }
             Fl_Input m_txtin_ele {

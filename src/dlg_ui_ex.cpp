@@ -53,7 +53,7 @@ void sighandler_ex(int sig)
     exit(EXIT_SUCCESS);
 }
 
-bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
+void dlg_ui::update_statusbar_ex()
 {
     cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
 
@@ -74,26 +74,24 @@ bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
     ss << _("Lat: ") << pos.y() << "°";
     m_txtout_lat->value(ss.str().c_str());
 
-    int dst = unit::KM;
+    unit::length dst;
     switch (cfgunits.system_length())
     {
-        case (unit::METRIC):
-            dst = unit::KM;
+        case (cfg_units::system::NAUTICAL):
+            dst = unit::length::SEA_MILE;
             break;
-        case (unit::IMPERIAL):
-            dst = unit::ENGLISH_MILE;
-            break;
-        case (unit::NAUTICAL):
-            dst = unit::SEA_MILE;
+        case (cfg_units::system::IMPERIAL):
+            dst = unit::length::ENGLISH_MILE;
             break;
         default:
+            dst = unit::length::KM;
             break;
     }
 
     ss.precision(2);
     ss.setf(std::ios::fixed, std::ios::floatfield);
     ss.str("");
-    ss << _("Trip: ") << unit::convert(unit::KM, dst, m_mapctrl->gpx_trip()) << " " << unit::sistr(dst);
+    ss << _("Trip: ") << unit::convert(unit::length::KM, dst, m_mapctrl->gpx_trip()) << " " << unit::sistr(dst);
     m_txtout_trip->value(ss.str().c_str());
 
     if (m_mapctrl->gpsd_connected())
@@ -118,7 +116,11 @@ bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
         m_box_fix->color(FL_RED);
         m_box_fix->label(_("GPS"));
     }
+}
 
+bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
+{
+    update_statusbar_ex();
     return true;
 }
 
@@ -168,6 +170,9 @@ void dlg_ui::create_ex(void)
 
     // Populate the Basemap selector
     update_choice_map_ex();
+
+    // Update statusbar
+    update_statusbar_ex();
 
     // GPS status
     m_box_fix->color(FL_RED);
@@ -442,6 +447,9 @@ void dlg_ui::settings_ex()
 
         // Update the list of tileservers
         update_choice_map_ex();
+        
+        // Update statusbar
+        update_statusbar_ex();
     }
 }
 

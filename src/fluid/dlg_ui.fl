@@ -61,7 +61,7 @@ class dlg_ui {open : {public event_listener}
   }
   decl {dlg_about *m_dlg_about;} {private local
   }
-  decl {dlg_bulkdl *m_dlg_bulkdl;} {selected private local
+  decl {dlg_bulkdl *m_dlg_bulkdl;} {private local
   }
   decl {void create_ex(void);} {private local
   }
@@ -90,6 +90,8 @@ class dlg_ui {open : {public event_listener}
   decl {void about_ex(void);} {private local
   }
   decl {void update_choice_map_ex(void);} {private local
+  }
+  decl {void update_statusbar_ex(void);} {selected private local
   }
   decl {void showwpmarkers_ex(void);} {private local
   }
@@ -197,7 +199,7 @@ ui->cb_choice_overlay_ex(widget);} {}
       label florb
       user_data this
       callback cb_close open
-      private xywh {1303 232 805 565} type Double align 80 resizable size_range {605 465 0 0} visible
+      private xywh {1441 232 805 565} type Double align 80 resizable size_range {605 465 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
@@ -439,16 +441,16 @@ ui->cb_choice_overlay_ex(widget);} {}
             private xywh {0 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
           }
           Fl_Output m_txtout_lon {
-            private xywh {140 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
+            private xywh {140 543 160 22} box THIN_DOWN_BOX color 49 textsize 12
           }
           Fl_Output m_txtout_lat {
-            private xywh {280 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
+            private xywh {300 543 160 22} box THIN_DOWN_BOX color 49 textsize 12
           }
           Fl_Output m_txtout_trip {
-            private xywh {420 543 140 22} box THIN_DOWN_BOX color 49 textsize 12
+            private xywh {460 543 160 22} box THIN_DOWN_BOX color 49 textsize 12
           }
           Fl_Box {} {
-            private xywh {560 543 195 22} box THIN_DOWN_BOX resizable
+            private xywh {620 543 135 22} box THIN_DOWN_BOX resizable
           }
           Fl_Box m_box_fix {
             private xywh {755 543 50 22} box THIN_DOWN_BOX color 55 labelsize 12

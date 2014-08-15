@@ -7,19 +7,6 @@ class unit
 {
     public:
 
-        static double convert(int src, int dst, double val);
-        static std::string sistr(int spec);
-
-        enum system
-        {
-            METRIC,
-            IMPERIAL,
-            NAUTICAL,
-
-            /* Always last */
-            ENUM_SYSTEM_END
-        };
-
         enum length {
             M,
             KM,
@@ -34,11 +21,13 @@ class unit
             ENUM_LENGTH_END
         };
 
+        static double convert(length src, length dst, double val);
+        static std::string sistr(length spec);
+
     private:
 
         struct conv
         {
-            int src;
             int dst;
             double fac;
         };
@@ -48,6 +37,9 @@ class unit
             int unit;
             const char* si;
         };
+
+        static double gen_convert(int src, int dst, double val, const conv *sc, size_t len);
+        static std::string gen_sistr(int spec, const si *ssi, size_t len);
 
         static const conv m_conv_length[];
         static const si   m_si_length[];

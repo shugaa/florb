@@ -11,48 +11,40 @@ const unit::si unit::m_si_length[] =
     {SEA_MILE,      "sm"},
     {YARD,          "yd"},
     {INCH,          "in"},
-    {FOOT,          "ft"}
+    {FOOT,          "ft"},
 };
 
 const unit::conv unit::m_conv_length[] =
 {
-    {M, KM,                1000.0},
-    {M, ENGLISH_MILE,      1609.344},
-    {M, SEA_MILE,          1852.0},
-    {M, US_MILE,           1609.347219},
-    {M, YARD,              0.9144},
-    {M, INCH,              0.0254},
-    {M, FOOT,              0.3048}
+    {M,                 1.0},
+    {KM,                1000.0},
+    {ENGLISH_MILE,      1609.344},
+    {SEA_MILE,          1852.0},
+    {US_MILE,           1609.347219},
+    {YARD,              0.9144},
+    {INCH,              0.0254},
+    {FOOT,              0.3048},
 };
 
-double unit::convert(int src, int dst, double val)
+double unit::gen_convert(int src, int dst, double val, const unit::conv *sc, size_t len)
 {
-    // Convert src to meters if it isn't already
-    bool found = false;
-    if (src != M)
+    // Convert src to base unit
+    for (size_t i=0;i<len;i++)
     {
-        for (size_t i=0;i<(sizeof(m_conv_length)/sizeof(m_conv_length[0]));i++)
+        if (m_conv_length[i].dst == src)
         {
-            if (m_conv_length[i].dst == src)
-            {
-                val *= m_conv_length[i].fac;
-                found = true;
-                break;
-            }
+            val *= sc[i].fac;
+            break;
         }
-
-        if (!found)
-            throw std::runtime_error(_("Invalid unit conversion"));
     }
 
-
     // Convert to destination unit
-    found = false;
-    for (size_t i=0;i<(sizeof(m_conv_length)/sizeof(m_conv_length[0]));i++)
+    bool found = false;
+    for (size_t i=0;i<len;i++)
     {
         if (m_conv_length[i].dst == dst)
         {
-            val /= m_conv_length[i].fac;
+            val /= sc[i].fac;
             found = true;
             break;
         }
@@ -64,15 +56,15 @@ double unit::convert(int src, int dst, double val)
     return val;
 }
 
-std::string unit::sistr(int spec)
+std::string unit::gen_sistr(int spec, const unit::si *ssi, size_t len)
 {
     std::string ret;
     bool found = false;
-    for (size_t i=0;i<(sizeof(m_si_length)/sizeof(m_si_length[0]));i++)
+    for (size_t i=0;i<len;i++)
     {
-        if (m_si_length[i].unit == spec)
+        if (ssi[i].unit == spec)
         {
-            ret = m_si_length[i].si;
+            ret = ssi[i].si;
             found = true;
             break;
         }
@@ -82,5 +74,23 @@ std::string unit::sistr(int spec)
         throw std::runtime_error(_("Invalid unit conversion"));
 
     return ret;
+}
+
+double unit::convert(unit::length src, unit::length dst, double val)
+{
+    return gen_convert(
+            static_cast<int>(src), 
+            static_cast<int>(dst), 
+            val, 
+            m_conv_length, 
+            sizeof(m_conv_length)/sizeof(m_conv_length[0]));
+}
+
+std::string unit::sistr(length spec)
+{
+    return gen_sistr(
+            static_cast<int>(spec), 
+            m_si_length,
+            sizeof(m_si_length)/sizeof(m_si_length[0]));
 }
 

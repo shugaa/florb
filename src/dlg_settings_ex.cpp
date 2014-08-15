@@ -114,7 +114,7 @@ void dlg_settings::cb_btn_location_ex(Fl_Widget *widget)
 void dlg_settings::cb_units_choice_distances_ex(Fl_Widget *widget)
 {
     int v = m_units_choice_distances->value();
-    m_cfgunits.system_length(v);
+    m_cfgunits.system_length(static_cast<cfg_units::system>(v));
 }
 
 void dlg_settings::cb_inp_server_ex(Fl_Widget *widget)
@@ -204,26 +204,24 @@ void dlg_settings::tab_cache_setup_ex()
 
 void dlg_settings::tab_units_setup_ex()
 {
-    int conf = m_cfgunits.system_length();
+    cfg_units::system conf = m_cfgunits.system_length();
 
-    for (int i=0;i<unit::ENUM_SYSTEM_END;i++)
+    for (int i=0;i<cfg_units::system::ENUM_SYSTEM_END;i++)
     {
         switch (i)
         {
-            case (unit::METRIC):
-                m_units_choice_distances->add(_("Metric"));
-                break;
-            case (unit::IMPERIAL):
+            case (cfg_units::system::IMPERIAL):
                 m_units_choice_distances->add(_("Imperial"));
                 break;
-            case (unit::NAUTICAL):
+            case (cfg_units::system::NAUTICAL):
                 m_units_choice_distances->add(_("Nautical"));
                 break;
             default:
+                m_units_choice_distances->add(_("Metric"));
                 break;
         }
 
-        if (i == conf)
+        if (i == static_cast<int>(conf))
             m_units_choice_distances->value(i);
     }
 }

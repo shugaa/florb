@@ -1,8 +1,11 @@
 #include <FL/fl_ask.H>
+#include "settings.hpp"
 #include "fluid/dlg_editselection.hpp"
 
 void dlg_editselection::show_ex()
 {
+    cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
+
     std::vector<gpxlayer::waypoint> waypoints;
     m_mapctrl->gpx_selection_get(waypoints);
 
@@ -19,7 +22,29 @@ void dlg_editselection::show_ex()
     m_txtin_lat->value(os.str().c_str());
 
     os.str("");
-    os << waypoints[0].elevation();
+    os << _("Elevation");
+
+    // Perform unit conversion for elevation and set the box label accordingly
+    double ele = waypoints[0].elevation();
+    std::string elelabel;
+    switch (cfgunits.system_length())
+    {
+        case (cfg_units::system::IMPERIAL):
+        case (cfg_units::system::NAUTICAL):
+            ele = unit::convert(unit::length::M, unit::length::FOOT, ele);
+            os << " [" << unit::sistr(unit::FOOT) << "]";
+            elelabel = os.str();
+            m_box_elevation->label(elelabel.c_str());
+            break;
+        default:
+            os << " [" << unit::sistr(unit::M) << "]";
+            elelabel = os.str();
+            m_box_elevation->label(elelabel.c_str());
+            break;
+    }
+
+    os.str("");
+    os << ele;
     m_txtin_ele->value(os.str().c_str());
 
     if (waypoints.size() > 1)
@@ -58,6 +83,22 @@ void dlg_editselection::show_ex()
 
 bool dlg_editselection::handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints)
 {
+    cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
+
+    // Perform unit conversion for elevaton if necessary
+    double ele = 0;
+    utils::fromstr(m_txtin_ele->value(), ele);
+
+    switch (cfgunits.system_length())
+    {
+        case (cfg_units::system::IMPERIAL):
+        case (cfg_units::system::NAUTICAL):
+            ele = unit::convert(unit::length::FOOT, unit::length::M, ele);
+            break;
+        default:
+            break;
+    }
+
     if (waypoints.size() > 1)
     {
         // Update elevation only, common for every selected
@@ -65,17 +106,14 @@ bool dlg_editselection::handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints)
         std::vector<gpxlayer::waypoint>::iterator it;
         for (it=waypoints.begin();it!=waypoints.end();++it)
         {
-            double ele = 0;
-            utils::fromstr(m_txtin_ele->value(), ele);
             (*it).elevation(ele);
         }
     }
     else
     {
-        double lat = 0, lon = 0, ele = 0;
+        double lat = 0, lon = 0;
         utils::fromstr(m_txtin_lon->value(), lon);
         utils::fromstr(m_txtin_lat->value(), lat);
-        utils::fromstr(m_txtin_ele->value(), ele);
 
         waypoints[0].lon(lon);
         waypoints[0].lat(lat);

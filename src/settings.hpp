@@ -159,14 +159,26 @@ class cfg_viewport
 class cfg_units
 {
     public:
+
+        enum system
+        {
+            METRIC,
+            IMPERIAL,
+            NAUTICAL,
+
+            /* Always last */
+            ENUM_SYSTEM_END
+        };
+
         cfg_units() :
-            m_system_length(unit::METRIC) {};
-    
-        int system_length() const { return m_system_length; }
-        void system_length(int sl) { m_system_length = sl; }
+            m_sl(system::METRIC) {};
+   
+
+        system system_length() const { return m_sl; }
+        void system_length(system sl) { m_sl = sl; }
 
     private:    
-        int m_system_length; 
+        system m_sl; 
 };
 
 // Forward declaration of YAML-cpp node container and iterator container

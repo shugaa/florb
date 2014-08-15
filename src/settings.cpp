@@ -80,7 +80,20 @@ namespace YAML {
         struct convert<cfg_units> {
             static Node encode(const cfg_units& rhs) {
                 Node node;
-                node["system_length"] = rhs.system_length();
+
+                switch (rhs.system_length())
+                {
+                    case (cfg_units::system::IMPERIAL):
+                        node["system_length"] = "imperial";
+                        break;
+                    case (cfg_units::system::NAUTICAL):
+                        node["system_length"] = "nautical";
+                        break;
+                    default:
+                        node["system_length"] = "metric";
+                        break;
+                }
+
                 return node;
             }
 
@@ -90,7 +103,15 @@ namespace YAML {
                     return true;
 
                 if (node["system_length"])
-                    rhs.system_length(node["system_length"].as<int>());
+                {
+                    std::string sm(node["system_length"].as<std::string>());
+                    if (sm == "imperial")
+                        rhs.system_length(cfg_units::system::IMPERIAL);
+                    else if (sm == "nautical")
+                        rhs.system_length(cfg_units::system::NAUTICAL);
+                    else
+                        rhs.system_length(cfg_units::system::METRIC);
+                }
                 
                 return true;
             }
