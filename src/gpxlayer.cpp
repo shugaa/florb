@@ -578,6 +578,9 @@ bool gpxlayer::handle_evt_key(const layer::event_key* evt)
 
 bool gpxlayer::draw(const viewport &vp, fgfx::canvas &os)
 {
+    if (m_trkpts.size() == 0)
+        return true;
+
     // TODO: Performance killer!!
     cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
 
