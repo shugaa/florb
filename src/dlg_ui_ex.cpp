@@ -329,6 +329,14 @@ void dlg_ui::bulkdl_ex()
     m_mapctrl->select_area(_("Select download area"));
 }
 
+void dlg_ui::eleprofile_ex()
+{
+    if (!m_dlg_eleprofile)
+        m_dlg_eleprofile = new dlg_eleprofile(m_mapctrl);
+    
+    m_dlg_eleprofile->show();
+}
+
 void dlg_ui::cleartrack_ex()
 {
     // Clear all waypoints
@@ -631,6 +639,9 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
     else if (mit == m_menuitem_track_showwpmarkers) {
         showwpmarkers_ex();
     }
+    else if (mit == m_menuitem_track_eleprofile) {
+        eleprofile_ex();
+    }
     else if (mit == m_menuitem_track_garmindl) {
         garmindl_ex();
     }
@@ -682,6 +693,7 @@ void dlg_ui::hide_ex()
     if (m_dlg_settings)         delete m_dlg_settings;
     if (m_dlg_about)            delete m_dlg_about;
     if (m_dlg_bulkdl)           delete m_dlg_bulkdl;
+    if (m_dlg_eleprofile)       delete m_dlg_eleprofile;
 
     // Delete the main window
     delete(m_window);

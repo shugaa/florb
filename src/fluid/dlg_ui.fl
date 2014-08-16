@@ -41,6 +41,9 @@ decl {\#include "dlg_about.hpp"} {public global
 decl {\#include "dlg_bulkdl.hpp"} {public global
 } 
 
+decl {\#include "dlg_eleprofile.hpp"} {selected public global
+} 
+
 decl {int main_ex(int argc, char* argv[]);} {private global
 } 
 
@@ -62,6 +65,8 @@ class dlg_ui {open : {public event_listener}
   decl {dlg_about *m_dlg_about;} {private local
   }
   decl {dlg_bulkdl *m_dlg_bulkdl;} {private local
+  }
+  decl {dlg_eleprofile *m_dlg_eleprofile;} {private local
   }
   decl {void create_ex(void);} {private local
   }
@@ -91,7 +96,7 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void update_choice_map_ex(void);} {private local
   }
-  decl {void update_statusbar_ex(void);} {selected private local
+  decl {void update_statusbar_ex(void);} {private local
   }
   decl {void showwpmarkers_ex(void);} {private local
   }
@@ -100,6 +105,8 @@ class dlg_ui {open : {public event_listener}
   decl {void garminul_ex(void);} {private local
   }
   decl {void bulkdl_ex(void);} {private local
+  }
+  decl {void eleprofile_ex(void);} {private local
   }
   decl {void show_ex(int argc, char *argv[]);} {private local
   }
@@ -193,12 +200,11 @@ ui->cb_choice_basemap_ex(widget);} {}
     code {dlg_ui *ui = reinterpret_cast<dlg_ui*>(userdata);
 ui->cb_choice_overlay_ex(widget);} {}
   }
-  Function {dlg_ui()} {open
-  } {
+  Function {dlg_ui()} {} {
     Fl_Window m_window {
       label florb
       user_data this
-      callback cb_close open
+      callback cb_close
       private xywh {1441 232 805 565} type Double align 80 resizable size_range {605 465 0 0} visible
     } {
       Fl_Pack {} {open
@@ -263,6 +269,10 @@ ui->cb_choice_overlay_ex(widget);} {}
             MenuItem m_menuitem_track_showwpmarkers {
               label {Show waypoint markers}
               private xywh {50 50 100 20} type Toggle shortcut 0x4006d
+            }
+            MenuItem m_menuitem_track_eleprofile {
+              label {Elevation profile}
+              private xywh {10 10 100 20}
             }
             MenuItem m_menuitem_track_garmindl {
               label {Download from device}

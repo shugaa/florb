@@ -1,5 +1,4 @@
 #include <cmath>
-#include <yaml-cpp/yaml.h>
 #include <iostream>
 #include <FL/fl_draw.H>
 #include <FL/x.H>

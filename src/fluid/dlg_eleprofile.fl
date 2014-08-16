@@ -1,0 +1,100 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0302 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include "mapctrl.hpp"} {public global
+} 
+
+decl {\#include "wgt_eleprofile.hpp"} {public global
+} 
+
+class dlg_eleprofile {open
+} {
+  decl {mapctrl *m_mapctrl;} {private local
+  }
+  decl {void create_ex();} {private local
+  }
+  decl {void destroy_ex();} {private local
+  }
+  decl {void show_ex();} {private local
+  }
+  Function {dlg_eleprofile(mapctrl *m)} {open
+  } {
+    Fl_Window m_window {
+      label {View elevation profile}
+      private xywh {1516 196 500 295} type Double resizable modal size_range {500 295 0 0} visible
+    } {
+      Fl_Pack {} {open
+        private xywh {0 0 500 297} resizable
+      } {
+        Fl_Box {} {
+          private xywh {0 0 500 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 5 500 250} type HORIZONTAL resizable
+        } {
+          Fl_Box {} {
+            private xywh {0 5 5 250}
+          }
+          Fl_Box m_profile {
+            label {Elevation profile}
+            private xywh {5 5 490 250} box FLAT_BOX resizable
+            class wgt_eleprofile
+          }
+          Fl_Box {} {
+            private xywh {495 5 5 250}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 255 500 5}
+        }
+        Fl_Pack {} {
+          private xywh {0 260 500 2} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            xywh {0 260 5 2}
+          }
+          Fl_Box {} {
+            xywh {5 260 490 2} box ENGRAVED_BOX resizable
+          }
+          Fl_Box {} {
+            xywh {495 260 5 2}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 262 500 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 267 500 25} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 267 390 25} resizable
+          }
+          Fl_Button m_btn_ok {
+            label OK
+            private xywh {390 267 105 25}
+          }
+          Fl_Box {} {
+            private xywh {495 267 5 25}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 292 500 5}
+        }
+      }
+    }
+    code {m_mapctrl = m;
+create_ex();} {selected
+    }
+  }
+  Function {~dlg_eleprofile()} {} {
+    code {destroy_ex();} {}
+  }
+  Function {show()} {return_type void
+  } {
+    code {show_ex();} {}
+  }
+} 
