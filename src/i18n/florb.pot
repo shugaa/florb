@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-15 20:36+0200\n"
+"POT-Creation-Date: 2014-08-17 18:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "Add tileserver"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:938
+#: fluid/dlg_ui.cpp:940
 msgid "Base"
 msgstr ""
 
@@ -71,7 +71,7 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:865
+#: fluid/dlg_ui.cpp:867
 msgid "Clear current track"
 msgstr ""
 
@@ -79,7 +79,7 @@ msgstr ""
 msgid "Delay [ms]"
 msgstr ""
 
-#: dlg_ui_ex.cpp:158 fluid/dlg_ui.cpp:885
+#: dlg_ui_ex.cpp:158 fluid/dlg_ui.cpp:887
 msgid "Delete waypoints"
 msgstr ""
 
@@ -129,7 +129,7 @@ msgstr ""
 msgid "Edit tileserver"
 msgstr ""
 
-#: dlg_ui_ex.cpp:157 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:875
+#: dlg_ui_ex.cpp:157 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:877
 msgid "Edit waypoints"
 msgstr ""
 
@@ -139,6 +139,10 @@ msgstr ""
 
 #: fluid/dlg_editselection.cpp:38
 msgid "Elevation [m]"
+msgstr ""
+
+#: fluid/dlg_eleprofile.cpp:16
+msgid "Elevation profile"
 msgstr ""
 
 #: fluid/dlg_settings.cpp:460
@@ -185,15 +189,15 @@ msgstr ""
 msgid "GPSd"
 msgstr ""
 
-#: mapctrl.cpp:279
+#: mapctrl.cpp:278
 msgid "GPSd error"
 msgstr ""
 
-#: mapctrl.cpp:38
+#: mapctrl.cpp:37
 msgid "GPX error"
 msgstr ""
 
-#: dlg_ui_ex.cpp:164 fluid/dlg_ui.cpp:901
+#: dlg_ui_ex.cpp:164 fluid/dlg_ui.cpp:903
 msgid "Go to cursor"
 msgstr ""
 
@@ -249,7 +253,7 @@ msgstr ""
 msgid "Latitude [°]"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:839
+#: fluid/dlg_ui.cpp:841
 msgid "Load GPX file"
 msgstr ""
 
@@ -257,7 +261,7 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
-#: dlg_ui_ex.cpp:166 fluid/dlg_ui.cpp:911
+#: dlg_ui_ex.cpp:166 fluid/dlg_ui.cpp:913
 msgid "Lock to cursor"
 msgstr ""
 
@@ -285,7 +289,7 @@ msgstr ""
 msgid "Marker color (selected)"
 msgstr ""
 
-#: mapctrl.cpp:49 mapctrl.cpp:146 mapctrl.cpp:154 mapctrl.cpp:162
+#: mapctrl.cpp:48 mapctrl.cpp:145 mapctrl.cpp:153 mapctrl.cpp:161
 msgid "Marker error"
 msgstr ""
 
@@ -293,7 +297,7 @@ msgstr ""
 msgid "Max. z"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:819
+#: fluid/dlg_ui.cpp:821
 msgid "Menu"
 msgstr ""
 
@@ -325,10 +329,10 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: fluid/dlg_bulkdl.cpp:86 fluid/dlg_settings.cpp:643
-#: fluid/dlg_tileserver.cpp:127 fluid/dlg_garminul.cpp:74
-#: fluid/dlg_editselection.cpp:76 fluid/dlg_about.cpp:47
-#: fluid/dlg_garmindl.cpp:65 fluid/dlg_search.cpp:67
+#: fluid/dlg_eleprofile.cpp:54 fluid/dlg_bulkdl.cpp:86
+#: fluid/dlg_settings.cpp:643 fluid/dlg_tileserver.cpp:127
+#: fluid/dlg_garminul.cpp:74 fluid/dlg_editselection.cpp:76
+#: fluid/dlg_about.cpp:47 fluid/dlg_garmindl.cpp:65 fluid/dlg_search.cpp:67
 msgid "OK"
 msgstr ""
 
@@ -336,7 +340,7 @@ msgstr ""
 msgid "Open GPX"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:947
+#: fluid/dlg_ui.cpp:949
 msgid "Overlay"
 msgstr ""
 
@@ -356,7 +360,7 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: dlg_ui_ex.cpp:165 fluid/dlg_ui.cpp:922
+#: dlg_ui_ex.cpp:165 fluid/dlg_ui.cpp:924
 msgid "Record track"
 msgstr ""
 
@@ -368,11 +372,11 @@ msgstr ""
 msgid "Save GPX as"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:849
+#: fluid/dlg_ui.cpp:851
 msgid "Save current track"
 msgstr ""
 
-#: mapctrl.cpp:60
+#: mapctrl.cpp:59
 msgid "Scale error"
 msgstr ""
 
@@ -400,7 +404,7 @@ msgstr ""
 msgid "Selection color"
 msgstr ""
 
-#: mapctrl.cpp:68
+#: mapctrl.cpp:67
 msgid "Selection error"
 msgstr ""
 
@@ -420,7 +424,7 @@ msgstr ""
 msgid "Sim. downloads"
 msgstr ""
 
-#: fluid/dlg_ui.cpp:968
+#: fluid/dlg_ui.cpp:970
 msgid "Slippy Map"
 msgstr ""
 
@@ -472,6 +476,10 @@ msgstr ""
 msgid "Upload to device"
 msgstr ""
 
+#: fluid/dlg_eleprofile.cpp:7
+msgid "View elevation profile"
+msgstr ""
+
 #: dlg_bulkdl_ex.cpp:306
 msgid "Zoom "
 msgstr ""
@@ -484,7 +492,7 @@ msgstr ""
 msgid "Zoom: "
 msgstr ""
 
-#: fluid/dlg_ui.cpp:815
+#: fluid/dlg_ui.cpp:817
 msgid "florb"
 msgstr ""
 
