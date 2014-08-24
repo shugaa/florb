@@ -20,7 +20,10 @@ class wgt_eleprofile : public Fl_Widget, public event_listener
 
     private:
         fgfx::canvas m_offscreen;
-        std::vector<gpxlayer::waypoint> m_wpts;
+        std::vector< point2d<double> > m_wpts;
+        double m_elemin;
+        double m_elemax;
+        double m_offs;
 
         // Utility methods
         void refresh();

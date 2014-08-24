@@ -16,13 +16,37 @@ wgt_eleprofile::~wgt_eleprofile()
 
 void wgt_eleprofile::trackpoints(const std::vector<gpxlayer::waypoint>& wpts)
 {
-    m_wpts = wpts;
+    double dst = 0.0;
+    m_elemin = 0.0;
+    m_elemax = 0.0;
+
+    m_wpts.clear();
+
+    std::vector<gpxlayer::waypoint>::const_iterator it;
+    for (it=wpts.begin();it!=wpts.end();++it)
+    {
+        point2d<double> ptmp;
+        ptmp.y((*it).elevation());
+
+        if (ptmp.y() < m_elemin)
+            m_elemin = ptmp.y();
+        if (ptmp.y() > m_elemax)
+            m_elemax = ptmp.y();
+
+        if (it != wpts.begin())
+        {
+            dst += utils::dist(
+                point2d<double>((*it).lon(), (*it).lat()),
+                point2d<double>((*(it-1)).lon(), (*(it-1)).lat()));
+        }
+
+        ptmp.x(dst);
+        m_wpts.push_back(ptmp);
+    }
 }
 
 void wgt_eleprofile::refresh()
 {
-    // Quote from the doc: The public method Fl_Widget::redraw() simply does
-    // Fl_Widget::damage(FL_DAMAGE_ALL)
     redraw();
 }
 
@@ -107,47 +131,33 @@ void wgt_eleprofile::draw_profile()
     m_offscreen.fgcolor(fgfx::color(0xff,0xff,0xff));
     m_offscreen.fillrect(0,0,w(),h());
 
-    double min = 0.0, max = 0.0, corr = 0.0; 
+    double corr = (m_elemin < 0) ? -m_elemin : 0.0;
+    double min = m_elemin + corr; 
+    double max = m_elemax + corr; 
 
-    std::vector<gpxlayer::waypoint>::iterator it;
-    for (it=m_wpts.begin();it!=m_wpts.end();++it)
-    {
-        double e = (*it).elevation();
-
-        if (e < min)
-            min = e;
-        if (e > max)
-            max = e;
-    }
-
-    if (min < 0)
-    {
-        corr -= min;
-        min = 0.0;
-        max += corr;
-    }
-
-    double yscale = ((double)h())/(max-min);
-    double xscale = ((double)w())/((double)m_wpts.size());
+    double yscale = ((max-min) > 0.0) ? ((double)h())/(max-min) : 0.0;
+    double xscale = ((*(m_wpts.end()-1)).x() > 0.0) ? ((double)w())/(*(m_wpts.end()-1)).x() : 0.0;
 
     m_offscreen.fgcolor(fgfx::color(0xff,0x00,0x00));
 
-    double x = 0;
+    double elast = 0.0;
+    std::vector< point2d<double> >::iterator it;
     for (it=m_wpts.begin();it!=m_wpts.end();++it)
     {
-        static double elast = (*it).elevation() + corr;
-        double ecurrent = (*it).elevation() + corr;
+        double ecurrent = (*it).y() + corr;
 
         if (it == m_wpts.begin())
+        {
+            elast = (*it).y() + corr;
             continue;
+        }
         
         m_offscreen.line(
-                (int)((x-1.0)*xscale), h()-(int)(elast*yscale),
-                (int)((x)*xscale), h()-(int)(ecurrent*yscale),
+                (int)((*(it-1)).x()*xscale), h()-(int)(elast*yscale),
+                (int)((*it).x()*xscale), h()-(int)(ecurrent*yscale),
                 1);
         
         elast = ecurrent;
-        x+=1.0;
     }
 }
 
