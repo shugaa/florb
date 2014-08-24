@@ -64,6 +64,9 @@ int wgt_eleprofile::handle_move(int event)
     double trip = (xscale > 0.0) ? posx/xscale : 0.0;
     double ele = (yscale > 0.0) ? posy/yscale : 0.0;
 
+    if (m_elemin < 0)
+        ele += m_elemin;
+
     notify_mouse(trip, ele);
     return 1;
 }
