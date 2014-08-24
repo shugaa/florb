@@ -50,6 +50,38 @@ void wgt_eleprofile::refresh()
     redraw();
 }
 
+int wgt_eleprofile::handle_move(int event)
+{
+    if (m_wpts.size() <= 1)
+        return 0;
+
+    int posx = Fl::event_x()-x();
+    int posy = h() - (Fl::event_y()-y());
+
+    double yscale = ((m_elemax-m_elemin) > 0.0) ? ((double)h())/(m_elemax-m_elemin) : 0.0;
+    double xscale = ((*(m_wpts.end()-1)).x() > 0.0) ? ((double)w())/(*(m_wpts.end()-1)).x() : 0.0;
+
+    double trip = (xscale > 0.0) ? posx/xscale : 0.0;
+    double ele = (yscale > 0.0) ? posy/yscale : 0.0;
+
+    notify_mouse(trip, ele);
+    return 1;
+}
+
+int wgt_eleprofile::handle_enter(int event)
+{
+    fl_cursor(FL_CURSOR_CROSS);
+    return 1;
+}
+
+int wgt_eleprofile::handle_leave(int event)
+{
+    fl_cursor(FL_CURSOR_DEFAULT);
+    notify_mouse(0.0, 0.0);
+    return 1;
+}
+
+
 int wgt_eleprofile::handle(int event) 
 {
     int ret = 0;
@@ -57,17 +89,17 @@ int wgt_eleprofile::handle(int event)
     switch (event) {
         case FL_MOVE:
             {
-                //ret = handle_move(event);
+                ret = handle_move(event);
                 break;
             }
         case FL_ENTER:
             {
-                //ret = handle_enter(event);
+                ret = handle_enter(event);
                 break;
             }
         case FL_LEAVE:
             {
-                //ret = handle_leave(event);
+                ret = handle_leave(event);
                 break;
             }
         case FL_PUSH:
@@ -110,6 +142,12 @@ int wgt_eleprofile::handle(int event)
     return ret;
 }
 
+void wgt_eleprofile::notify_mouse(double trip, double ele)
+{
+    event_mouse e(trip, ele);
+    fire(&e);
+}
+
 void wgt_eleprofile::draw() 
 {
     // Make sure redraw() has been called previously
@@ -131,7 +169,7 @@ void wgt_eleprofile::draw_profile()
     m_offscreen.fgcolor(fgfx::color(0xff,0xff,0xff));
     m_offscreen.fillrect(0,0,w(),h());
 
-    if (m_wpts.size() == 0)
+    if (m_wpts.size() <= 1)
         return;
 
     double corr = (m_elemin < 0) ? -m_elemin : 0.0;

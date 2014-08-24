@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-17 18:35+0200\n"
+"POT-Creation-Date: 2014-08-24 21:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgstr ""
 msgid "Add tile server"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:522
+#: fluid/dlg_settings.cpp:521
 msgid "Add tileserver"
 msgstr ""
 
@@ -45,7 +45,7 @@ msgstr ""
 msgid "Bulk download"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:555
+#: fluid/dlg_settings.cpp:554
 msgid "Cache"
 msgstr ""
 
@@ -115,9 +115,9 @@ msgstr ""
 msgid "Download from device"
 msgstr ""
 
-#: dlg_ui_ex.cpp:151 fluid/dlg_settings.cpp:327 fluid/dlg_settings.cpp:351
-#: fluid/dlg_settings.cpp:375 fluid/dlg_settings.cpp:399
-#: fluid/dlg_settings.cpp:423
+#: dlg_ui_ex.cpp:151 fluid/dlg_settings.cpp:326 fluid/dlg_settings.cpp:350
+#: fluid/dlg_settings.cpp:374 fluid/dlg_settings.cpp:398
+#: fluid/dlg_settings.cpp:422
 msgid "Edit"
 msgstr ""
 
@@ -125,7 +125,7 @@ msgstr ""
 msgid "Edit tile server"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:540 fluid/dlg_tileserver.cpp:17
+#: fluid/dlg_settings.cpp:539 fluid/dlg_tileserver.cpp:17
 msgid "Edit tileserver"
 msgstr ""
 
@@ -145,7 +145,11 @@ msgstr ""
 msgid "Elevation profile"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:460
+#: dlg_eleprofile_ex.cpp:74
+msgid "Elevation: "
+msgstr ""
+
+#: fluid/dlg_settings.cpp:459
 msgid "Enable GPSd"
 msgstr ""
 
@@ -181,11 +185,11 @@ msgstr ""
 msgid "GPS"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:411
+#: fluid/dlg_settings.cpp:410
 msgid "GPS cursor color"
 msgstr ""
 
-#: dlg_ui_ex.cpp:163 fluid/dlg_settings.cpp:453
+#: dlg_ui_ex.cpp:163 fluid/dlg_settings.cpp:452
 msgid "GPSd"
 msgstr ""
 
@@ -257,7 +261,7 @@ msgstr ""
 msgid "Load GPX file"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:562
+#: fluid/dlg_settings.cpp:561
 msgid "Location"
 msgstr ""
 
@@ -281,11 +285,11 @@ msgstr ""
 msgid "Map"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:315
+#: fluid/dlg_settings.cpp:314
 msgid "Marker color"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:339
+#: fluid/dlg_settings.cpp:338
 msgid "Marker color (selected)"
 msgstr ""
 
@@ -329,7 +333,7 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: fluid/dlg_eleprofile.cpp:54 fluid/dlg_bulkdl.cpp:86
+#: fluid/dlg_eleprofile.cpp:71 fluid/dlg_bulkdl.cpp:86
 #: fluid/dlg_settings.cpp:643 fluid/dlg_tileserver.cpp:127
 #: fluid/dlg_garminul.cpp:74 fluid/dlg_editselection.cpp:76
 #: fluid/dlg_about.cpp:47 fluid/dlg_garmindl.cpp:65 fluid/dlg_search.cpp:67
@@ -352,7 +356,7 @@ msgstr ""
 msgid "Please specify the download url for this server!"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:486
+#: fluid/dlg_settings.cpp:485
 msgid "Port"
 msgstr ""
 
@@ -364,7 +368,7 @@ msgstr ""
 msgid "Record track"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:531
+#: fluid/dlg_settings.cpp:530
 msgid "Remove tileserver"
 msgstr ""
 
@@ -384,7 +388,7 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#: dlg_settings_ex.cpp:97 fluid/dlg_settings.cpp:572
+#: dlg_settings_ex.cpp:97 fluid/dlg_settings.cpp:571
 msgid "Select cache directory"
 msgstr ""
 
@@ -400,7 +404,7 @@ msgstr ""
 msgid "Select the desired area on the map now"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:387
+#: fluid/dlg_settings.cpp:386
 msgid "Selection color"
 msgstr ""
 
@@ -408,7 +412,7 @@ msgstr ""
 msgid "Selection error"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:472
+#: fluid/dlg_settings.cpp:471
 msgid "Server"
 msgstr ""
 
@@ -428,7 +432,7 @@ msgstr ""
 msgid "Slippy Map"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:504
+#: fluid/dlg_settings.cpp:503
 msgid "Tileservers"
 msgstr ""
 
@@ -436,11 +440,11 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:363
+#: fluid/dlg_settings.cpp:362
 msgid "Track color"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:435
+#: fluid/dlg_settings.cpp:434
 msgid "Track line width"
 msgstr ""
 
@@ -448,7 +452,7 @@ msgstr ""
 msgid "Track title"
 msgstr ""
 
-#: dlg_ui_ex.cpp:94
+#: dlg_ui_ex.cpp:94 dlg_eleprofile_ex.cpp:70
 msgid "Trip: "
 msgstr ""
 
@@ -456,7 +460,7 @@ msgstr ""
 msgid "URL"
 msgstr ""
 
-#: fluid/dlg_settings.cpp:587
+#: fluid/dlg_settings.cpp:586
 msgid "Units"
 msgstr ""
 

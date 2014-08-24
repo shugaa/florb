@@ -11,7 +11,7 @@ decl {\#include "mapctrl.hpp"} {public global
 decl {\#include "wgt_eleprofile.hpp"} {public global
 } 
 
-class dlg_eleprofile {open
+class dlg_eleprofile {open : {public event_listener}
 } {
   decl {mapctrl *m_mapctrl;} {private local
   }
@@ -21,10 +21,12 @@ class dlg_eleprofile {open
   }
   decl {void show_ex();} {private local
   }
+  decl {bool profile_evt_mouse_ex(const wgt_eleprofile::event_mouse *e);} {private local
+  }
   Function {dlg_eleprofile(mapctrl *m)} {open
   } {
     Fl_Window m_window {
-      label {View elevation profile}
+      label {View elevation profile} open
       private xywh {1516 196 500 295} type Double resizable modal size_range {500 295 0 0} visible
     } {
       Fl_Pack {} {open
@@ -34,18 +36,37 @@ class dlg_eleprofile {open
           private xywh {0 0 500 5}
         }
         Fl_Pack {} {open
-          private xywh {0 5 500 250} type HORIZONTAL resizable
+          private xywh {0 5 500 220} type HORIZONTAL resizable
         } {
           Fl_Box {} {
             private xywh {0 5 5 250}
           }
           Fl_Box m_profile {
             label {Elevation profile}
-            private xywh {5 5 490 250} box FLAT_BOX resizable
+            private xywh {5 5 490 220} box FLAT_BOX resizable
             class wgt_eleprofile
           }
           Fl_Box {} {
             private xywh {495 5 5 250}
+          }
+        }
+        Fl_Box {} {
+          private xywh {0 225 500 5}
+        }
+        Fl_Pack {} {open
+          private xywh {0 230 500 25} type HORIZONTAL
+        } {
+          Fl_Box {} {
+            private xywh {0 230 5 25}
+          }
+          Fl_Box m_box_trip {
+            private xywh {5 230 180 25} align 20
+          }
+          Fl_Box m_box_ele {selected
+            private xywh {185 230 310 25} align 20 resizable
+          }
+          Fl_Box {} {
+            private xywh {495 230 5 25}
           }
         }
         Fl_Box {} {
@@ -87,8 +108,7 @@ class dlg_eleprofile {open
       }
     }
     code {m_mapctrl = m;
-create_ex();} {selected
-    }
+create_ex();} {}
   }
   Function {~dlg_eleprofile()} {} {
     code {destroy_ex();} {}
