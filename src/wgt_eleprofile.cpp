@@ -131,6 +131,9 @@ void wgt_eleprofile::draw_profile()
     m_offscreen.fgcolor(fgfx::color(0xff,0xff,0xff));
     m_offscreen.fillrect(0,0,w(),h());
 
+    if (m_wpts.size() == 0)
+        return;
+
     double corr = (m_elemin < 0) ? -m_elemin : 0.0;
     double min = m_elemin + corr; 
     double max = m_elemax + corr; 
