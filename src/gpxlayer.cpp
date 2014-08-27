@@ -401,7 +401,13 @@ void gpxlayer::save_track(const std::string &path)
     }
 
     // Try to save and restore original locale
+#if (TIXML2_MAJOR_VERSION < 2)
+    // My Ubuntu / Mint has a really weird tinyxml2 header with a major version of 1
+    int xmlerr = doc.SaveFile(path.c_str());
+#else
     tinyxml2::XMLError xmlerr = doc.SaveFile(path.c_str());
+#endif
+
     setlocale(LC_ALL, oldlc);
 
     // Throw in case of error

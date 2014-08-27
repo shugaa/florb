@@ -1,3 +1,6 @@
+# Make sure we have an up-to-date OMake version (Important for foreach support)
+OMakeVersion(0.9.8.6)
+
 # Program name
 PROGRAM = florb
 

@@ -94,7 +94,7 @@ bool dlg_tileserver::handle_ok_ex(bool add)
 
         if (!ret)
         {
-            fl_alert(_("A tile server with the same name already exists."));
+            fl_alert("%s", _("A tile server with the same name already exists."));
             break;
         }
 

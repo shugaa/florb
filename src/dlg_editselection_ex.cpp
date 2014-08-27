@@ -123,10 +123,10 @@ bool dlg_editselection::handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints)
     try {
         m_mapctrl->gpx_selection_set(waypoints);
     } catch (std::out_of_range& e) {
-        fl_alert(e.what());
+        fl_alert("%s", e.what());
         return false;
     } catch (std::runtime_error& e) {
-        fl_alert(e.what());
+        fl_alert("%s", e.what());
         return false;
     }
 

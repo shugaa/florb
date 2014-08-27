@@ -325,7 +325,7 @@ void dlg_ui::savetrack_ex()
 void dlg_ui::bulkdl_ex()
 {
     // Clear all waypoints
-    fl_alert(_("Select the desired area on the map now"));
+    fl_alert("%s", _("Select the desired area on the map now"));
     m_mapctrl->select_area(_("Select download area"));
 }
 

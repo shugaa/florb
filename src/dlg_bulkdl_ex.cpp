@@ -163,7 +163,7 @@ void dlg_bulkdl::cb_btn_download_ex(Fl_Widget *widget)
     try {
         m_zoomlevels = parse_zoomlevels_ex();
     } catch (std::runtime_error& e) {
-        fl_alert(e.what());
+        fl_alert("%s", e.what());
         return;
     }
 
@@ -254,7 +254,7 @@ void dlg_bulkdl::startdl_ex()
                     1,
                     cfgtileserver.type());
             } catch (std::runtime_error &e) {
-                fl_alert(e.what());
+                fl_alert("%s", e.what());
                 osml = NULL;
                 rc = false;
                 break;
@@ -264,7 +264,7 @@ void dlg_bulkdl::startdl_ex()
             long ms;
             if (!utils::fromstr(m_input_nice->value(), ms) || (ms < 0))
             {
-                fl_alert(_("Invalid delay"));
+                fl_alert("%s", _("Invalid delay"));
                 rc = false;
                 break;
             }
