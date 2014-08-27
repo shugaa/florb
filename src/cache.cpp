@@ -19,8 +19,11 @@ cache::cache(const std::string& url, const std::string& session, const std::stri
     {
         if (!utils::exists(m_url))
         {
-            rc = -1;
-            break;
+            if (!utils::mkdir(m_url))
+            {
+                rc = -1;
+                break;
+            }
         }
 
         if (utils::exists(m_url+utils::pathsep()+m_session))
@@ -28,9 +31,8 @@ cache::cache(const std::string& url, const std::string& session, const std::stri
             break;
         }
 
-        try {
-            utils::mkdir(m_url+utils::pathsep()+m_session);
-        } catch (...) {
+        if (!utils::mkdir(m_url+utils::pathsep()+m_session))
+        {
             rc = -1;
             break;
         }

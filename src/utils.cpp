@@ -178,9 +178,17 @@ std::string utils::appdir()
     return oss.str();
 }
 
-void utils::mkdir(const std::string& path)
+bool utils::mkdir(const std::string& path)
 {
-    boost::filesystem::create_directory(path);
+    bool ret = true;
+
+    try {
+        boost::filesystem::create_directory(path);
+    } catch (...) {
+        ret = false;
+    }
+
+    return ret;
 }
 
 void utils::rm(const std::string& path)

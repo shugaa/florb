@@ -51,7 +51,7 @@ class utils
         static std::string pathsep();
         static std::string userdir();
         static std::string appdir();
-        static void mkdir(const std::string& path);
+        static bool mkdir(const std::string& path);
         static void rm(const std::string& path);
         static bool exists(const std::string& path);
         static std::string filestem(const std::string& path);
