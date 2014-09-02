@@ -11,7 +11,7 @@ areaselectlayer::areaselectlayer() :
     m_p2(-1,-1)
 {
     name(std::string("AreaSelect"));
-    register_event_handler<areaselectlayer, layer::event_mouse>(this, &areaselectlayer::handle_evt_mouse);
+    register_event_handler<areaselectlayer, florb::layer::event_mouse>(this, &areaselectlayer::handle_evt_mouse);
 };
 
 areaselectlayer::~areaselectlayer()
@@ -28,7 +28,7 @@ void areaselectlayer::clear()
     notify();
 }
 
-bool areaselectlayer::handle_evt_mouse(const layer::event_mouse* evt)
+bool areaselectlayer::handle_evt_mouse(const florb::layer::event_mouse* evt)
 {
     if (!enabled())
     {
@@ -36,23 +36,23 @@ bool areaselectlayer::handle_evt_mouse(const layer::event_mouse* evt)
     }
 
     // Only the left mouse button is of interest
-    if (evt->button() != layer::event_mouse::BUTTON_LEFT)
+    if (evt->button() != florb::layer::event_mouse::BUTTON_LEFT)
         return false;
 
     bool ret = false;
     switch (evt->action())
     {
-        case layer::event_mouse::ACTION_PRESS:
+        case florb::layer::event_mouse::ACTION_PRESS:
         {
             ret = press(evt); 
             break;
         }
-        case layer::event_mouse::ACTION_RELEASE:
+        case florb::layer::event_mouse::ACTION_RELEASE:
         {
             ret = release(evt); 
             break;
         }
-        case layer::event_mouse::ACTION_DRAG:
+        case florb::layer::event_mouse::ACTION_DRAG:
         {
             ret = drag(evt); 
             break;
@@ -64,7 +64,7 @@ bool areaselectlayer::handle_evt_mouse(const layer::event_mouse* evt)
     return ret;
 }
 
-bool areaselectlayer::press(const layer::event_mouse* evt)
+bool areaselectlayer::press(const florb::layer::event_mouse* evt)
 {
     m_p1[0] = evt->pos().x() < 0 ? 0 : (unsigned long)evt->pos().x();
     m_p1[1] = evt->pos().y() < 0 ? 0 : (unsigned long)evt->pos().y();
@@ -78,7 +78,7 @@ bool areaselectlayer::press(const layer::event_mouse* evt)
     return true;
 }
 
-bool areaselectlayer::drag(const layer::event_mouse* evt)
+bool areaselectlayer::drag(const florb::layer::event_mouse* evt)
 {
     florb::point2d<unsigned long> px(evt->pos().x(), evt->pos().y());
     
@@ -100,7 +100,7 @@ bool areaselectlayer::drag(const layer::event_mouse* evt)
     return true;
 }
 
-bool areaselectlayer::release(const layer::event_mouse* evt)
+bool areaselectlayer::release(const florb::layer::event_mouse* evt)
 {
     m_vp = viewport(
         evt->vp().x() + ((m_p1.x() > m_p2.x()) ? m_p2.x() : m_p1.x()),

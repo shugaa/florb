@@ -4,7 +4,7 @@
 #include "layer.hpp"
 #include "viewport.hpp"
 
-class scalelayer : public layer
+class scalelayer : public florb::layer
 {
     public:
         scalelayer();

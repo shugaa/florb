@@ -12,7 +12,7 @@
 
 namespace florb {
 
-    class tracklayer : public layer
+    class tracklayer : public florb::layer
     {
         public:
             tracklayer(const std::string &path);

@@ -602,15 +602,15 @@ int wgt_map::handle_push(int event)
         fl_cursor(FL_CURSOR_MOVE);
 
     // fire mouse event for the layers
-    int button = layer::event_mouse::BUTTON_MIDDLE;
+    int button = florb::layer::event_mouse::BUTTON_MIDDLE;
     if (Fl::event_button() == FL_LEFT_MOUSE)
-        button = layer::event_mouse::BUTTON_LEFT;
+        button = florb::layer::event_mouse::BUTTON_LEFT;
     else if (Fl::event_button() == FL_RIGHT_MOUSE)
-        button = layer::event_mouse::BUTTON_RIGHT;
+        button = florb::layer::event_mouse::BUTTON_RIGHT;
 
-    layer::event_mouse me(
+    florb::layer::event_mouse me(
             m_viewport, 
-            layer::event_mouse::ACTION_PRESS,
+            florb::layer::event_mouse::ACTION_PRESS,
             button, 
             vp_relative(florb::point2d<int>(Fl::event_x(), Fl::event_y())));
 
@@ -633,17 +633,17 @@ int wgt_map::handle_release(int event)
     fl_cursor(FL_CURSOR_CROSS);
 
     // Mouse event for the layers
-    int button = layer::event_mouse::BUTTON_MIDDLE;
+    int button = florb::layer::event_mouse::BUTTON_MIDDLE;
     if (Fl::event_button() == FL_LEFT_MOUSE)
-        button = layer::event_mouse::BUTTON_LEFT;
+        button = florb::layer::event_mouse::BUTTON_LEFT;
     else if (Fl::event_button() == FL_RIGHT_MOUSE)
     {
-        button = layer::event_mouse::BUTTON_RIGHT;
+        button = florb::layer::event_mouse::BUTTON_RIGHT;
     }
 
-    layer::event_mouse me(
+    florb::layer::event_mouse me(
             m_viewport, 
-            layer::event_mouse::ACTION_RELEASE,
+            florb::layer::event_mouse::ACTION_RELEASE,
             button, 
             vp_relative(florb::point2d<int>(Fl::event_x(), Fl::event_y())));
 
@@ -680,15 +680,15 @@ int wgt_map::handle_drag(int event)
     // Drag event for the layers
     else
     {
-        int button = layer::event_mouse::BUTTON_MIDDLE;
+        int button = florb::layer::event_mouse::BUTTON_MIDDLE;
         if (Fl::event_state(FL_BUTTON1) != 0)
-            button = layer::event_mouse::BUTTON_LEFT;
+            button = florb::layer::event_mouse::BUTTON_LEFT;
         else if (Fl::event_state(FL_BUTTON3) != 0)
-            button = layer::event_mouse::BUTTON_RIGHT;
+            button = florb::layer::event_mouse::BUTTON_RIGHT;
 
-        layer::event_mouse me(
+        florb::layer::event_mouse me(
                 m_viewport,
-                layer::event_mouse::ACTION_DRAG,
+                florb::layer::event_mouse::ACTION_DRAG,
                 button,
                 vp_relative(florb::point2d<int>(Fl::event_x(), Fl::event_y())));
 

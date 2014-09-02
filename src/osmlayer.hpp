@@ -9,7 +9,7 @@
 #include "gfx.hpp"
 #include "settings.hpp"
 
-class osmlayer : public layer
+class osmlayer : public florb::layer
 {
     public:
         osmlayer(

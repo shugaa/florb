@@ -4,7 +4,7 @@
 #include "layer.hpp"
 #include "viewport.hpp"
 
-class areaselectlayer : public layer
+class areaselectlayer : public florb::layer
 {
     public:
         areaselectlayer();

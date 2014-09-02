@@ -17,7 +17,7 @@ florb::tracklayer::tracklayer() :
     m_trip(0.0)
 {
     name(std::string(_(trackname.c_str())));
-    register_event_handler<florb::tracklayer, layer::event_mouse>(this, &florb::tracklayer::handle_evt_mouse);
+    register_event_handler<florb::tracklayer, florb::layer::event_mouse>(this, &florb::tracklayer::handle_evt_mouse);
     register_event_handler<florb::tracklayer, layer::event_key>(this, &florb::tracklayer::handle_evt_key);
 }
 
@@ -67,7 +67,7 @@ bool florb::tracklayer::key(const layer::event_key* evt)
     return true;
 }
 
-bool florb::tracklayer::press(const layer::event_mouse* evt)
+bool florb::tracklayer::press(const florb::layer::event_mouse* evt)
 {
     florb::point2d<unsigned long> pxabs;
     pxabs[0] = evt->pos().x() < 0 ? 0 : (unsigned long)evt->pos().x();
@@ -120,7 +120,7 @@ bool florb::tracklayer::press(const layer::event_mouse* evt)
     return true;
 }
 
-bool florb::tracklayer::drag(const layer::event_mouse* evt)
+bool florb::tracklayer::drag(const florb::layer::event_mouse* evt)
 {
     // Enter drag mode
     m_selection.dragging = true;
@@ -211,7 +211,7 @@ bool florb::tracklayer::drag(const layer::event_mouse* evt)
     return true;
 }
 
-bool florb::tracklayer::release(const layer::event_mouse* evt)
+bool florb::tracklayer::release(const florb::layer::event_mouse* evt)
 {
     // Button release on an existing item
     if ((m_selection.waypoints.size() == 1) && (m_selection.multiselect == false))
@@ -523,28 +523,28 @@ florb::tracklayer::~tracklayer()
     ;
 };
 
-bool florb::tracklayer::handle_evt_mouse(const layer::event_mouse* evt)
+bool florb::tracklayer::handle_evt_mouse(const florb::layer::event_mouse* evt)
 {
     // Only the left mouse button is of interest
     if (!enabled())
         return false;
-    if (evt->button() != layer::event_mouse::BUTTON_LEFT)
+    if (evt->button() != florb::layer::event_mouse::BUTTON_LEFT)
         return false;
 
     bool ret = false;
     switch (evt->action())
     {
-        case layer::event_mouse::ACTION_PRESS:
+        case florb::layer::event_mouse::ACTION_PRESS:
         {
             ret = press(evt); 
             break;
         }
-        case layer::event_mouse::ACTION_RELEASE:
+        case florb::layer::event_mouse::ACTION_RELEASE:
         {
             ret = release(evt); 
             break;
         }
-        case layer::event_mouse::ACTION_DRAG:
+        case florb::layer::event_mouse::ACTION_DRAG:
         {
             ret = drag(evt); 
             break;

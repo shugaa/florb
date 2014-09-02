@@ -5,7 +5,7 @@
 #include "layer.hpp"
 #include "viewport.hpp"
 
-class markerlayer : public layer
+class markerlayer : public florb::layer
 {
     public:
         markerlayer();
