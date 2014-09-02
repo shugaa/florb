@@ -27,7 +27,7 @@ class areaselectlayer : public layer
         void notify();
 
         std::string m_caption;
-        point2d<unsigned long> m_p1, m_p2;
+        florb::point2d<unsigned long> m_p1, m_p2;
         viewport m_vp;
 };
 

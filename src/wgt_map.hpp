@@ -66,12 +66,12 @@ class wgt_map : public Fl_Widget, public event_listener, public event_generator
         unsigned int zoom();
         void zoom(unsigned int z);
         void goto_cursor();
-        void goto_pos(const point2d<double> &pwsg84);
-        point2d<double> mousepos();
+        void goto_pos(const florb::point2d<double> &pwsg84);
+        florb::point2d<double> mousepos();
        
         // Marker handling
-        void marker_add(const point2d<double> &pmerc, size_t id);
-        size_t marker_add(const point2d<double> &pmerc);
+        void marker_add(const florb::point2d<double> &pmerc, size_t id);
+        size_t marker_add(const florb::point2d<double> &pmerc);
         void marker_remove(size_t id);
 
         // Area selection
@@ -97,8 +97,8 @@ class wgt_map : public Fl_Widget, public event_listener, public event_generator
         int handle_drag(int event);
         int handle_mousewheel(int event);
         int handle_keyboard(int event);
-        point2d<int> vp_relative(const point2d<int>& pos);
-        bool vp_inside(const point2d<int>& pos);
+        florb::point2d<int> vp_relative(const florb::point2d<int>& pos);
+        bool vp_inside(const florb::point2d<int>& pos);
 
         // GPSd-layer event handlers
         bool gpsd_evt_motion(const gpsdlayer::event_motion *e);
@@ -126,7 +126,7 @@ class wgt_map : public Fl_Widget, public event_listener, public event_generator
         gpsdlayer *m_gpsdlayer;
         areaselectlayer *m_areaselectlayer;
 
-        point2d<int> m_mousepos;
+        florb::point2d<int> m_mousepos;
         viewport m_viewport;
         viewport m_viewport_map;
         florb::canvas m_offscreen;

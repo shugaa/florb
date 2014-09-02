@@ -31,16 +31,16 @@ gpsdlayer::~gpsdlayer()
         delete m_gpsdclient;
 };
 
-const point2d<double> gpsdlayer::pos()
+const florb::point2d<double> gpsdlayer::pos()
 {
     m_mutex.lock();
-    point2d<double> ptmp(m_pos);
+    florb::point2d<double> ptmp(m_pos);
     m_mutex.unlock();
 
     return ptmp;
 }
 
-void gpsdlayer::pos(point2d<double> p) 
+void gpsdlayer::pos(florb::point2d<double> p) 
 {
     m_mutex.lock();
     m_pos = p;
@@ -164,7 +164,7 @@ bool gpsdlayer::handle_evt_gpsd(const gpsdclient::event_gpsd *e)
     else if (
         (valid()) &&
         ((e->mode() != gpsdclient::FIX_NONE)) && 
-        (utils::dist(pos(), e->pos()) >= 0.002))
+        (florb::utils::dist(pos(), e->pos()) >= 0.002))
         motion = true;
     
     connected(e->connected());
@@ -202,12 +202,12 @@ bool gpsdlayer::draw(const viewport &viewport, florb::canvas &os)
     double csize = 17.0;
 
     // Calculate cursor rotation
-    point2d<int> p1((int)((cos((90.0+t)*d2r)*csize)), (int)(sin((90.0+t)*d2r)*csize));
-    point2d<int> p2((int)((cos((222.0+t)*d2r)*csize)), (int)(sin((222.0+t)*d2r)*csize));
-    point2d<int> p3((int)((cos((310.0+t)*d2r)*csize)), (int)(sin((310.0+t)*d2r)*csize));
+    florb::point2d<int> p1((int)((cos((90.0+t)*d2r)*csize)), (int)(sin((90.0+t)*d2r)*csize));
+    florb::point2d<int> p2((int)((cos((222.0+t)*d2r)*csize)), (int)(sin((222.0+t)*d2r)*csize));
+    florb::point2d<int> p3((int)((cos((310.0+t)*d2r)*csize)), (int)(sin((310.0+t)*d2r)*csize));
 
     // Calculate current pixel position on the map
-    point2d<unsigned long> pxpos(utils::wsg842px(viewport.z(), pos()));
+    florb::point2d<unsigned long> pxpos(florb::utils::wsg842px(viewport.z(), pos()));
     pxpos[0] -= viewport.x();
     pxpos[1] -= viewport.y();
 

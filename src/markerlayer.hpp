@@ -15,8 +15,8 @@ class markerlayer : public layer
 
         bool draw(const viewport &viewport, florb::canvas &os);
 
-        size_t add(const point2d<double> &pmerc);
-        void add(const point2d<double> &pmerc, size_t id);
+        size_t add(const florb::point2d<double> &pmerc);
+        void add(const florb::point2d<double> &pmerc, size_t id);
         void remove(size_t id);
         void clear();
     private:
@@ -24,7 +24,7 @@ class markerlayer : public layer
         void notify();
 
         struct marker_internal {
-            point2d<double> p;
+            florb::point2d<double> p;
             size_t id;
         };
 

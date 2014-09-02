@@ -26,7 +26,7 @@ class wgt_eleprofile : public Fl_Widget, public event_generator
         class event_mouse;
     private:
         florb::canvas m_offscreen;
-        std::vector< point2d<double> > m_wpts;
+        std::vector< florb::point2d<double> > m_wpts;
         double m_elemin;
         double m_elemax;
 

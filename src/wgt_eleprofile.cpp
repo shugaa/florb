@@ -25,7 +25,7 @@ void wgt_eleprofile::trackpoints(const std::vector<florb::tracklayer::waypoint>&
     std::vector<florb::tracklayer::waypoint>::const_iterator it;
     for (it=wpts.begin();it!=wpts.end();++it)
     {
-        point2d<double> ptmp;
+        florb::point2d<double> ptmp;
         ptmp.y((*it).elevation());
 
         if (ptmp.y() < m_elemin)
@@ -35,9 +35,9 @@ void wgt_eleprofile::trackpoints(const std::vector<florb::tracklayer::waypoint>&
 
         if (it != wpts.begin())
         {
-            dst += utils::dist(
-                point2d<double>((*it).lon(), (*it).lat()),
-                point2d<double>((*(it-1)).lon(), (*(it-1)).lat()));
+            dst += florb::utils::dist(
+                florb::point2d<double>((*it).lon(), (*it).lat()),
+                florb::point2d<double>((*(it-1)).lon(), (*(it-1)).lat()));
         }
 
         ptmp.x(dst);
@@ -185,7 +185,7 @@ void wgt_eleprofile::draw_profile()
     m_offscreen.fgcolor(florb::color(0xff,0x00,0x00));
 
     double elast = 0.0;
-    std::vector< point2d<double> >::iterator it;
+    std::vector< florb::point2d<double> >::iterator it;
     for (it=m_wpts.begin();it!=m_wpts.end();++it)
     {
         double ecurrent = (*it).y() + corr;

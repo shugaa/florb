@@ -11,55 +11,59 @@
 
 #define _(STRING) gettext(STRING)
 
-class utils
+namespace florb
 {
-    public:
-        static unsigned long dim(unsigned int z);
+    class utils
+    {
+        public:
+            static unsigned long dim(unsigned int z);
 
-        static point2d<double> wsg842merc(const point2d<double> &wsg84);
-        static point2d<unsigned long> merc2px(unsigned int z, const point2d<double> &merc);
-        static point2d<unsigned long> wsg842px(unsigned int z, const point2d<double> &wsg84);
-        static point2d<double> px2wsg84(unsigned int z, const point2d<unsigned long> &px);
-        static point2d<double> merc2wsg84(const point2d<double>& wsg84);
-        static point2d<double> px2merc(unsigned int z, const point2d<unsigned long> &px);
+            static florb::point2d<double> wsg842merc(const florb::point2d<double> &wsg84);
+            static florb::point2d<unsigned long> merc2px(unsigned int z, const florb::point2d<double> &merc);
+            static florb::point2d<unsigned long> wsg842px(unsigned int z, const florb::point2d<double> &wsg84);
+            static florb::point2d<double> px2wsg84(unsigned int z, const florb::point2d<unsigned long> &px);
+            static florb::point2d<double> merc2wsg84(const florb::point2d<double>& wsg84);
+            static florb::point2d<double> px2merc(unsigned int z, const florb::point2d<unsigned long> &px);
 
-        static bool clipline(point2d<double> &p1, point2d<double> &p2, const point2d<double> &r1, const point2d<double> &r2, bool &p1clip, bool &p2clip); 
-        
-        static double dist(const point2d<double> &p1, const point2d<double> &p2);
-        static double dist_merc(const point2d<double> &p1, const point2d<double> &p2);
-        static double meters_per_pixel(unsigned int z, double lat);
+            static bool clipline(florb::point2d<double> &p1, florb::point2d<double> &p2, const florb::point2d<double> &r1, const florb::point2d<double> &r2, bool &p1clip, bool &p2clip); 
 
-        static time_t iso8601_2timet(const std::string& iso);
-        static std::string timet2iso8601(time_t t);
+            static double dist(const florb::point2d<double> &p1, const florb::point2d<double> &p2);
+            static double dist_merc(const florb::point2d<double> &p1, const florb::point2d<double> &p2);
+            static double meters_per_pixel(unsigned int z, double lat);
 
-        static std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
-        static std::size_t str_count(const std::string& str, const std::string& token);
-        static void str_replace(std::string& str, const std::string& s, const std::string& r);
-    
-        template <class T>
-        static bool fromstr(const std::string& s, T& out)
-        {
-            try {
-                out = boost::lexical_cast<T>(s);
-            } catch (const boost::bad_lexical_cast &e) {
-                return false;
-            }
+            static time_t iso8601_2timet(const std::string& iso);
+            static std::string timet2iso8601(time_t t);
 
-            return true;
-        };
+            static std::vector<std::string> str_split(const std::string& str, const std::string& delimiter);
+            static std::size_t str_count(const std::string& str, const std::string& token);
+            static void str_replace(std::string& str, const std::string& s, const std::string& r);
 
-        static std::string pathsep();
-        static std::string userdir();
-        static std::string appdir();
-        static bool mkdir(const std::string& path);
-        static void rm(const std::string& path);
-        static bool exists(const std::string& path);
-        static std::string filestem(const std::string& path);
-        static std::string extension(const std::string& path);
-        static void touch(const std::string& path);
+            template <class T>
+                static bool fromstr(const std::string& s, T& out)
+                {
+                    try {
+                        out = boost::lexical_cast<T>(s);
+                    } catch (const boost::bad_lexical_cast &e) {
+                        return false;
+                    }
 
-        static void set_window_icon(Fl_Window *w);
-    private:
+                    return true;
+                };
+
+            static std::string pathsep();
+            static std::string userdir();
+            static std::string appdir();
+            static bool mkdir(const std::string& path);
+            static void rm(const std::string& path);
+            static bool exists(const std::string& path);
+            static std::string filestem(const std::string& path);
+            static std::string extension(const std::string& path);
+            static void touch(const std::string& path);
+
+            static void set_window_icon(Fl_Window *w);
+        private:
+    };
+
 };
 
 #endif // UTILS_HPP

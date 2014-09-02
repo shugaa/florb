@@ -7,7 +7,7 @@ void dlg_eleprofile::create_ex()
     m_profile->add_event_listener(this);
 
     // Set the window icon
-    utils::set_window_icon(m_window); 
+    florb::utils::set_window_icon(m_window); 
 }
 
 void dlg_eleprofile::destroy_ex()

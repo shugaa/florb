@@ -8,7 +8,7 @@
 void dlg_garminul::create_ex()
 {
     // Set the window icon
-    utils::set_window_icon(m_window); 
+    florb::utils::set_window_icon(m_window); 
 }
 
 void dlg_garminul::show_ex()
@@ -22,7 +22,7 @@ void dlg_garminul::show_ex()
     {
         // Very basic gpsbabel output validation (check first item integer)
         int conv;
-        if (!utils::fromstr(utils::str_split(tmp, " ")[0], conv))
+        if (!florb::utils::fromstr(florb::utils::str_split(tmp, " ")[0], conv))
             break;
 
         m_choice_device->add(tmp.c_str());

@@ -11,7 +11,7 @@
 void dlg_settings::create_ex()
 {
     // Set the window icon
-    utils::set_window_icon(m_window); 
+    florb::utils::set_window_icon(m_window); 
 
     m_cfgui = settings::get_instance()["ui"].as<cfg_ui>();
     m_cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
@@ -87,7 +87,7 @@ void dlg_settings::cb_inp_trackwidth_ex(Fl_Widget *widget)
 
     /* Save new value */
     unsigned int tw = 2;
-    utils::fromstr(m_input_trackwidth->value(), tw);
+    florb::utils::fromstr(m_input_trackwidth->value(), tw);
     m_cfgui.tracklinewidth(tw);
 }
 

@@ -38,7 +38,7 @@ class viewport
         // unsigned long range for map dimensions: at least 0 to
         // 4294967295. So the maximum zoomlevel can be
         // floor(log2(4294967295/256)) = 23. Zoomlevel 0 just results
-        // in a 256x256 pixels size map. See utils::dim() for
+        // in a 256x256 pixels size map. See florb::utils::dim() for
         // details.
         static const int ZMIN = 0;
         static const int ZMAX = 23;

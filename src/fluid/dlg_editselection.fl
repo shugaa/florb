@@ -17,12 +17,13 @@ class dlg_editselection {open
   }
   decl {void show_ex();} {private local
   }
-  decl {bool handle_ok_ex(std::vector<florb::tracklayer::waypoint>& waypoints);} {selected private local
+  decl {bool handle_ok_ex(std::vector<florb::tracklayer::waypoint>& waypoints);} {private local
   }
-  Function {dlg_editselection(wgt_map*m)} {open
-  } {
+  decl {void create_ex();} {selected private local
+  }
+  Function {dlg_editselection(wgt_map*m)} {} {
     Fl_Window m_window {
-      label {Edit waypoints} open
+      label {Edit waypoints}
       private xywh {1631 297 220 180} type Double modal visible
     } {
       Fl_Pack {} {open
@@ -115,16 +116,13 @@ class dlg_editselection {open
       }
     }
     code {m_wgtmap = m;
-
-// Set the window icon
-utils::set_window_icon(m_window);} {}
+create_ex();} {}
   }
-  Function {~dlg_editselection()} {open
-  } {
+  Function {~dlg_editselection()} {} {
     code {if (m_window)
     delete(m_window);} {}
   }
-  Function {show()} {open return_type void
+  Function {show()} {return_type void
   } {
     code {show_ex();} {}
   }

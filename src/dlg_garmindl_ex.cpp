@@ -10,7 +10,7 @@ void dlg_garmindl::create_ex()
     m_dlstatus = false;
 
     // Set the window icon
-    utils::set_window_icon(m_window); 
+    florb::utils::set_window_icon(m_window); 
 
     m_progress_status->minimum(0);
     m_progress_status->maximum(99);
@@ -30,7 +30,7 @@ bool dlg_garmindl::show_ex()
     {
         // Very basic gpsbabel output validation (check first item integer)
         int conv;
-        if (!utils::fromstr(utils::str_split(tmp, " ")[0], conv))
+        if (!florb::utils::fromstr(florb::utils::str_split(tmp, " ")[0], conv))
             break;
 
         m_choice_device->add(tmp.c_str());
@@ -90,7 +90,7 @@ void dlg_garmindl::cb_btn_download_ex(Fl_Widget *widget)
     std::string line;
     while (sh.readln(line))
     {
-        std::vector<std::string> progress = utils::str_split(line, "/");
+        std::vector<std::string> progress = florb::utils::str_split(line, "/");
         if (progress.size() != 3)
             continue;
 

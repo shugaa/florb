@@ -11,7 +11,7 @@ void dlg_search::create_ex()
     m_markerid = std::numeric_limits<size_t>::max();
 
     // Set the window icon
-    utils::set_window_icon(m_window);
+    florb::utils::set_window_icon(m_window);
 
     try {
         m_downloader = new downloader(1);
@@ -98,7 +98,7 @@ void dlg_search::cb_browser_results_ex(Fl_Widget *widget)
     if (m_markerid != std::numeric_limits<size_t>::max())
         m_wgtmap->marker_remove(m_markerid);
 
-    m_markerid = m_wgtmap->marker_add(utils::wsg842merc(m_searchresults[v-1].m_pos));
+    m_markerid = m_wgtmap->marker_add(florb::utils::wsg842merc(m_searchresults[v-1].m_pos));
     m_wgtmap->goto_pos(m_searchresults[v-1].m_pos);
 }
 
@@ -179,7 +179,7 @@ void dlg_search::process_download_ex()
 
             searchresult tmp;
             tmp.m_displayname = std::string(dn);
-            tmp.m_pos = point2d<double>(lon,lat);
+            tmp.m_pos = florb::point2d<double>(lon,lat);
             
             m_searchresults.push_back(tmp);
             m_browser_results->add(dn);

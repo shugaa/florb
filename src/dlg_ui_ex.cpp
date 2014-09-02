@@ -62,7 +62,7 @@ void dlg_ui::update_statusbar_ex()
     ss << _("Zoom: ") << m_wgtmap->zoom();
     m_txtout_zoom->value(ss.str().c_str());
 
-    point2d<double> pos = m_wgtmap->mousepos();
+    florb::point2d<double> pos = m_wgtmap->mousepos();
     ss.precision(5);
     ss.setf(std::ios::fixed, std::ios::floatfield);
 
@@ -139,7 +139,7 @@ bool dlg_ui::wgtmap_evt_endselect_ex(const wgt_map::event_endselect *e)
 void dlg_ui::create_ex(void)
 {
     // Set the window icon
-    utils::set_window_icon(m_window);
+    florb::utils::set_window_icon(m_window);
 
     // Fluid 1.3 does not gettext the menuitems, do it manually here
     // File
@@ -396,7 +396,7 @@ void dlg_ui::showwpmarkers_ex()
 void dlg_ui::garmindl_ex()
 {
     // Temp gpx file path
-    std::string tmp(utils::appdir() + utils::pathsep() + "tmp.gpx"); 
+    std::string tmp(florb::utils::appdir() + florb::utils::pathsep() + "tmp.gpx"); 
 
     // Download track from garmin device to temporary file
     if (!m_dlg_garmindl)
@@ -405,7 +405,7 @@ void dlg_ui::garmindl_ex()
     if (m_dlg_garmindl->show())
     {
         m_wgtmap->gpx_loadtrack(tmp);
-        utils::rm(tmp);
+        florb::utils::rm(tmp);
     }
 }
 
@@ -415,7 +415,7 @@ void dlg_ui::garminul_ex()
 
     // Temp gpx file path
     std::string name(m_wgtmap->gpx_trackname());
-    std::string path(utils::appdir() + utils::pathsep() + "tmp.gpx"); 
+    std::string path(florb::utils::appdir() + florb::utils::pathsep() + "tmp.gpx"); 
     m_wgtmap->gpx_savetrack(path);
 
     // Show upload dialog
@@ -425,7 +425,7 @@ void dlg_ui::garminul_ex()
     m_dlg_garminul->show();
 
     // Remove temp file
-    utils::rm(path);
+    florb::utils::rm(path);
 
     //winopen.post();
 }

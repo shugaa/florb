@@ -16,7 +16,7 @@ extern "C"
 void dlg_about::create_ex()
 {
     // Set the window icon
-    utils::set_window_icon(m_window); 
+    florb::utils::set_window_icon(m_window); 
 
     m_buf = new Fl_Text_Buffer();
     

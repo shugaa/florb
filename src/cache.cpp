@@ -17,21 +17,21 @@ cache::cache(const std::string& url, const std::string& session, const std::stri
 
     for (;;)
     {
-        if (!utils::exists(m_url))
+        if (!florb::utils::exists(m_url))
         {
-            if (!utils::mkdir(m_url))
+            if (!florb::utils::mkdir(m_url))
             {
                 rc = -1;
                 break;
             }
         }
 
-        if (utils::exists(m_url+utils::pathsep()+m_session))
+        if (florb::utils::exists(m_url+florb::utils::pathsep()+m_session))
         {
             break;
         }
 
-        if (!utils::mkdir(m_url+utils::pathsep()+m_session))
+        if (!florb::utils::mkdir(m_url+florb::utils::pathsep()+m_session))
         {
             rc = -1;
             break;
@@ -62,19 +62,19 @@ void cache::put(int z, int x, int y, time_t expires, const std::vector<char> &bu
         // Create the storage directory for the tile if not already present
         std::ostringstream oss;
         
-        oss << m_url << utils::pathsep() << m_session; 
-        if (!utils::exists(oss.str()))
-            utils::mkdir(oss.str());
+        oss << m_url << florb::utils::pathsep() << m_session; 
+        if (!florb::utils::exists(oss.str()))
+            florb::utils::mkdir(oss.str());
 
-        oss << utils::pathsep() << z;
-        if (!utils::exists(oss.str()))
-            utils::mkdir(oss.str());
+        oss << florb::utils::pathsep() << z;
+        if (!florb::utils::exists(oss.str()))
+            florb::utils::mkdir(oss.str());
 
-        oss << utils::pathsep() << x;
-        if (!utils::exists(oss.str()))
-            utils::mkdir(oss.str());
+        oss << florb::utils::pathsep() << x;
+        if (!florb::utils::exists(oss.str()))
+            florb::utils::mkdir(oss.str());
 
-        oss << utils::pathsep() << y << m_ext;
+        oss << florb::utils::pathsep() << y << m_ext;
 
         std::ofstream of;
         of.open(oss.str().c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
@@ -116,7 +116,7 @@ int cache::exists(int z, int x, int y)
     int rc = -1;
     for (;;)
     {
-        std::string sep(utils::pathsep());
+        std::string sep(florb::utils::pathsep());
         std::ostringstream oss;
         oss << m_url << sep << m_session << sep << z << sep << x << sep << y << m_ext; 
 
@@ -169,7 +169,7 @@ int cache::get(int z, int x, int y, std::vector<char> &buf)
     {
         // Return the data
         std::ostringstream oss;
-        std::string sep(utils::pathsep());
+        std::string sep(florb::utils::pathsep());
         oss << m_url << sep << m_session << sep << z << sep << x << sep << y << m_ext; 
 
         std::ifstream tf;

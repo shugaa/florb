@@ -15,7 +15,7 @@ class gpsdlayer : public layer
 
         bool draw(const viewport &viewport, florb::canvas &os);
 
-        const point2d<double> pos();
+        const florb::point2d<double> pos();
         double track(); 
         double mode();
         bool valid();
@@ -24,7 +24,7 @@ class gpsdlayer : public layer
         class event_status;
         class event_motion;
     private:
-        void pos(point2d<double> p);
+        void pos(florb::point2d<double> p);
         void track(double t); 
         void mode(int m);
         void valid(bool v);
@@ -35,7 +35,7 @@ class gpsdlayer : public layer
         void fire_event_motion();
         void fire_event_status();
 
-        point2d<double> m_pos;
+        florb::point2d<double> m_pos;
         double m_track;
         int m_mode;
         bool m_valid;
@@ -66,17 +66,17 @@ class gpsdlayer::event_status : public event_base
 class gpsdlayer::event_motion : public event_status
 {
     public:
-        event_motion(bool connected, int mode, const point2d<double>& pos, double track) :
+        event_motion(bool connected, int mode, const florb::point2d<double>& pos, double track) :
             event_status(connected, mode),
             m_pos(pos),
             m_track(track) {};
         ~event_motion() {};
 
-        const point2d<double>& pos() const { return m_pos; };
+        const florb::point2d<double>& pos() const { return m_pos; };
         double track() const { return m_track; };
 
     private:
-        point2d<double> m_pos;
+        florb::point2d<double> m_pos;
         double m_track;
 };
 

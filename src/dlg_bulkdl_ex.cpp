@@ -9,7 +9,7 @@
 void dlg_bulkdl::create_ex()
 {
     // Set the window icon
-    utils::set_window_icon(m_window); 
+    florb::utils::set_window_icon(m_window); 
 
     // Don't use default window callback
     m_window->callback(cb_window_ex);
@@ -69,8 +69,8 @@ std::vector<unsigned int> dlg_bulkdl::parse_zoomlevels_ex()
 
     //  Split the string at separator
     std::string desc(m_input_zoomlevels->value());
-    utils::str_replace(desc, " ", "");
-    std::vector< std::string > tokens = utils::str_split(desc, ";");
+    florb::utils::str_replace(desc, " ", "");
+    std::vector< std::string > tokens = florb::utils::str_split(desc, ";");
    
     // Look at each token
     for (std::vector< std::string >::iterator it=tokens.begin();it!=tokens.end();++it)
@@ -79,19 +79,19 @@ std::vector<unsigned int> dlg_bulkdl::parse_zoomlevels_ex()
         {
             // Try to convert the token to an int first
             unsigned int conv1, conv2;
-            if (utils::fromstr((*it), conv1))
+            if (florb::utils::fromstr((*it), conv1))
             {
                 ret.push_back(conv1);
                 break;
             }
 
             // Try to split the token and construct a range
-            std::size_t c = utils::str_count((*it), "-");
-            std::vector< std::string > r = utils::str_split((*it), "-");
+            std::size_t c = florb::utils::str_count((*it), "-");
+            std::vector< std::string > r = florb::utils::str_split((*it), "-");
             if ((r.size() == 2) && (c == 1))
             {
                // Try to convert upper and lower bounds to int
-               if (utils::fromstr(r[0], conv1) && utils::fromstr(r[1], conv2))
+               if (florb::utils::fromstr(r[0], conv1) && florb::utils::fromstr(r[1], conv2))
                {
                     // Add every zoom level in the range
                     for (
@@ -262,7 +262,7 @@ void dlg_bulkdl::startdl_ex()
 
             // Set nice value
             long ms;
-            if (!utils::fromstr(m_input_nice->value(), ms) || (ms < 0))
+            if (!florb::utils::fromstr(m_input_nice->value(), ms) || (ms < 0))
             {
                 fl_alert("%s", _("Invalid delay"));
                 rc = false;
@@ -287,10 +287,10 @@ void dlg_bulkdl::startdl_ex()
 
     // Calculate mercator coordinates for the requested download viewport and
     // convert them back for the current zoom level
-    point2d<double> pmerc1(utils::px2merc(m_vp.z(), point2d<unsigned long>(m_vp.x(), m_vp.y())));
-    point2d<double> pmerc2(utils::px2merc(m_vp.z(), point2d<unsigned long>(m_vp.x()+m_vp.w(), m_vp.y()+m_vp.h())));
-    point2d<unsigned long> ppx1(utils::merc2px(m_zoomlevels[levelidx], pmerc1));
-    point2d<unsigned long> ppx2(utils::merc2px(m_zoomlevels[levelidx], pmerc2));
+    florb::point2d<double> pmerc1(florb::utils::px2merc(m_vp.z(), florb::point2d<unsigned long>(m_vp.x(), m_vp.y())));
+    florb::point2d<double> pmerc2(florb::utils::px2merc(m_vp.z(), florb::point2d<unsigned long>(m_vp.x()+m_vp.w(), m_vp.y()+m_vp.h())));
+    florb::point2d<unsigned long> ppx1(florb::utils::merc2px(m_zoomlevels[levelidx], pmerc1));
+    florb::point2d<unsigned long> ppx2(florb::utils::merc2px(m_zoomlevels[levelidx], pmerc2));
 
     // Generate a viewport for the respective zoom level. Every member
     // (x/y/w/h) is initialized separately to make use of the viewport's bounds

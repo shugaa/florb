@@ -82,7 +82,7 @@ class cfg_cache
 {
     public:
         cfg_cache() :
-            m_location(utils::appdir() + "/tiles") {};
+            m_location(florb::utils::appdir() + "/tiles") {};
     
         const std::string& location() const { return m_location; }
         void location(const std::string& location) { m_location = location; }

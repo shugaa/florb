@@ -20,7 +20,7 @@
 
 #define CIRCUMFERENCEKM (2*M_PI*6372.7982)
 
-point2d<double> utils::wsg842merc(const point2d<double> &wsg84)
+florb::point2d<double> florb::utils::wsg842merc(const florb::point2d<double> &wsg84)
 {
     if ((wsg84.x() > 180.0) || (wsg84.x() < -180.0))
         throw std::out_of_range(_("Invalid longitude"));
@@ -36,30 +36,30 @@ point2d<double> utils::wsg842merc(const point2d<double> &wsg84)
         lat = -85.0;
 
     // Project to Mercator (360 by 360 square)
-    return point2d<double>(
+    return florb::point2d<double>(
             180.0 + wsg84.x(),
             180.0 - ((180.0/M_PI) * log(tan(M_PI/4.0+lat*(M_PI/180.0)/2.0))));
 }
 
-point2d<unsigned long> utils::merc2px(unsigned int z, const point2d<double> &merc)
+florb::point2d<unsigned long> florb::utils::merc2px(unsigned int z, const florb::point2d<double> &merc)
 {
     unsigned long dimxy = dim(z);
 
-    return point2d<unsigned long>(
+    return florb::point2d<unsigned long>(
         (unsigned long)(((double)(dimxy-1)/360.0) * merc.x()),
         (unsigned long)(((double)(dimxy-1)/360.0) * merc.y()));
 }
 
-point2d<unsigned long> utils::wsg842px(unsigned int z, const point2d<double> &wsg84)
+florb::point2d<unsigned long> florb::utils::wsg842px(unsigned int z, const florb::point2d<double> &wsg84)
 {
     // Mercator projection
-    point2d<double> merc(wsg842merc(wsg84));
+    florb::point2d<double> merc(wsg842merc(wsg84));
 
     // Unit conversion
     return merc2px(z, merc);
 }
 
-point2d<double> utils::px2wsg84(unsigned int z, const point2d<unsigned long> &px)
+florb::point2d<double> florb::utils::px2wsg84(unsigned int z, const florb::point2d<unsigned long> &px)
 {
     // Get map dimensions
     unsigned long dimxy = dim(z);
@@ -69,7 +69,7 @@ point2d<double> utils::px2wsg84(unsigned int z, const point2d<unsigned long> &px
         throw std::out_of_range(_("Invalid pixel position"));
 
     // Unit conversion
-    point2d<double> mdeg(
+    florb::point2d<double> mdeg(
             (360.0/((double)dimxy/(double)px.x())),
             (360.0/((double)dimxy/(double)px.y())));
 
@@ -77,14 +77,14 @@ point2d<double> utils::px2wsg84(unsigned int z, const point2d<unsigned long> &px
     return merc2wsg84(mdeg);
 }
 
-point2d<double> utils::merc2wsg84(const point2d<double>& wsg84)
+florb::point2d<double> florb::utils::merc2wsg84(const florb::point2d<double>& wsg84)
 {
-    return point2d<double>( 
+    return florb::point2d<double>( 
             wsg84.x() - 180.0,
             -((180.0/M_PI) * (2.0 * atan(exp((wsg84.y()-180.0)*M_PI/180.0)) - M_PI/2.0)));
 }
 
-point2d<double> utils::px2merc(unsigned int z, const point2d<unsigned long> &px)
+florb::point2d<double> florb::utils::px2merc(unsigned int z, const florb::point2d<unsigned long> &px)
 {
     unsigned long dimxy = dim(z);
 
@@ -96,15 +96,15 @@ point2d<double> utils::px2merc(unsigned int z, const point2d<unsigned long> &px)
 
     double x = (px.x() == 0) ? 0.0 : (360.0/((double)(dimxy-1)/(double)px.x()));
     double y = (px.y() == 0) ? 0.0 : (360.0/((double)(dimxy-1)/(double)px.y()));
-    return point2d<double>(x,y);
+    return florb::point2d<double>(x,y);
 }
 
-unsigned long utils::dim(unsigned int z)
+unsigned long florb::utils::dim(unsigned int z)
 {
     return pow(2.0, z) * 256;
 }
 
-double utils::dist(const point2d<double> &p1, const point2d<double> &p2)
+double florb::utils::dist(const florb::point2d<double> &p1, const florb::point2d<double> &p2)
 {
     if (p1 == p2)
         return 0.0;
@@ -120,7 +120,7 @@ double utils::dist(const point2d<double> &p1, const point2d<double> &p2)
     return (isnan(ret) > 0) ? 0.0 : ret;
 }
 
-double utils::dist_merc(const point2d<double> &p1, const point2d<double> &p2)
+double florb::utils::dist_merc(const florb::point2d<double> &p1, const florb::point2d<double> &p2)
 {
     if (p1 == p2)
         return 0.0;
@@ -129,12 +129,12 @@ double utils::dist_merc(const point2d<double> &p1, const point2d<double> &p2)
     return (dstmerc * (CIRCUMFERENCEKM/360.0));
 }
 
-double utils::meters_per_pixel(unsigned int z, double lat)
+double florb::utils::meters_per_pixel(unsigned int z, double lat)
 {
     return (CIRCUMFERENCEKM * cos(lat*(M_PI/180.0)) / pow(2.0,(z+8))) * 1000.0;
 }
 
-time_t utils::iso8601_2timet(const std::string& iso)
+time_t florb::utils::iso8601_2timet(const std::string& iso)
 {
     struct tm stm;
     strptime(iso.c_str(), "%FT%T%z", &stm);
@@ -142,7 +142,7 @@ time_t utils::iso8601_2timet(const std::string& iso)
     return mktime(&stm);
 }
 
-std::string utils::timet2iso8601(time_t t)
+std::string florb::utils::timet2iso8601(time_t t)
 {
     char buf[sizeof "2011-10-08T07:07:09Z"];
     strftime(buf, sizeof buf, "%FT%TZ", gmtime(&t));
@@ -150,7 +150,7 @@ std::string utils::timet2iso8601(time_t t)
     return std::string(buf);
 }
 
-std::string utils::pathsep()
+std::string florb::utils::pathsep()
 {
 #if defined(WIN32) || defined(_WIN32) 
 return std::string("\\");
@@ -159,7 +159,7 @@ return std::string("/");
 #endif 
 }
 
-std::string utils::userdir()
+std::string florb::utils::userdir()
 {
     char *home = getenv("HOME");
     if (!home)
@@ -168,7 +168,7 @@ std::string utils::userdir()
     return std::string(home);
 }
 
-std::string utils::appdir()
+std::string florb::utils::appdir()
 {
     std::ostringstream oss;
     oss << userdir();
@@ -178,7 +178,7 @@ std::string utils::appdir()
     return oss.str();
 }
 
-bool utils::mkdir(const std::string& path)
+bool florb::utils::mkdir(const std::string& path)
 {
     bool ret = true;
 
@@ -191,33 +191,33 @@ bool utils::mkdir(const std::string& path)
     return ret;
 }
 
-void utils::rm(const std::string& path)
+void florb::utils::rm(const std::string& path)
 {
     boost::filesystem::remove_all(path);
 }
 
-bool utils::exists(const std::string& path)
+bool florb::utils::exists(const std::string& path)
 {
     return boost::filesystem::exists(path);
 }
 
-std::string utils::filestem(const std::string& path)
+std::string florb::utils::filestem(const std::string& path)
 {
     return boost::filesystem::path(path).stem().string();
 }
 
-std::string utils::extension(const std::string& path)
+std::string florb::utils::extension(const std::string& path)
 {
     return boost::filesystem::path(path).extension().string();
 }
 
-void utils::touch(const std::string& path)
+void florb::utils::touch(const std::string& path)
 {
     std::fstream f(path, std::ios::out|std::ios::app);
 	f.close();
 }
 
-void utils::set_window_icon(Fl_Window *w)
+void florb::utils::set_window_icon(Fl_Window *w)
 {
     fl_open_display();
     Pixmap p, mask;
@@ -225,7 +225,7 @@ void utils::set_window_icon(Fl_Window *w)
     w->icon((char *)p);
 }
 
-std::vector<std::string> utils::str_split(const std::string& str, const std::string& delimiter)
+std::vector<std::string> florb::utils::str_split(const std::string& str, const std::string& delimiter)
 {
     std::size_t offs = 0, p1 = 0, p2 = std::string::npos;
     std::size_t len = str.length();
@@ -248,7 +248,7 @@ std::vector<std::string> utils::str_split(const std::string& str, const std::str
     return ret;
 }
 
-std::size_t utils::str_count(const std::string& str, const std::string& token)
+std::size_t florb::utils::str_count(const std::string& str, const std::string& token)
 {
     if (token.length() == 0)
         return 0;
@@ -264,7 +264,7 @@ std::size_t utils::str_count(const std::string& str, const std::string& token)
     return ret;
 }
 
-void utils::str_replace(std::string& str, const std::string& s, const std::string& r)
+void florb::utils::str_replace(std::string& str, const std::string& s, const std::string& r)
 {
     std::size_t offs = 0;
     while ((offs = str.find(s, 0)) != std::string::npos)
@@ -274,7 +274,13 @@ void utils::str_replace(std::string& str, const std::string& s, const std::strin
 }
 
 // Cohen–Sutherland clipping algorithm
-bool utils::clipline(point2d<double> &p1, point2d<double> &p2, const point2d<double> &r1, const point2d<double> &r2, bool &p1clip, bool &p2clip)
+bool florb::utils::clipline(
+        florb::point2d<double> &p1, 
+        florb::point2d<double> &p2, 
+        const florb::point2d<double> &r1, 
+        const florb::point2d<double> &r2, 
+        bool &p1clip, 
+        bool &p2clip)
 {
     bool ret = false;
     double xmin, xmax, ymin, ymax;
@@ -369,7 +375,7 @@ bool utils::clipline(point2d<double> &p1, point2d<double> &p2, const point2d<dou
         }
 
         // Pick an endpoint for clipping
-        point2d<double> &ptmp = (code1 != 0) ? p1 : p2;
+        florb::point2d<double> &ptmp = (code1 != 0) ? p1 : p2;
         int codetmp;
         if (code1 != 0)
         {

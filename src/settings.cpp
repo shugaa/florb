@@ -227,7 +227,7 @@ class yaml_node
         yaml_node(const std::string& path)
         {
             // Touch cfgfile in case it doesn't exist
-            utils::touch(path);
+            florb::utils::touch(path);
             m_node = YAML::LoadFile(path);
         }
         ~yaml_node() {};
@@ -308,8 +308,8 @@ node node::iterator::operator* () const
 
 settings::settings()
 {
-    m_cfgfile = utils::appdir() + utils::pathsep() + "config";
-    utils::mkdir(utils::appdir());
+    m_cfgfile = florb::utils::appdir() + florb::utils::pathsep() + "config";
+    florb::utils::mkdir(florb::utils::appdir());
 
     m_rootnode = node(m_cfgfile);
     defaults(m_cfgfile);

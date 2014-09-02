@@ -80,7 +80,7 @@ bool areaselectlayer::press(const layer::event_mouse* evt)
 
 bool areaselectlayer::drag(const layer::event_mouse* evt)
 {
-    point2d<unsigned long> px(evt->pos().x(), evt->pos().y());
+    florb::point2d<unsigned long> px(evt->pos().x(), evt->pos().y());
     
     // Catch drag outside map area
     if (evt->pos().x() < 0)

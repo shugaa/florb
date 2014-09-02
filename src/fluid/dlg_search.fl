@@ -22,17 +22,18 @@ decl {\#include "wgt_map.hpp"} {public global
 
 class dlg_search {open : {public event_listener}
 } {
-  class searchresult {} {
+  class searchresult {open
+  } {
     decl {std::string m_displayname;} {public local
     }
-    decl {point2d<double> m_pos;} {public local
+    decl {florb::point2d<double> m_pos;} {selected public local
     }
   }
   decl {std::vector<searchresult> m_searchresults;} {private local
   }
   decl {downloader* m_downloader;} {private local
   }
-  decl {wgt_map* m_wgtmap;} {selected private local
+  decl {wgt_map* m_wgtmap;} {private local
   }
   decl {size_t m_markerid;} {private local
   }

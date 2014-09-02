@@ -19,11 +19,11 @@ scalelayer::~scalelayer()
 bool scalelayer::draw(const viewport &viewport, florb::canvas &os)
 {
     // Calculate coordinate in the center of the viewport
-    point2d<unsigned long> ppx(viewport.x() + (viewport.w()/2), viewport.y() + (viewport.h()/2));
-    point2d<double> pwsg84(utils::px2wsg84(viewport.z(), ppx));
+    florb::point2d<unsigned long> ppx(viewport.x() + (viewport.w()/2), viewport.y() + (viewport.h()/2));
+    florb::point2d<double> pwsg84(florb::utils::px2wsg84(viewport.z(), ppx));
 
     // Calculate meters per pixel for this latitude and zoom level
-    double mpp = utils::meters_per_pixel(viewport.z(), pwsg84.y());
+    double mpp = florb::utils::meters_per_pixel(viewport.z(), pwsg84.y());
 
     // Length of the scale in meters
     double slm = 0.0;

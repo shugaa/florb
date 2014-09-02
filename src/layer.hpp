@@ -36,7 +36,7 @@ class layer : public event_listener, public event_generator
 class layer::event_mouse : public event_base
 {
     public:
-        event_mouse(const viewport& vp, int action, int button, point2d<int> pos) :
+        event_mouse(const viewport& vp, int action, int button, florb::point2d<int> pos) :
             event_base(),
             m_viewport(vp),
             m_action(action),
@@ -48,7 +48,7 @@ class layer::event_mouse : public event_base
         const viewport& vp() const { return m_viewport; }; 
         int action() const { return m_action; };
         int button() const { return m_button; };
-        point2d<int> pos() const { return m_pos; };
+        florb::point2d<int> pos() const { return m_pos; };
 
         enum {
             BUTTON_LEFT,
@@ -65,7 +65,7 @@ class layer::event_mouse : public event_base
         viewport m_viewport;
         int m_action;
         int m_button;
-        point2d<int> m_pos;
+        florb::point2d<int> m_pos;
 };
 
 class layer::event_key : public event_base

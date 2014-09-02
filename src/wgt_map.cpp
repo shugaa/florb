@@ -86,7 +86,7 @@ wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
         m_viewport.z(cfgvp.z(), m_viewport.w()/2, m_viewport.h()/2);
 
     // set previous position
-    goto_pos(point2d<double>(cfgvp.lon(), cfgvp.lat()));
+    goto_pos(florb::point2d<double>(cfgvp.lon(), cfgvp.lat()));
 }
 
 wgt_map::~wgt_map()
@@ -94,9 +94,9 @@ wgt_map::~wgt_map()
     // Save viewport configuration
     cfg_viewport cfgvp = settings::get_instance()["viewport"].as<cfg_viewport>();
     cfgvp.z(m_viewport.z());
-    point2d<double> pos = utils::px2wsg84(
+    florb::point2d<double> pos = florb::utils::px2wsg84(
             m_viewport.z(), 
-            point2d<unsigned long>(m_viewport.x()+(m_viewport.w()/2), m_viewport.y()+(m_viewport.h()/2)));
+            florb::point2d<unsigned long>(m_viewport.x()+(m_viewport.w()/2), m_viewport.y()+(m_viewport.h()/2)));
 
     cfgvp.lon(pos.x());
     cfgvp.lat(pos.y());
@@ -125,10 +125,10 @@ wgt_map::~wgt_map()
         delete m_areaselectlayer;
 }
 
-void wgt_map::goto_pos(const point2d<double> &pwsg84)
+void wgt_map::goto_pos(const florb::point2d<double> &pwsg84)
 {
     // set previous position
-    point2d<unsigned long> ppx(utils::wsg842px(zoom(), pwsg84));
+    florb::point2d<unsigned long> ppx(florb::utils::wsg842px(zoom(), pwsg84));
 
     unsigned long dx = m_viewport.w()/2;
     unsigned long dy = m_viewport.h()/2;
@@ -139,7 +139,7 @@ void wgt_map::goto_pos(const point2d<double> &pwsg84)
     refresh();
 }
 
-void wgt_map::marker_add(const point2d<double> &pmerc, size_t id)
+void wgt_map::marker_add(const florb::point2d<double> &pmerc, size_t id)
 {
     if (!m_markerlayer)
         throw std::runtime_error(_("Marker error"));
@@ -147,7 +147,7 @@ void wgt_map::marker_add(const point2d<double> &pmerc, size_t id)
     m_markerlayer->add(pmerc, id);
 }
 
-size_t wgt_map::marker_add(const point2d<double> &pmerc)
+size_t wgt_map::marker_add(const florb::point2d<double> &pmerc)
 {
     if (!m_markerlayer)
         throw std::runtime_error(_("Marker error"));
@@ -425,7 +425,7 @@ void wgt_map::goto_cursor()
     goto_pos(m_gpsdlayer->pos());
 }
 
-point2d<double> wgt_map::mousepos()
+florb::point2d<double> wgt_map::mousepos()
 {
     // The currently active viewport might be smaller than the current widget
     // size. Calculate the delta first
@@ -454,8 +454,8 @@ point2d<double> wgt_map::mousepos()
         py = m_viewport.h()-1;
 
     // Get the GPS coordinates for the current mouse position
-    return point2d<double> (
-            utils::px2wsg84(m_viewport.z(), point2d<unsigned long>(m_viewport.x()+px, m_viewport.y()+py)));
+    return florb::point2d<double> (
+            florb::utils::px2wsg84(m_viewport.z(), florb::point2d<unsigned long>(m_viewport.x()+px, m_viewport.y()+py)));
 }
 
 void wgt_map::refresh()
@@ -465,10 +465,10 @@ void wgt_map::refresh()
     redraw();
 }
 
-point2d<int> wgt_map::vp_relative(const point2d<int>& pos)
+florb::point2d<int> wgt_map::vp_relative(const florb::point2d<int>& pos)
 {
     // Convert to widget-relative coordinates first
-    point2d<int> ret(pos.x()-x(), pos.y()-y());
+    florb::point2d<int> ret(pos.x()-x(), pos.y()-y());
 
     // Calculate the widget<->viewport delta and get the viewport-relative
     // return coordinates
@@ -480,9 +480,9 @@ point2d<int> wgt_map::vp_relative(const point2d<int>& pos)
     return ret;
 }
 
-bool wgt_map::vp_inside(const point2d<int>& pos)
+bool wgt_map::vp_inside(const florb::point2d<int>& pos)
 {
-    point2d<int> vprel(vp_relative(pos));
+    florb::point2d<int> vprel(vp_relative(pos));
 
     if (vprel.x() < 0)
         return false;
@@ -612,7 +612,7 @@ int wgt_map::handle_push(int event)
             m_viewport, 
             layer::event_mouse::ACTION_PRESS,
             button, 
-            vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
+            vp_relative(florb::point2d<int>(Fl::event_x(), Fl::event_y())));
 
     fire(&me);
 
@@ -645,7 +645,7 @@ int wgt_map::handle_release(int event)
             m_viewport, 
             layer::event_mouse::ACTION_RELEASE,
             button, 
-            vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
+            vp_relative(florb::point2d<int>(Fl::event_x(), Fl::event_y())));
 
     fire(&me);
 
@@ -690,7 +690,7 @@ int wgt_map::handle_drag(int event)
                 m_viewport,
                 layer::event_mouse::ACTION_DRAG,
                 button,
-                vp_relative(point2d<int>(Fl::event_x(), Fl::event_y())));
+                vp_relative(florb::point2d<int>(Fl::event_x(), Fl::event_y())));
 
         fire(&me);
     }

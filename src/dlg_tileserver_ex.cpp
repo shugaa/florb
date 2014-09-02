@@ -6,7 +6,7 @@
 void dlg_tileserver::create_ex()
 {
     // Set the window icon
-    utils::set_window_icon(m_window); 
+    florb::utils::set_window_icon(m_window); 
     m_window->label(m_title.c_str());
 }
 

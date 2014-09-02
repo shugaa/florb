@@ -107,7 +107,7 @@ double gpsdclient::track(void)
     return ret;   
 }
 
-void gpsdclient::pos(const point2d<double>& p)
+void gpsdclient::pos(const florb::point2d<double>& p)
 {
     m_mutex.lock();
     m_pos = p;
@@ -123,10 +123,10 @@ void gpsdclient::pos(double lon, double lat)
 }
 
 
-point2d<double> gpsdclient::pos(void)
+florb::point2d<double> gpsdclient::pos(void)
 {
     m_mutex.lock();
-    point2d<double> ret(m_pos);
+    florb::point2d<double> ret(m_pos);
     m_mutex.unlock();
 
     return ret;   

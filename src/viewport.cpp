@@ -11,7 +11,7 @@ viewport::viewport(unsigned long w, unsigned long h)
     m_dim = 0;
     for (m_z=ZMIN;m_z<=ZMAX;m_z++)
     {
-        m_dim = utils::dim(m_z);
+        m_dim = florb::utils::dim(m_z);
 
         // At this zoomlevel the map fills the viewport in both directions
         if ((m_dim >= w) && (m_dim >= h))
@@ -31,7 +31,7 @@ viewport::viewport(unsigned long x, unsigned long y, unsigned int z, unsigned lo
     m_z(z), 
     m_w(w), 
     m_h(h),
-    m_dim(utils::dim(z))
+    m_dim(florb::utils::dim(z))
 {
 };
 
@@ -41,7 +41,7 @@ viewport::viewport() :
     m_z(0), 
     m_w(0), 
     m_h(0),
-    m_dim(utils::dim(0))
+    m_dim(florb::utils::dim(0))
 {
 };
 
@@ -193,7 +193,7 @@ void viewport::z(unsigned int z, unsigned long x, unsigned long y)
    // Calculate the mapsize for the new zoomlevel and fit the viewport if
    // necessary
    m_z = z;
-   m_dim = utils::dim(m_z); 
+   m_dim = florb::utils::dim(m_z); 
    
    unsigned long newx = (unsigned long)((double)m_dim*facx);
    unsigned long newy = (unsigned long)((double)m_dim*facy);

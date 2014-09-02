@@ -29,7 +29,7 @@ namespace florb {
             void load_track(const std::string &path);
             void save_track(const std::string &path);
             void clear_track();
-            void add_trackpoint(const point2d<double>& p);
+            void add_trackpoint(const florb::point2d<double>& p);
 
             size_t selected();
             void selection_get(std::vector<waypoint>& waypoints);
@@ -55,8 +55,8 @@ namespace florb {
 
                 // Dragging
                 bool dragging;
-                point2d<double> dragorigin;
-                point2d<double> dragcurrent;
+                florb::point2d<double> dragorigin;
+                florb::point2d<double> dragcurrent;
 
                 std::vector< std::vector<gpx_trkpt>::iterator > waypoints;
             };
@@ -70,7 +70,7 @@ namespace florb {
             void trip_update();
             void trip_calcall();
 
-            bool clipline(point2d<double> &p1, point2d<double> &p2, point2d<double> r1, point2d<double> r2, bool &p1clip, bool &p2clip);
+            bool clipline(florb::point2d<double> &p1, florb::point2d<double> &p2, florb::point2d<double> r1, florb::point2d<double> r2, bool &p1clip, bool &p2clip);
 
             void parsetree(tinyxml2::XMLNode *parent);
 

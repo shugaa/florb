@@ -74,7 +74,7 @@ osmlayer::osmlayer(
     // Create cache
     cfg_cache cfgcache = settings::get_instance()["cache"].as<cfg_cache>();
     try {
-        m_cache = new cache(cfgcache.location(), nm, /*utils::extension(url)*/ std::string());
+        m_cache = new cache(cfgcache.location(), nm, /*florb::utils::extension(url)*/ std::string());
     } catch (std::runtime_error& e) {
         throw e;
     }

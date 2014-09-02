@@ -16,7 +16,7 @@ class gpsdclient : public event_generator
 
         bool connected(void);
         int mode(void);
-        point2d<double> pos(void);
+        florb::point2d<double> pos(void);
         double track(void);
 
         enum {
@@ -30,7 +30,7 @@ class gpsdclient : public event_generator
     private:
         void connected(bool c);
         void mode(int m);
-        void pos(const point2d<double>& p);
+        void pos(const florb::point2d<double>& p);
         void pos(double lon, double lat);
         void track(double t);
 
@@ -51,14 +51,14 @@ class gpsdclient : public event_generator
         bool m_exit;
         bool m_connected;
         int m_mode;
-        point2d<double> m_pos;
+        florb::point2d<double> m_pos;
         double m_track;
 };
 
 class gpsdclient::event_gpsd : public event_base
 {
     public:
-        event_gpsd(bool c, int mode, const point2d<double>& pos, double track) :
+        event_gpsd(bool c, int mode, const florb::point2d<double>& pos, double track) :
             m_connected(c),
             m_mode(mode),
             m_pos(pos),
@@ -66,14 +66,14 @@ class gpsdclient::event_gpsd : public event_base
         ~event_gpsd() {};
 
         int mode() const { return m_mode; };
-        const point2d<double>& pos() const { return m_pos; };
+        const florb::point2d<double>& pos() const { return m_pos; };
         double track() const { return m_track; };
         bool connected() const { return m_connected; };
 
     private:
         bool m_connected;
         int m_mode;
-        point2d<double> m_pos;
+        florb::point2d<double> m_pos;
         double m_track;
 };
 

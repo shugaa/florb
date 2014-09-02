@@ -15,7 +15,7 @@ markerlayer::~markerlayer()
 {
 };
 
-size_t markerlayer::add(const point2d<double> &pmerc)
+size_t markerlayer::add(const florb::point2d<double> &pmerc)
 {
     size_t i = 0;
     for (;i<m_markers.size();i++)
@@ -40,7 +40,7 @@ size_t markerlayer::add(const point2d<double> &pmerc)
     return i;
 };
 
-void markerlayer::add(const point2d<double> &pmerc, size_t id)
+void markerlayer::add(const florb::point2d<double> &pmerc, size_t id)
 {
     marker_internal tmp;
     tmp.p = pmerc;
@@ -83,7 +83,7 @@ bool markerlayer::draw(const viewport &viewport, florb::canvas &os)
     std::vector<marker_internal>::iterator it;
     for (it=m_markers.begin();it!=m_markers.end();++it)
     {
-        point2d<unsigned long> ppx(utils::merc2px(viewport.z(), (*it).p));
+        florb::point2d<unsigned long> ppx(florb::utils::merc2px(viewport.z(), (*it).p));
 
         if (ppx.x() < viewport.x())
             continue;

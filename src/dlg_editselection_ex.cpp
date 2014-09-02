@@ -2,6 +2,12 @@
 #include "settings.hpp"
 #include "fluid/dlg_editselection.hpp"
 
+void dlg_editselection::create_ex()
+{
+    // Set the window icon
+    florb::utils::set_window_icon(m_window); 
+}
+
 void dlg_editselection::show_ex()
 {
     cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
@@ -87,7 +93,7 @@ bool dlg_editselection::handle_ok_ex(std::vector<florb::tracklayer::waypoint>& w
 
     // Perform unit conversion for elevaton if necessary
     double ele = 0;
-    utils::fromstr(m_txtin_ele->value(), ele);
+    florb::utils::fromstr(m_txtin_ele->value(), ele);
 
     switch (cfgunits.system_length())
     {
@@ -112,8 +118,8 @@ bool dlg_editselection::handle_ok_ex(std::vector<florb::tracklayer::waypoint>& w
     else
     {
         double lat = 0, lon = 0;
-        utils::fromstr(m_txtin_lon->value(), lon);
-        utils::fromstr(m_txtin_lat->value(), lat);
+        florb::utils::fromstr(m_txtin_lon->value(), lon);
+        florb::utils::fromstr(m_txtin_lat->value(), lat);
 
         waypoints[0].lon(lon);
         waypoints[0].lat(lat);
