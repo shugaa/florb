@@ -118,13 +118,13 @@ void dlg_ui::update_statusbar_ex()
     }
 }
 
-bool dlg_ui::wgtmap_evt_notify_ex(const wgt_map::event_notify *e)
+bool dlg_ui::wgtmap_evt_notify_ex(const florb::wgt_map::event_notify *e)
 {
     update_statusbar_ex();
     return true;
 }
 
-bool dlg_ui::wgtmap_evt_endselect_ex(const wgt_map::event_endselect *e)
+bool dlg_ui::wgtmap_evt_endselect_ex(const florb::wgt_map::event_endselect *e)
 {
     if (!m_dlg_bulkdl)
         m_dlg_bulkdl = new dlg_bulkdl(m_wgtmap);
@@ -182,9 +182,9 @@ void dlg_ui::create_ex(void)
     m_menuitem_track_showwpmarkers->set(); 
     m_wgtmap->gpx_showwpmarkers(true);
 
-    // Start listening to wgt_mapevents
-    register_event_handler<dlg_ui, wgt_map::event_notify>(this, &dlg_ui::wgtmap_evt_notify_ex);
-    register_event_handler<dlg_ui, wgt_map::event_endselect>(this, &dlg_ui::wgtmap_evt_endselect_ex);
+    // Start listening to florb::wgt_mapevents
+    register_event_handler<dlg_ui, florb::wgt_map::event_notify>(this, &dlg_ui::wgtmap_evt_notify_ex);
+    register_event_handler<dlg_ui, florb::wgt_map::event_endselect>(this, &dlg_ui::wgtmap_evt_endselect_ex);
     m_wgtmap->add_event_listener(this);
 }
 

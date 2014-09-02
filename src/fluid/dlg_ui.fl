@@ -14,7 +14,7 @@ decl {\#include <curl/curl.h>} {private global
 decl {\#include "dlg_ui.hpp"} {private global
 } 
 
-decl {\#include "wgt_map.hpp"} {public global
+decl {\#include "wgt_map.hpp"} {selected public global
 } 
 
 decl {\#include "event.hpp"} {public global
@@ -136,9 +136,9 @@ class dlg_ui {open : {public event_listener}
   }
   decl {void cb_close_ex(Fl_Widget *widget);} {private local
   }
-  decl {bool wgtmap_evt_notify_ex(const wgt_map::event_notify *e);} {private local
+  decl {bool wgtmap_evt_notify_ex(const florb::wgt_map::event_notify *e);} {private local
   }
-  decl {bool wgtmap_evt_endselect_ex(const wgt_map::event_endselect *e);} {selected private local
+  decl {bool wgtmap_evt_endselect_ex(const florb::wgt_map::event_endselect *e);} {private local
   }
   Function {cb_close(Fl_Widget *widget, void *userdata)} {private return_type {static void}
   } {
@@ -435,7 +435,7 @@ ui->cb_choice_overlay_ex(widget);} {}
           Fl_Box m_wgtmap {
             label {Slippy Map}
             private xywh {5 58 795 480} box FLAT_BOX resizable
-            class wgt_map
+            class {florb::wgt_map}
           }
           Fl_Box {} {
             private xywh {800 58 5 480} box FLAT_BOX

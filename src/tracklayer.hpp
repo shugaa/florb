@@ -22,8 +22,8 @@ namespace florb {
             class event_notify;
             class waypoint;
 
-            bool handle_evt_mouse(const layer::event_mouse* evt);
-            bool handle_evt_key(const layer::event_key* evt);
+            bool handle_evt_mouse(const florb::layer::event_mouse* evt);
+            bool handle_evt_key(const florb::layer::event_key* evt);
 
             bool draw(const viewport& vp, florb::canvas& os);
             void load_track(const std::string &path);
@@ -58,23 +58,21 @@ namespace florb {
                 florb::point2d<double> dragorigin;
                 florb::point2d<double> dragcurrent;
 
-                std::vector< std::vector<gpx_trkpt>::iterator > waypoints;
+                std::vector< std::vector<florb::tracklayer::gpx_trkpt>::iterator > waypoints;
             };
 
             void notify();
 
-            bool press(const layer::event_mouse* evt);
-            bool release(const layer::event_mouse* evt);
-            bool drag(const layer::event_mouse* evt);
-            bool key(const layer::event_key* evt);
+            bool press(const florb::layer::event_mouse* evt);
+            bool release(const florb::layer::event_mouse* evt);
+            bool drag(const florb::layer::event_mouse* evt);
+            bool key(const florb::layer::event_key* evt);
             void trip_update();
             void trip_calcall();
 
-            bool clipline(florb::point2d<double> &p1, florb::point2d<double> &p2, florb::point2d<double> r1, florb::point2d<double> r2, bool &p1clip, bool &p2clip);
-
             void parsetree(tinyxml2::XMLNode *parent);
 
-            std::vector<gpx_trkpt> m_trkpts;
+            std::vector<florb::tracklayer::gpx_trkpt> m_trkpts;
             selection m_selection;
             long double m_trip;
             bool m_showwpmarkers;

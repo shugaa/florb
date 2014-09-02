@@ -6,7 +6,7 @@
 #include "wgt_map.hpp"
 #include "utils.hpp"
 
-wgt_map::wgt_map(int x, int y, int w, int h, const char *label) : 
+florb::wgt_map::wgt_map(int x, int y, int w, int h, const char *label) : 
     Fl_Widget(x, y, w, h, label),
     m_basemap(NULL),
     m_tracklayer(NULL),
@@ -21,13 +21,13 @@ wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
     m_dragmode(false)
 {
     // Register event handlers for layer events
-    register_event_handler<wgt_map, gpsdlayer::event_status>(this, &wgt_map::gpsd_evt_status);
-    register_event_handler<wgt_map, gpsdlayer::event_motion>(this, &wgt_map::gpsd_evt_motion);
-    register_event_handler<wgt_map, osmlayer::event_notify>(this, &wgt_map::osm_evt_notify);
-    register_event_handler<wgt_map, florb::tracklayer::event_notify>(this, &wgt_map::gpx_evt_notify);
-    register_event_handler<wgt_map, markerlayer::event_notify>(this, &wgt_map::marker_evt_notify);
-    register_event_handler<wgt_map, areaselectlayer::event_done>(this, &wgt_map::areaselect_evt_done);
-    register_event_handler<wgt_map, areaselectlayer::event_notify>(this, &wgt_map::areaselect_evt_notify);
+    register_event_handler<florb::wgt_map, gpsdlayer::event_status>(this, &florb::wgt_map::gpsd_evt_status);
+    register_event_handler<florb::wgt_map, gpsdlayer::event_motion>(this, &florb::wgt_map::gpsd_evt_motion);
+    register_event_handler<florb::wgt_map, osmlayer::event_notify>(this, &florb::wgt_map::osm_evt_notify);
+    register_event_handler<florb::wgt_map, florb::tracklayer::event_notify>(this, &florb::wgt_map::gpx_evt_notify);
+    register_event_handler<florb::wgt_map, markerlayer::event_notify>(this, &florb::wgt_map::marker_evt_notify);
+    register_event_handler<florb::wgt_map, areaselectlayer::event_done>(this, &florb::wgt_map::areaselect_evt_done);
+    register_event_handler<florb::wgt_map, areaselectlayer::event_notify>(this, &florb::wgt_map::areaselect_evt_notify);
 
     // Add a GPX layer
     try {
@@ -89,7 +89,7 @@ wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
     goto_pos(florb::point2d<double>(cfgvp.lon(), cfgvp.lat()));
 }
 
-wgt_map::~wgt_map()
+florb::wgt_map::~wgt_map()
 {
     // Save viewport configuration
     florb::cfg_viewport cfgvp = florb::settings::get_instance()["viewport"].as<florb::cfg_viewport>();
@@ -125,7 +125,7 @@ wgt_map::~wgt_map()
         delete m_areaselectlayer;
 }
 
-void wgt_map::goto_pos(const florb::point2d<double> &pwsg84)
+void florb::wgt_map::goto_pos(const florb::point2d<double> &pwsg84)
 {
     // set previous position
     florb::point2d<unsigned long> ppx(florb::utils::wsg842px(zoom(), pwsg84));
@@ -139,7 +139,7 @@ void wgt_map::goto_pos(const florb::point2d<double> &pwsg84)
     refresh();
 }
 
-void wgt_map::marker_add(const florb::point2d<double> &pmerc, size_t id)
+void florb::wgt_map::marker_add(const florb::point2d<double> &pmerc, size_t id)
 {
     if (!m_markerlayer)
         throw std::runtime_error(_("Marker error"));
@@ -147,7 +147,7 @@ void wgt_map::marker_add(const florb::point2d<double> &pmerc, size_t id)
     m_markerlayer->add(pmerc, id);
 }
 
-size_t wgt_map::marker_add(const florb::point2d<double> &pmerc)
+size_t florb::wgt_map::marker_add(const florb::point2d<double> &pmerc)
 {
     if (!m_markerlayer)
         throw std::runtime_error(_("Marker error"));
@@ -155,7 +155,7 @@ size_t wgt_map::marker_add(const florb::point2d<double> &pmerc)
     return m_markerlayer->add(pmerc);
 }
 
-void wgt_map::marker_remove(size_t id)
+void florb::wgt_map::marker_remove(size_t id)
 {
     if (!m_markerlayer)
         throw std::runtime_error(_("Marker error"));
@@ -163,7 +163,7 @@ void wgt_map::marker_remove(size_t id)
     m_markerlayer->remove(id);
 }
 
-void wgt_map::select_area(const std::string& caption)
+void florb::wgt_map::select_area(const std::string& caption)
 {
     // Disabe florb::tracklayer
     m_tracklayer->enable(false);
@@ -172,12 +172,12 @@ void wgt_map::select_area(const std::string& caption)
     m_areaselectlayer->enable(true);
 }
 
-void wgt_map::select_clear()
+void florb::wgt_map::select_clear()
 {
     m_areaselectlayer->clear();
 }
 
-void wgt_map::gpx_loadtrack(const std::string& path)
+void florb::wgt_map::gpx_loadtrack(const std::string& path)
 {
     if (!m_tracklayer)
         throw 0;
@@ -185,7 +185,7 @@ void wgt_map::gpx_loadtrack(const std::string& path)
     m_tracklayer->load_track(path);
 }
 
-void wgt_map::gpx_savetrack(const std::string& path)
+void florb::wgt_map::gpx_savetrack(const std::string& path)
 {
     if (!m_tracklayer)
         throw 0;
@@ -193,7 +193,7 @@ void wgt_map::gpx_savetrack(const std::string& path)
     m_tracklayer->save_track(path);
 }
 
-void wgt_map::gpx_cleartrack()
+void florb::wgt_map::gpx_cleartrack()
 {
     if (!m_tracklayer)
         throw 0;
@@ -201,7 +201,7 @@ void wgt_map::gpx_cleartrack()
     m_tracklayer->clear_track();
 }
 
-bool wgt_map::gpx_wpselected()
+bool florb::wgt_map::gpx_wpselected()
 {
     if (!m_tracklayer)
         throw 0;
@@ -209,7 +209,7 @@ bool wgt_map::gpx_wpselected()
     return (m_tracklayer->selected() > 0);
 }
 
-void wgt_map::gpx_selection_get(std::vector<florb::tracklayer::waypoint>& waypoints)
+void florb::wgt_map::gpx_selection_get(std::vector<florb::tracklayer::waypoint>& waypoints)
 {
     if (!m_tracklayer)
         throw 0;
@@ -217,7 +217,7 @@ void wgt_map::gpx_selection_get(std::vector<florb::tracklayer::waypoint>& waypoi
     m_tracklayer->selection_get(waypoints);
 }
         
-void wgt_map::gpx_selection_set(const std::vector<florb::tracklayer::waypoint>& waypoints)
+void florb::wgt_map::gpx_selection_set(const std::vector<florb::tracklayer::waypoint>& waypoints)
 {
     if (!m_tracklayer)
         throw 0;
@@ -226,7 +226,7 @@ void wgt_map::gpx_selection_set(const std::vector<florb::tracklayer::waypoint>& 
     refresh();
 }
 
-void wgt_map::gpx_wpdelete()
+void florb::wgt_map::gpx_wpdelete()
 {
     if (!m_tracklayer)
         throw 0;
@@ -234,7 +234,7 @@ void wgt_map::gpx_wpdelete()
     m_tracklayer->selection_delete();    
 }
 
-double wgt_map::gpx_trip()
+double florb::wgt_map::gpx_trip()
 {
     if (!m_tracklayer)
         throw 0;
@@ -242,7 +242,7 @@ double wgt_map::gpx_trip()
     return m_tracklayer->trip();
 }
 
-void wgt_map::gpx_showwpmarkers(bool s)
+void florb::wgt_map::gpx_showwpmarkers(bool s)
 {
     if (!m_tracklayer)
         throw 0;
@@ -250,7 +250,7 @@ void wgt_map::gpx_showwpmarkers(bool s)
     m_tracklayer->showwpmarkers(s);
 }
 
-std::string wgt_map::gpx_trackname()
+std::string florb::wgt_map::gpx_trackname()
 {
     if (!m_tracklayer)
         throw 0;
@@ -258,7 +258,7 @@ std::string wgt_map::gpx_trackname()
     return m_tracklayer->name();
 }
 
-bool wgt_map::gpsd_connected()
+bool florb::wgt_map::gpsd_connected()
 {
     if (!m_gpsdlayer)
         return false;
@@ -266,7 +266,7 @@ bool wgt_map::gpsd_connected()
     return m_gpsdlayer->connected();
 }
 
-void wgt_map::gpsd_connect(const std::string& host, const std::string& port)
+void florb::wgt_map::gpsd_connect(const std::string& host, const std::string& port)
 {
     if (m_gpsdlayer)
         gpsd_disconnect();
@@ -281,7 +281,7 @@ void wgt_map::gpsd_connect(const std::string& host, const std::string& port)
     m_gpsdlayer->add_event_listener(this);
 }
 
-void wgt_map::gpsd_disconnect()
+void florb::wgt_map::gpsd_disconnect()
 {
     // Not connected in the first place
     if (!m_gpsdlayer)
@@ -298,19 +298,19 @@ void wgt_map::gpsd_disconnect()
     fire(&e);
 }
 
-void wgt_map::gpsd_record(bool start)
+void florb::wgt_map::gpsd_record(bool start)
 {
     m_recordtrack = start;
 }
 
-void wgt_map::gpsd_lock(bool start)
+void florb::wgt_map::gpsd_lock(bool start)
 {
     m_lockcursor = start;
     if (m_lockcursor)
         goto_cursor();
 }
 
-int wgt_map::gpsd_mode()
+int florb::wgt_map::gpsd_mode()
 {
     if (!m_gpsdlayer)
         throw 0;
@@ -318,7 +318,7 @@ int wgt_map::gpsd_mode()
     return m_gpsdlayer->mode();
 }
 
-void wgt_map::basemap(
+void florb::wgt_map::basemap(
                 const std::string& name, 
                 const std::string& url, 
                 unsigned int zmin, 
@@ -354,7 +354,7 @@ void wgt_map::basemap(
     refresh();
 }
 
-void wgt_map::overlay(
+void florb::wgt_map::overlay(
                 const std::string& name, 
                 const std::string& url, 
                 unsigned int zmin, 
@@ -379,7 +379,7 @@ void wgt_map::overlay(
     refresh();
 }
 
-void wgt_map::clear_overlay()
+void florb::wgt_map::clear_overlay()
 {
     osmlayer *lold = m_overlay;
     m_overlay = NULL;
@@ -397,13 +397,13 @@ void wgt_map::clear_overlay()
     refresh();
 }
 
-unsigned int wgt_map::zoom()
+unsigned int florb::wgt_map::zoom()
 {
     // Return current zoomlevel
     return m_viewport.z();
 }
 
-void wgt_map::zoom(unsigned int z)
+void florb::wgt_map::zoom(unsigned int z)
 {
     // Set tne new zoomlevel
     m_viewport.z(z, m_viewport.w()/2, m_viewport.h()/2);
@@ -412,7 +412,7 @@ void wgt_map::zoom(unsigned int z)
     refresh();
 }
 
-void wgt_map::goto_cursor()
+void florb::wgt_map::goto_cursor()
 {
     // GPSd not connected
     if (!gpsd_connected())
@@ -425,7 +425,7 @@ void wgt_map::goto_cursor()
     goto_pos(m_gpsdlayer->pos());
 }
 
-florb::point2d<double> wgt_map::mousepos()
+florb::point2d<double> florb::wgt_map::mousepos()
 {
     // The currently active viewport might be smaller than the current widget
     // size. Calculate the delta first
@@ -458,14 +458,14 @@ florb::point2d<double> wgt_map::mousepos()
             florb::utils::px2wsg84(m_viewport.z(), florb::point2d<unsigned long>(m_viewport.x()+px, m_viewport.y()+py)));
 }
 
-void wgt_map::refresh()
+void florb::wgt_map::refresh()
 {
     // Quote from the doc: The public method Fl_Widget::redraw() simply does
     // Fl_Widget::damage(FL_DAMAGE_ALL)
     redraw();
 }
 
-florb::point2d<int> wgt_map::vp_relative(const florb::point2d<int>& pos)
+florb::point2d<int> florb::wgt_map::vp_relative(const florb::point2d<int>& pos)
 {
     // Convert to widget-relative coordinates first
     florb::point2d<int> ret(pos.x()-x(), pos.y()-y());
@@ -480,7 +480,7 @@ florb::point2d<int> wgt_map::vp_relative(const florb::point2d<int>& pos)
     return ret;
 }
 
-bool wgt_map::vp_inside(const florb::point2d<int>& pos)
+bool florb::wgt_map::vp_inside(const florb::point2d<int>& pos)
 {
     florb::point2d<int> vprel(vp_relative(pos));
 
@@ -496,7 +496,7 @@ bool wgt_map::vp_inside(const florb::point2d<int>& pos)
     return true;
 }
 
-bool wgt_map::gpsd_evt_motion(const gpsdlayer::event_motion *e)
+bool florb::wgt_map::gpsd_evt_motion(const gpsdlayer::event_motion *e)
 {
     // Track recording on, add current position
     if (m_recordtrack)
@@ -515,7 +515,7 @@ bool wgt_map::gpsd_evt_motion(const gpsdlayer::event_motion *e)
     return true;
 }
 
-bool wgt_map::gpsd_evt_status(const gpsdlayer::event_status *e)
+bool florb::wgt_map::gpsd_evt_status(const gpsdlayer::event_status *e)
 {
     refresh();
     event_notify en;
@@ -523,13 +523,13 @@ bool wgt_map::gpsd_evt_status(const gpsdlayer::event_status *e)
     return true;
 }
 
-bool wgt_map::osm_evt_notify(const osmlayer::event_notify *e)
+bool florb::wgt_map::osm_evt_notify(const osmlayer::event_notify *e)
 {
     refresh();
     return true;
 }
 
-bool wgt_map::gpx_evt_notify(const florb::tracklayer::event_notify *e)
+bool florb::wgt_map::gpx_evt_notify(const florb::tracklayer::event_notify *e)
 {
     refresh();
 
@@ -540,13 +540,13 @@ bool wgt_map::gpx_evt_notify(const florb::tracklayer::event_notify *e)
     return true;
 }
 
-bool wgt_map::marker_evt_notify(const markerlayer::event_notify *e)
+bool florb::wgt_map::marker_evt_notify(const markerlayer::event_notify *e)
 {
     refresh();
     return true;
 }
 
-bool wgt_map::areaselect_evt_done(const areaselectlayer::event_done *e)
+bool florb::wgt_map::areaselect_evt_done(const areaselectlayer::event_done *e)
 {
     // disable areaselectlayer
     m_areaselectlayer->enable(false);
@@ -561,13 +561,13 @@ bool wgt_map::areaselect_evt_done(const areaselectlayer::event_done *e)
     return true;
 }
 
-bool wgt_map::areaselect_evt_notify(const areaselectlayer::event_notify *e)
+bool florb::wgt_map::areaselect_evt_notify(const areaselectlayer::event_notify *e)
 {
     refresh();
     return true;
 }
 
-int wgt_map::handle_move(int event)
+int florb::wgt_map::handle_move(int event)
 {
     // Save the current mouse position
     m_mousepos.x(Fl::event_x()-x());
@@ -580,19 +580,19 @@ int wgt_map::handle_move(int event)
     return 1;
 }
 
-int wgt_map::handle_enter(int event)
+int florb::wgt_map::handle_enter(int event)
 {
     fl_cursor(FL_CURSOR_CROSS);
     return 1;
 }
 
-int wgt_map::handle_leave(int event)
+int florb::wgt_map::handle_leave(int event)
 {
     fl_cursor(FL_CURSOR_DEFAULT);
     return 1;
 }
 
-int wgt_map::handle_push(int event)
+int florb::wgt_map::handle_push(int event)
 {
     // Focus this widget when pushed
     take_focus();
@@ -619,7 +619,7 @@ int wgt_map::handle_push(int event)
     return 1;
 }
 
-int wgt_map::handle_release(int event)
+int florb::wgt_map::handle_release(int event)
 {
     // End of drag mode, allow downloading of tiles
     if (m_basemap)
@@ -652,7 +652,7 @@ int wgt_map::handle_release(int event)
     return 1;
 }
 
-int wgt_map::handle_drag(int event)
+int florb::wgt_map::handle_drag(int event)
 {
     // Move the viewport
     if (Fl::event_state(FL_BUTTON3) != 0)
@@ -698,7 +698,7 @@ int wgt_map::handle_drag(int event)
     return 1;
 }
 
-int wgt_map::handle_mousewheel(int event)
+int florb::wgt_map::handle_mousewheel(int event)
 {
     // Outside this widget
     if (!Fl::event_inside(this))
@@ -733,7 +733,7 @@ int wgt_map::handle_mousewheel(int event)
     return 1;
 }
 
-int wgt_map::handle_keyboard(int event)
+int florb::wgt_map::handle_keyboard(int event)
 {
     int ret = 0;
 
@@ -802,7 +802,7 @@ int wgt_map::handle_keyboard(int event)
     return ret;
 }
 
-int wgt_map::handle(int event) 
+int florb::wgt_map::handle(int event) 
 {
     int ret = 0;
 
@@ -862,7 +862,7 @@ int wgt_map::handle(int event)
     return ret;
 }
 
-void wgt_map::draw() 
+void florb::wgt_map::draw() 
 {
     // Basemap and overlay rendering complete?
     static bool map_dirty = true;

@@ -16,145 +16,149 @@
 #include "areaselectlayer.hpp"
 #include "gfx.hpp"
 
-class wgt_map : public Fl_Widget, public event_listener, public event_generator
+namespace florb
 {
-    public:
-        wgt_map(int x, int y, int w, int h, const char *label);
-        ~wgt_map();
+    class wgt_map : public Fl_Widget, public event_listener, public event_generator
+    {
+        public:
+            wgt_map(int x, int y, int w, int h, const char *label);
+            ~wgt_map();
 
-        // FLTK event handling routine
-        int handle(int event);
+            // FLTK event handling routine
+            int handle(int event);
 
-        // Map and overlay configuration
-        void basemap(
-                const std::string& name, 
-                const std::string& url, 
-                unsigned int zmin, 
-                unsigned int zmax, 
-                unsigned int parallel,
-                int imgtype);
-        void overlay(
-                const std::string& name, 
-                const std::string& url, 
-                unsigned int zmin, 
-                unsigned int zmax, 
-                unsigned int parallel,
-                int imgtype);
-        void clear_overlay();
+            // Map and overlay configuration
+            void basemap(
+                    const std::string& name, 
+                    const std::string& url, 
+                    unsigned int zmin, 
+                    unsigned int zmax, 
+                    unsigned int parallel,
+                    int imgtype);
+            void overlay(
+                    const std::string& name, 
+                    const std::string& url, 
+                    unsigned int zmin, 
+                    unsigned int zmax, 
+                    unsigned int parallel,
+                    int imgtype);
+            void clear_overlay();
 
-        // GPSd configuration
-        bool gpsd_connected();
-        void gpsd_connect(const std::string& host, const std::string& port);
-        void gpsd_disconnect();
-        void gpsd_lock(bool start);
-        void gpsd_record(bool start);
-        int gpsd_mode();
+            // GPSd configuration
+            bool gpsd_connected();
+            void gpsd_connect(const std::string& host, const std::string& port);
+            void gpsd_disconnect();
+            void gpsd_lock(bool start);
+            void gpsd_record(bool start);
+            int gpsd_mode();
 
-        // GPX configuration
-        void gpx_loadtrack(const std::string& path);
-        void gpx_savetrack(const std::string& path);
-        void gpx_cleartrack();
-        bool gpx_wpselected();
-        void gpx_wpdelete();
-        void gpx_selection_get(std::vector<florb::tracklayer::waypoint>& waypoints);
-        void gpx_selection_set(const std::vector<florb::tracklayer::waypoint>& waypoints); 
-        double gpx_trip();
-        void gpx_showwpmarkers(bool s);
-        std::string gpx_trackname();
-        
-        // Viewport control
-        unsigned int zoom();
-        void zoom(unsigned int z);
-        void goto_cursor();
-        void goto_pos(const florb::point2d<double> &pwsg84);
-        florb::point2d<double> mousepos();
-       
-        // Marker handling
-        void marker_add(const florb::point2d<double> &pmerc, size_t id);
-        size_t marker_add(const florb::point2d<double> &pmerc);
-        void marker_remove(size_t id);
+            // GPX configuration
+            void gpx_loadtrack(const std::string& path);
+            void gpx_savetrack(const std::string& path);
+            void gpx_cleartrack();
+            bool gpx_wpselected();
+            void gpx_wpdelete();
+            void gpx_selection_get(std::vector<florb::tracklayer::waypoint>& waypoints);
+            void gpx_selection_set(const std::vector<florb::tracklayer::waypoint>& waypoints); 
+            double gpx_trip();
+            void gpx_showwpmarkers(bool s);
+            std::string gpx_trackname();
 
-        // Area selection
-        void select_area(const std::string& caption);
-        void select_clear();
+            // Viewport control
+            unsigned int zoom();
+            void zoom(unsigned int z);
+            void goto_cursor();
+            void goto_pos(const florb::point2d<double> &pwsg84);
+            florb::point2d<double> mousepos();
 
-        // Event classes
-        class event_notify;
-        class event_endselect;
-    private:
-        // Pixel delta for keyborad map motion commands
-        static const int PXMOTION = 15;
+            // Marker handling
+            void marker_add(const florb::point2d<double> &pmerc, size_t id);
+            size_t marker_add(const florb::point2d<double> &pmerc);
+            void marker_remove(size_t id);
 
-        // Utility methods
-        void refresh();
+            // Area selection
+            void select_area(const std::string& caption);
+            void select_clear();
 
-        // Widget event handling routines
-        int handle_move(int event);
-        int handle_enter(int event);
-        int handle_leave(int event);
-        int handle_push(int event);
-        int handle_release(int event);
-        int handle_drag(int event);
-        int handle_mousewheel(int event);
-        int handle_keyboard(int event);
-        florb::point2d<int> vp_relative(const florb::point2d<int>& pos);
-        bool vp_inside(const florb::point2d<int>& pos);
+            // Event classes
+            class event_notify;
+            class event_endselect;
+        private:
+            // Pixel delta for keyborad map motion commands
+            static const int PXMOTION = 15;
 
-        // GPSd-layer event handlers
-        bool gpsd_evt_motion(const gpsdlayer::event_motion *e);
-        bool gpsd_evt_status(const gpsdlayer::event_status *e);
+            // Utility methods
+            void refresh();
 
-        // Basemap-layer event handlers
-        bool osm_evt_notify(const osmlayer::event_notify *e);
+            // Widget event handling routines
+            int handle_move(int event);
+            int handle_enter(int event);
+            int handle_leave(int event);
+            int handle_push(int event);
+            int handle_release(int event);
+            int handle_drag(int event);
+            int handle_mousewheel(int event);
+            int handle_keyboard(int event);
+            florb::point2d<int> vp_relative(const florb::point2d<int>& pos);
+            bool vp_inside(const florb::point2d<int>& pos);
 
-        // GPX-layer event handlers
-        bool gpx_evt_notify(const florb::tracklayer::event_notify *e);
+            // GPSd-layer event handlers
+            bool gpsd_evt_motion(const gpsdlayer::event_motion *e);
+            bool gpsd_evt_status(const gpsdlayer::event_status *e);
 
-        // Marker layer event handlers
-        bool marker_evt_notify(const markerlayer::event_notify *e);
+            // Basemap-layer event handlers
+            bool osm_evt_notify(const osmlayer::event_notify *e);
 
-        // Area selection layer event handlers
-        bool areaselect_evt_done(const areaselectlayer::event_done *e);
-        bool areaselect_evt_notify(const areaselectlayer::event_notify *e);
+            // GPX-layer event handlers
+            bool gpx_evt_notify(const florb::tracklayer::event_notify *e);
 
-        // Layers
-        osmlayer *m_basemap;
-        osmlayer *m_overlay;
-        scalelayer *m_scale;
-        florb::tracklayer *m_tracklayer;
-        markerlayer *m_markerlayer;
-        gpsdlayer *m_gpsdlayer;
-        areaselectlayer *m_areaselectlayer;
+            // Marker layer event handlers
+            bool marker_evt_notify(const markerlayer::event_notify *e);
 
-        florb::point2d<int> m_mousepos;
-        viewport m_viewport;
-        viewport m_viewport_map;
-        florb::canvas m_offscreen;
-        florb::canvas m_offscreen_map;
-        bool m_lockcursor;
-        bool m_recordtrack;
-        bool m_dragmode;
+            // Area selection layer event handlers
+            bool areaselect_evt_done(const areaselectlayer::event_done *e);
+            bool areaselect_evt_notify(const areaselectlayer::event_notify *e);
 
-    protected:
-        void draw();
-};
+            // Layers
+            osmlayer *m_basemap;
+            osmlayer *m_overlay;
+            scalelayer *m_scale;
+            florb::tracklayer *m_tracklayer;
+            markerlayer *m_markerlayer;
+            gpsdlayer *m_gpsdlayer;
+            areaselectlayer *m_areaselectlayer;
 
-class wgt_map::event_notify : public event_base
-{
-    public:
-        event_notify() {};
-        ~event_notify() {};
-};
+            florb::point2d<int> m_mousepos;
+            viewport m_viewport;
+            viewport m_viewport_map;
+            florb::canvas m_offscreen;
+            florb::canvas m_offscreen_map;
+            bool m_lockcursor;
+            bool m_recordtrack;
+            bool m_dragmode;
 
-class wgt_map::event_endselect : public event_base
-{
-    public:
-        event_endselect(const viewport& vp) : m_vp(vp) {};
-        ~event_endselect() {};
+        protected:
+            void draw();
+    };
 
-        const viewport& vp() const { return m_vp; };
-    private:
-        viewport m_vp;
+    class wgt_map::event_notify : public event_base
+    {
+        public:
+            event_notify() {};
+            ~event_notify() {};
+    };
+
+    class wgt_map::event_endselect : public event_base
+    {
+        public:
+            event_endselect(const viewport& vp) : m_vp(vp) {};
+            ~event_endselect() {};
+
+            const viewport& vp() const { return m_vp; };
+        private:
+            viewport m_vp;
+    };
+
 };
 
 #endif // WGT_MAP_HPP

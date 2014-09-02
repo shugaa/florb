@@ -18,7 +18,7 @@ florb::tracklayer::tracklayer() :
 {
     name(std::string(_(trackname.c_str())));
     register_event_handler<florb::tracklayer, florb::layer::event_mouse>(this, &florb::tracklayer::handle_evt_mouse);
-    register_event_handler<florb::tracklayer, layer::event_key>(this, &florb::tracklayer::handle_evt_key);
+    register_event_handler<florb::tracklayer, florb::layer::event_key>(this, &florb::tracklayer::handle_evt_key);
 }
 
 void florb::tracklayer::trip_update()
@@ -48,7 +48,7 @@ void florb::tracklayer::trip_calcall()
 
     // Add up the distances between any consecutive trackpoints in the list
     m_trip = 0.0;
-    std::vector<gpx_trkpt>::iterator it;
+    std::vector<florb::tracklayer::gpx_trkpt>::iterator it;
     for (it=m_trkpts.begin()+1;it!=m_trkpts.end();++it)
     {
         florb::point2d<double> p1((*it).lon, (*it).lat);
@@ -57,10 +57,10 @@ void florb::tracklayer::trip_calcall()
     }
 }
 
-bool florb::tracklayer::key(const layer::event_key* evt)
+bool florb::tracklayer::key(const florb::layer::event_key* evt)
 {
     // We only care for the DEL key at the moment
-    if (evt->key() != layer::event_key::KEY_DEL)
+    if (evt->key() != florb::layer::event_key::KEY_DEL)
         return false;
 
     selection_delete();
@@ -87,7 +87,7 @@ bool florb::tracklayer::press(const florb::layer::event_mouse* evt)
     m_selection.waypoints.clear();
 
     // Find an existing item for this mouse position
-    std::vector<gpx_trkpt>::iterator it;
+    std::vector<florb::tracklayer::gpx_trkpt>::iterator it;
     for (it=m_trkpts.begin();it!=m_trkpts.end();++it)
     {
         florb::point2d<unsigned long> cmp = florb::utils::merc2px(evt->vp().z(), florb::point2d<double>((*it).lon, (*it).lat)); 
@@ -185,7 +185,7 @@ bool florb::tracklayer::drag(const florb::layer::event_mouse* evt)
             right = m_selection.dragorigin.x(); 
         }
 
-        std::vector<gpx_trkpt>::iterator it;
+        std::vector<florb::tracklayer::gpx_trkpt>::iterator it;
         for (it=m_trkpts.begin();it!=m_trkpts.end();++it)
         {
             florb::point2d<double> cmp((*it).lon, (*it).lat); 
@@ -263,7 +263,7 @@ void florb::tracklayer::add_trackpoint(const florb::point2d<double>& p)
     // Add the position to the list
     florb::point2d<double> merc(florb::utils::wsg842merc(p));
 
-    gpx_trkpt ptrk;
+    florb::tracklayer::gpx_trkpt ptrk;
     ptrk.lon = merc.x();
     ptrk.lat = merc.y();
     ptrk.time = time(NULL);
@@ -371,7 +371,7 @@ void florb::tracklayer::save_track(const std::string &path)
     e1 = e1->InsertEndChild(doc.NewElement("trkseg"))->ToElement();
 
     // Add trackpoints to the segment
-    std::vector<gpx_trkpt>::iterator it;
+    std::vector<florb::tracklayer::gpx_trkpt>::iterator it;
     for (it=m_trkpts.begin();it!=m_trkpts.end();++it) 
     {
         // Trackpoint element
@@ -461,7 +461,7 @@ void florb::tracklayer::selection_get(std::vector<waypoint>& waypoints)
     waypoints.clear();
 
     // Return a list of selected waypoints
-    std::vector< std::vector<gpx_trkpt>::iterator >::iterator it;
+    std::vector< std::vector<florb::tracklayer::gpx_trkpt>::iterator >::iterator it;
     for(it=m_selection.waypoints.begin();it!=m_selection.waypoints.end();++it)
     {
         florb::point2d<double> pwsg84(florb::utils::merc2wsg84(florb::point2d<double>((*(*it)).lon, (*(*it)).lat)));
@@ -478,7 +478,7 @@ void florb::tracklayer::selection_set(const std::vector<waypoint>& waypoints)
         throw std::runtime_error(_("Error updating selected waypoints"));;
 
     // Update the internal representation of each selected waypoint
-    std::vector< std::vector<gpx_trkpt>::iterator >::iterator it;
+    std::vector< std::vector<florb::tracklayer::gpx_trkpt>::iterator >::iterator it;
     size_t i;
     for(it=m_selection.waypoints.begin(), i=0;it!=m_selection.waypoints.end();++it,i++)
     {
@@ -498,7 +498,7 @@ void florb::tracklayer::selection_delete()
         throw std::out_of_range("Invalid selection"); 
 
     // Delete all selected waypoints, back to front
-    std::vector< std::vector<gpx_trkpt>::iterator >::iterator it = m_selection.waypoints.end();
+    std::vector< std::vector<florb::tracklayer::gpx_trkpt>::iterator >::iterator it = m_selection.waypoints.end();
     do
     {
         --it;
@@ -556,7 +556,7 @@ bool florb::tracklayer::handle_evt_mouse(const florb::layer::event_mouse* evt)
     return ret;
 }
 
-bool florb::tracklayer::handle_evt_key(const layer::event_key* evt)
+bool florb::tracklayer::handle_evt_key(const florb::layer::event_key* evt)
 {   
     if (!enabled())
         return false;
@@ -565,12 +565,12 @@ bool florb::tracklayer::handle_evt_key(const layer::event_key* evt)
 
     switch (evt->action())
     {
-        case layer::event_key::ACTION_PRESS:
+        case florb::layer::event_key::ACTION_PRESS:
         {
             ret = false; 
             break;
         }
-        case layer::event_key::ACTION_RELEASE:
+        case florb::layer::event_key::ACTION_RELEASE:
         {
             ret = key(evt); 
             break;
@@ -600,7 +600,7 @@ bool florb::tracklayer::draw(const viewport &vp, florb::canvas &os)
     florb::point2d<double> pmerc_r1(florb::utils::px2merc(vp.z(), florb::point2d<unsigned long>(vp.x(), vp.y())));
     florb::point2d<double> pmerc_r2(florb::utils::px2merc(vp.z(), florb::point2d<unsigned long>(vp.x()+vp.w()-1, vp.y()+vp.h()-1)));
 
-    std::vector<gpx_trkpt>::iterator it;
+    std::vector<florb::tracklayer::gpx_trkpt>::iterator it;
     for (it=m_trkpts.begin();it!=m_trkpts.end();++it) 
     {
         florb::point2d<double> pmerc((*it).lon, (*it).lat);
@@ -708,7 +708,7 @@ void florb::tracklayer::parsetree(tinyxml2::XMLNode *parent)
             break;
         }
 
-        gpx_trkpt p;
+        florb::tracklayer::gpx_trkpt p;
         std::string val(parent->Value());
 
         // Handle trackpoint

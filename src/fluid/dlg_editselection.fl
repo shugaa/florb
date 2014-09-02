@@ -13,15 +13,15 @@ decl {\#include "utils.hpp"} {private global
 
 class dlg_editselection {open
 } {
-  decl {wgt_map*m_wgtmap;} {private local
+  decl {florb::wgt_map* m_wgtmap;} {selected private local
   }
   decl {void show_ex();} {private local
   }
   decl {bool handle_ok_ex(std::vector<florb::tracklayer::waypoint>& waypoints);} {private local
   }
-  decl {void create_ex();} {selected private local
+  decl {void create_ex();} {private local
   }
-  Function {dlg_editselection(wgt_map*m)} {} {
+  Function {dlg_editselection(florb::wgt_map*m)} {} {
     Fl_Window m_window {
       label {Edit waypoints}
       private xywh {1631 297 220 180} type Double modal visible
