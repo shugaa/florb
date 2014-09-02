@@ -269,7 +269,7 @@ void osmlayer::download_qtile(int z, int x, int y)
         delete ti;
 }
 
-bool osmlayer::draw(const viewport &vp, fgfx::canvas &os)
+bool osmlayer::draw(const viewport &vp, florb::canvas &os)
 {
     if ((vp.z() < m_zmin) || (vp.z() > m_zmax))
     {
@@ -300,7 +300,7 @@ bool osmlayer::download(const viewport &vp, double& coverage)
     return rc;
 }
 
-bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c, unsigned long *ttotal, unsigned long *tnok)
+bool osmlayer::drawvp(const viewport &vp, florb::canvas *c, unsigned long *ttotal, unsigned long *tnok)
 {
     // Reset statistics
     if (ttotal != NULL) (*ttotal) = 0;
@@ -343,7 +343,7 @@ bool osmlayer::drawvp(const viewport &vp, fgfx::canvas *c, unsigned long *ttotal
               if ((rc != cache::NOTFOUND) && 
                   (m_imgbuf.size() != 0))
               {
-                  fgfx::image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
+                  florb::image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
                   c->draw(img, (int)px-(int)dx, (int)py-(int)dy);
               }
           }

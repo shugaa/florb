@@ -14,9 +14,9 @@ namespace YAML {
                 node["parallel"] = rhs.parallel();
 
                 node["type"] = "PNG";
-                if      (rhs.type() == fgfx::image::PNG)
+                if      (rhs.type() == florb::image::PNG)
                     node["type"] = "PNG";
-                else if (rhs.type() == fgfx::image::JPG)
+                else if (rhs.type() == florb::image::JPG)
                     node["type"] = "JPG";
 
                 return node;
@@ -44,12 +44,12 @@ namespace YAML {
 
                 if (node["type"])
                 {
-                    rhs.type(fgfx::image::PNG);
+                    rhs.type(florb::image::PNG);
                     std::string imgtype = node["type"].as<std::string>();
                     if      (imgtype.compare("PNG") == 0)
-                        rhs.type(fgfx::image::PNG);
+                        rhs.type(florb::image::PNG);
                     else if (imgtype.compare("JPG") == 0)
-                        rhs.type(fgfx::image::JPG);
+                        rhs.type(florb::image::JPG);
                 }
 
                 return true;
@@ -167,19 +167,19 @@ namespace YAML {
                 }
 
                 if (node["markercolor"])
-                    rhs.markercolor(fgfx::color(node["markercolor"].as<unsigned int>()));
+                    rhs.markercolor(florb::color(node["markercolor"].as<unsigned int>()));
                 
                 if (node["markercolorselected"])
-                    rhs.markercolorselected(fgfx::color(node["markercolorselected"].as<unsigned int>()));
+                    rhs.markercolorselected(florb::color(node["markercolorselected"].as<unsigned int>()));
 
                 if (node["trackcolor"])
-                    rhs.trackcolor(fgfx::color(node["trackcolor"].as<unsigned int>()));
+                    rhs.trackcolor(florb::color(node["trackcolor"].as<unsigned int>()));
 
                 if (node["selectioncolor"])
-                    rhs.selectioncolor(fgfx::color(node["selectioncolor"].as<unsigned int>()));
+                    rhs.selectioncolor(florb::color(node["selectioncolor"].as<unsigned int>()));
 
                 if (node["gpscursorcolor"])
-                    rhs.gpscursorcolor(fgfx::color(node["gpscursorcolor"].as<unsigned int>()));
+                    rhs.gpscursorcolor(florb::color(node["gpscursorcolor"].as<unsigned int>()));
                 
                 if (node["tracklinewidth"])
                     rhs.tracklinewidth(node["tracklinewidth"].as<unsigned int>());

@@ -13,7 +13,7 @@ class wgt_eleprofile : public Fl_Widget, public event_generator
         wgt_eleprofile(int x, int y, int w, int h, const char *label);
         ~wgt_eleprofile();
 
-        void trackpoints(const std::vector<gpxlayer::waypoint>& wpts);
+        void trackpoints(const std::vector<florb::tracklayer::waypoint>& wpts);
 
         // FLTK event handling routine
         int handle(int event);
@@ -25,7 +25,7 @@ class wgt_eleprofile : public Fl_Widget, public event_generator
 
         class event_mouse;
     private:
-        fgfx::canvas m_offscreen;
+        florb::canvas m_offscreen;
         std::vector< point2d<double> > m_wpts;
         double m_elemin;
         double m_elemax;

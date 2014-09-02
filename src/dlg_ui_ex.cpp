@@ -4,8 +4,8 @@
 #include <curl/curl.h>
 #include <locale.h>
 #include <cstdlib>
-#include "gpxlayer.hpp"
-#include "mapctrl.hpp"
+#include "tracklayer.hpp"
+#include "wgt_map.hpp"
 #include "settings.hpp"
 #include "gpsdclient.hpp"
 #include "utils.hpp"
@@ -59,10 +59,10 @@ void dlg_ui::update_statusbar_ex()
 
     std::ostringstream ss; 
 
-    ss << _("Zoom: ") << m_mapctrl->zoom();
+    ss << _("Zoom: ") << m_wgtmap->zoom();
     m_txtout_zoom->value(ss.str().c_str());
 
-    point2d<double> pos = m_mapctrl->mousepos();
+    point2d<double> pos = m_wgtmap->mousepos();
     ss.precision(5);
     ss.setf(std::ios::fixed, std::ios::floatfield);
 
@@ -91,12 +91,12 @@ void dlg_ui::update_statusbar_ex()
     ss.precision(2);
     ss.setf(std::ios::fixed, std::ios::floatfield);
     ss.str("");
-    ss << _("Trip: ") << unit::convert(unit::length::KM, dst, m_mapctrl->gpx_trip()) << " " << unit::sistr(dst);
+    ss << _("Trip: ") << unit::convert(unit::length::KM, dst, m_wgtmap->gpx_trip()) << " " << unit::sistr(dst);
     m_txtout_trip->value(ss.str().c_str());
 
-    if (m_mapctrl->gpsd_connected())
+    if (m_wgtmap->gpsd_connected())
     {
-        switch(m_mapctrl->gpsd_mode())
+        switch(m_wgtmap->gpsd_mode())
         {
             case (gpsdclient::FIX_2D):
                 m_box_fix->color(FL_GREEN);
@@ -118,20 +118,20 @@ void dlg_ui::update_statusbar_ex()
     }
 }
 
-bool dlg_ui::mapctrl_evt_notify_ex(const mapctrl::event_notify *e)
+bool dlg_ui::wgtmap_evt_notify_ex(const wgt_map::event_notify *e)
 {
     update_statusbar_ex();
     return true;
 }
 
-bool dlg_ui::mapctrl_evt_endselect_ex(const mapctrl::event_endselect *e)
+bool dlg_ui::wgtmap_evt_endselect_ex(const wgt_map::event_endselect *e)
 {
     if (!m_dlg_bulkdl)
-        m_dlg_bulkdl = new dlg_bulkdl(m_mapctrl);
+        m_dlg_bulkdl = new dlg_bulkdl(m_wgtmap);
     
     m_dlg_bulkdl->show(e->vp());
 
-    m_mapctrl->select_clear();
+    m_wgtmap->select_clear();
 
     return true;
 }
@@ -180,12 +180,12 @@ void dlg_ui::create_ex(void)
 
     // Show waypoint markers by default
     m_menuitem_track_showwpmarkers->set(); 
-    m_mapctrl->gpx_showwpmarkers(true);
+    m_wgtmap->gpx_showwpmarkers(true);
 
-    // Start listening to mapctrl events
-    register_event_handler<dlg_ui, mapctrl::event_notify>(this, &dlg_ui::mapctrl_evt_notify_ex);
-    register_event_handler<dlg_ui, mapctrl::event_endselect>(this, &dlg_ui::mapctrl_evt_endselect_ex);
-    m_mapctrl->add_event_listener(this);
+    // Start listening to wgt_mapevents
+    register_event_handler<dlg_ui, wgt_map::event_notify>(this, &dlg_ui::wgtmap_evt_notify_ex);
+    register_event_handler<dlg_ui, wgt_map::event_endselect>(this, &dlg_ui::wgtmap_evt_endselect_ex);
+    m_wgtmap->add_event_listener(this);
 }
 
 void dlg_ui::update_choice_map_ex(void)
@@ -219,7 +219,7 @@ void dlg_ui::update_choice_map_ex(void)
    
         // Try to create a basemap
         try {
-            m_mapctrl->basemap(
+            m_wgtmap->basemap(
                 ts.name(), 
                 ts.url(), 
                 ts.zmin(), 
@@ -236,7 +236,7 @@ void dlg_ui::update_choice_map_ex(void)
 
             // Try to create a basemap
             try {
-                m_mapctrl->overlay(
+                m_wgtmap->overlay(
                         ts.name(), 
                         ts.url(), 
                         ts.zmin(), 
@@ -250,7 +250,7 @@ void dlg_ui::update_choice_map_ex(void)
         }
         else
         {
-            m_mapctrl->clear_overlay();
+            m_wgtmap->clear_overlay();
         }
 
         // Set the selected item index
@@ -258,7 +258,7 @@ void dlg_ui::update_choice_map_ex(void)
         m_choice_overlay->value(idxover);
 
         // Focus on the map
-        m_mapctrl->take_focus();
+        m_wgtmap->take_focus();
     }
 }
 
@@ -293,7 +293,7 @@ void dlg_ui::loadtrack_ex()
 
     // Try to load the track
     try {
-        m_mapctrl->gpx_loadtrack(std::string(fc.value()));
+        m_wgtmap->gpx_loadtrack(std::string(fc.value()));
     } catch (std::runtime_error& e) {
         fl_alert("%s", e.what());  
     }
@@ -316,7 +316,7 @@ void dlg_ui::savetrack_ex()
 
     // Load the track
     try {
-        m_mapctrl->gpx_savetrack(std::string(fc.value()));
+        m_wgtmap->gpx_savetrack(std::string(fc.value()));
     } catch (std::runtime_error& e) {
         fl_alert("%s", e.what());
     }
@@ -326,13 +326,13 @@ void dlg_ui::bulkdl_ex()
 {
     // Clear all waypoints
     fl_alert("%s", _("Select the desired area on the map now"));
-    m_mapctrl->select_area(_("Select download area"));
+    m_wgtmap->select_area(_("Select download area"));
 }
 
 void dlg_ui::eleprofile_ex()
 {
     if (!m_dlg_eleprofile)
-        m_dlg_eleprofile = new dlg_eleprofile(m_mapctrl);
+        m_dlg_eleprofile = new dlg_eleprofile(m_wgtmap);
     
     m_dlg_eleprofile->show();
 }
@@ -340,38 +340,38 @@ void dlg_ui::eleprofile_ex()
 void dlg_ui::cleartrack_ex()
 {
     // Clear all waypoints
-    m_mapctrl->gpx_cleartrack();
+    m_wgtmap->gpx_cleartrack();
 }
 
 void dlg_ui::gotocursor_ex()
 {
     // Center over current GPS position
-    m_mapctrl->goto_cursor();
+    m_wgtmap->goto_cursor();
 }
 
 void dlg_ui::lockcursor_ex()
 {
     // Lock / unlock GPS cursor
     bool start = (m_btn_lockcursor->value() == 1) ? true : false;
-    m_mapctrl->gpsd_lock(start);
+    m_wgtmap->gpsd_lock(start);
 }
 
 void dlg_ui::recordtrack_ex()
 {
     // Start / stop recording
     bool start = (m_btn_recordtrack->value() == 1) ? true : false;
-    m_mapctrl->gpsd_record(start);
+    m_wgtmap->gpsd_record(start);
 }
 
 void dlg_ui::editselection_ex()
 {
     // No waypoints selected
-    if (!m_mapctrl->gpx_wpselected())
+    if (!m_wgtmap->gpx_wpselected())
         return;
 
     // Show editor dialog for selected waypoints
     if (!m_dlg_editselection)
-        m_dlg_editselection = new dlg_editselection(m_mapctrl);
+        m_dlg_editselection = new dlg_editselection(m_wgtmap);
     
     m_dlg_editselection->show();
 }
@@ -379,18 +379,18 @@ void dlg_ui::editselection_ex()
 void dlg_ui::deleteselection_ex()
 {
     // No waypoints selected
-    if (!m_mapctrl->gpx_wpselected())
+    if (!m_wgtmap->gpx_wpselected())
         return;
 
     // Delete selected waypoints
-    m_mapctrl->gpx_wpdelete();
+    m_wgtmap->gpx_wpdelete();
 }
 
 void dlg_ui::showwpmarkers_ex()
 {
     // Show / hide waypoint markers
     bool b = (m_menuitem_track_showwpmarkers->value() == 0) ? false : true; 
-    m_mapctrl->gpx_showwpmarkers(b);
+    m_wgtmap->gpx_showwpmarkers(b);
 }
 
 void dlg_ui::garmindl_ex()
@@ -404,7 +404,7 @@ void dlg_ui::garmindl_ex()
 
     if (m_dlg_garmindl->show())
     {
-        m_mapctrl->gpx_loadtrack(tmp);
+        m_wgtmap->gpx_loadtrack(tmp);
         utils::rm(tmp);
     }
 }
@@ -414,9 +414,9 @@ void dlg_ui::garminul_ex()
     //winopen.wait();
 
     // Temp gpx file path
-    std::string name(m_mapctrl->gpx_trackname());
+    std::string name(m_wgtmap->gpx_trackname());
     std::string path(utils::appdir() + utils::pathsep() + "tmp.gpx"); 
-    m_mapctrl->gpx_savetrack(path);
+    m_wgtmap->gpx_savetrack(path);
 
     // Show upload dialog
     if (!m_dlg_garminul)
@@ -445,12 +445,12 @@ void dlg_ui::settings_ex()
         cfg_gpsd cfggpsd = s["gpsd"].as<cfg_gpsd>();
         if (cfggpsd.enabled())
         {
-            if (!m_mapctrl->gpsd_connected())
-                m_mapctrl->gpsd_connect(cfggpsd.host(), cfggpsd.port());
+            if (!m_wgtmap->gpsd_connected())
+                m_wgtmap->gpsd_connect(cfggpsd.host(), cfggpsd.port());
         }
         else
         {
-            m_mapctrl->gpsd_disconnect();
+            m_wgtmap->gpsd_disconnect();
         }
 
         // Update the list of tileservers
@@ -465,7 +465,7 @@ void dlg_ui::search_ex()
 {
     // Create search dialog and show it
     if (!m_dlg_search)
-        m_dlg_search = new dlg_search(m_mapctrl);
+        m_dlg_search = new dlg_search(m_wgtmap);
 
     m_dlg_search->show();
 }
@@ -482,25 +482,25 @@ void dlg_ui::about_ex()
 void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
 {
     loadtrack_ex();
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_btn_savetrack_ex(Fl_Widget *widget)
 {
     savetrack_ex();
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_btn_cleartrack_ex(Fl_Widget *widget)
 {
     cleartrack_ex();
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_btn_gotocursor_ex(Fl_Widget *widget)
 {
     gotocursor_ex();
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_btn_lockcursor_ex(Fl_Widget *widget)
@@ -511,7 +511,7 @@ void dlg_ui::cb_btn_lockcursor_ex(Fl_Widget *widget)
         m_menuitem_gpsd_lockcursor->clear();
 
     lockcursor_ex();
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_btn_recordtrack_ex(Fl_Widget *widget)
@@ -522,19 +522,19 @@ void dlg_ui::cb_btn_recordtrack_ex(Fl_Widget *widget)
         m_menuitem_gpsd_recordtrack->clear();
 
     recordtrack_ex();
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_btn_editselection_ex(Fl_Widget *widget)
 {
     editselection_ex();
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_btn_deleteselection_ex(Fl_Widget *widget)
 {
     deleteselection_ex(); 
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
@@ -547,7 +547,7 @@ void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
 
     // Try to create a basemap using the selected tile server configuration
     try {
-        m_mapctrl->basemap(
+        m_wgtmap->basemap(
                 tileservers[idx].name(), 
                 tileservers[idx].url(), 
                 tileservers[idx].zmin(), 
@@ -559,7 +559,7 @@ void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
     }
 
     // Map focus
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_choice_overlay_ex(Fl_Widget *widget)
@@ -574,7 +574,7 @@ void dlg_ui::cb_choice_overlay_ex(Fl_Widget *widget)
 
         // Try to create a basemap using the selected tile server configuration
         try {
-            m_mapctrl->overlay(
+            m_wgtmap->overlay(
                     tileservers[idx-1].name(), 
                     tileservers[idx-1].url(), 
                     tileservers[idx-1].zmin(), 
@@ -587,11 +587,11 @@ void dlg_ui::cb_choice_overlay_ex(Fl_Widget *widget)
     }
     else
     {
-        m_mapctrl->clear_overlay();
+        m_wgtmap->clear_overlay();
     }
 
     // Map focus
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_menu_ex(Fl_Widget *widget)
@@ -667,7 +667,7 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
         about_ex();
     }
 
-    m_mapctrl->take_focus();
+    m_wgtmap->take_focus();
 }
 
 void dlg_ui::cb_close_ex(Fl_Widget *widget)

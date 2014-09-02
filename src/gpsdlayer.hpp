@@ -13,7 +13,7 @@ class gpsdlayer : public layer
         gpsdlayer(const std::string& host, const std::string& port);
         ~gpsdlayer();
 
-        bool draw(const viewport &viewport, fgfx::canvas &os);
+        bool draw(const viewport &viewport, florb::canvas &os);
 
         const point2d<double> pos();
         double track(); 

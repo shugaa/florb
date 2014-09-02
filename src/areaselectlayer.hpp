@@ -16,7 +16,7 @@ class areaselectlayer : public layer
         bool handle_evt_mouse(const layer::event_mouse* evt);
 
         void clear();
-        bool draw(const viewport &viewport, fgfx::canvas &os);
+        bool draw(const viewport &viewport, florb::canvas &os);
     private:
 
         bool press(const layer::event_mouse* evt);

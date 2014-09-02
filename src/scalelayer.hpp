@@ -10,7 +10,7 @@ class scalelayer : public layer
         scalelayer();
         ~scalelayer();
 
-        bool draw(const viewport &viewport, fgfx::canvas &os);
+        bool draw(const viewport &viewport, florb::canvas &os);
     private:
 };
 

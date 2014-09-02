@@ -20,7 +20,7 @@ class osmlayer : public layer
             unsigned int parallel,
             int imgtype);
         ~osmlayer();
-        bool draw(const viewport &vp, fgfx::canvas &c);
+        bool draw(const viewport &vp, florb::canvas &c);
         bool download(const viewport& vp, double& coverage);
         void nice(long ms);
 
@@ -55,7 +55,7 @@ class osmlayer : public layer
         static void cb_download(void *userdata);
         void process_downloads();
 
-        bool drawvp(const viewport &viewport, fgfx::canvas *c, unsigned long *ttotal, unsigned long *tnok);
+        bool drawvp(const viewport &viewport, florb::canvas *c, unsigned long *ttotal, unsigned long *tnok);
         void download_qtile(int z, int x, int y);
         bool evt_downloadcomplete(const downloader::event_complete *e);
 };

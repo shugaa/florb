@@ -76,7 +76,7 @@ void markerlayer::notify()
     fire(&e);
 }
 
-bool markerlayer::draw(const viewport &viewport, fgfx::canvas &os)
+bool markerlayer::draw(const viewport &viewport, florb::canvas &os)
 {
     cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>();
 

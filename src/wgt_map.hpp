@@ -1,5 +1,5 @@
-#ifndef MAPCTRL_HPP
-#define MAPCTRL_HPP
+#ifndef WGT_MAP_HPP
+#define WGT_MAP_HPP
 
 #include <vector>
 #include <string>
@@ -9,18 +9,18 @@
 #include "viewport.hpp"
 #include "point.hpp"
 #include "osmlayer.hpp"
-#include "gpxlayer.hpp"
+#include "tracklayer.hpp"
 #include "markerlayer.hpp"
 #include "scalelayer.hpp"
 #include "gpsdlayer.hpp"
 #include "areaselectlayer.hpp"
 #include "gfx.hpp"
 
-class mapctrl : public Fl_Widget, public event_listener, public event_generator
+class wgt_map : public Fl_Widget, public event_listener, public event_generator
 {
     public:
-        mapctrl(int x, int y, int w, int h, const char *label);
-        ~mapctrl();
+        wgt_map(int x, int y, int w, int h, const char *label);
+        ~wgt_map();
 
         // FLTK event handling routine
         int handle(int event);
@@ -56,8 +56,8 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         void gpx_cleartrack();
         bool gpx_wpselected();
         void gpx_wpdelete();
-        void gpx_selection_get(std::vector<gpxlayer::waypoint>& waypoints);
-        void gpx_selection_set(const std::vector<gpxlayer::waypoint>& waypoints); 
+        void gpx_selection_get(std::vector<florb::tracklayer::waypoint>& waypoints);
+        void gpx_selection_set(const std::vector<florb::tracklayer::waypoint>& waypoints); 
         double gpx_trip();
         void gpx_showwpmarkers(bool s);
         std::string gpx_trackname();
@@ -108,7 +108,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         bool osm_evt_notify(const osmlayer::event_notify *e);
 
         // GPX-layer event handlers
-        bool gpx_evt_notify(const gpxlayer::event_notify *e);
+        bool gpx_evt_notify(const florb::tracklayer::event_notify *e);
 
         // Marker layer event handlers
         bool marker_evt_notify(const markerlayer::event_notify *e);
@@ -121,7 +121,7 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         osmlayer *m_basemap;
         osmlayer *m_overlay;
         scalelayer *m_scale;
-        gpxlayer *m_gpxlayer;
+        florb::tracklayer *m_tracklayer;
         markerlayer *m_markerlayer;
         gpsdlayer *m_gpsdlayer;
         areaselectlayer *m_areaselectlayer;
@@ -129,8 +129,8 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         point2d<int> m_mousepos;
         viewport m_viewport;
         viewport m_viewport_map;
-        fgfx::canvas m_offscreen;
-        fgfx::canvas m_offscreen_map;
+        florb::canvas m_offscreen;
+        florb::canvas m_offscreen_map;
         bool m_lockcursor;
         bool m_recordtrack;
         bool m_dragmode;
@@ -139,14 +139,14 @@ class mapctrl : public Fl_Widget, public event_listener, public event_generator
         void draw();
 };
 
-class mapctrl::event_notify : public event_base
+class wgt_map::event_notify : public event_base
 {
     public:
         event_notify() {};
         ~event_notify() {};
 };
 
-class mapctrl::event_endselect : public event_base
+class wgt_map::event_endselect : public event_base
 {
     public:
         event_endselect(const viewport& vp) : m_vp(vp) {};
@@ -157,5 +157,5 @@ class mapctrl::event_endselect : public event_base
         viewport m_vp;
 };
 
-#endif // MAPCTRL_HPP
+#endif // WGT_MAP_HPP
 

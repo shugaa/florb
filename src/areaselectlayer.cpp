@@ -126,7 +126,7 @@ void areaselectlayer::notify()
     fire(&e);
 }
 
-bool areaselectlayer::draw(const viewport &viewport, fgfx::canvas &os)
+bool areaselectlayer::draw(const viewport &viewport, florb::canvas &os)
 {
     if (m_p1.x() < 0)
         return true;

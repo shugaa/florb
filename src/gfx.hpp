@@ -8,7 +8,7 @@
 #include <FL/Fl_JPEG_Image.H>
 #include <string>
 
-namespace fgfx
+namespace florb
 {
     typedef Fl_Offscreen canvas_storage;
     typedef Fl_Image* image_storage;

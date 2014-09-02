@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-24 21:06+0200\n"
+"POT-Creation-Date: 2014-09-02 19:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,15 +49,15 @@ msgstr ""
 msgid "Cache"
 msgstr ""
 
-#: cache.cpp:154
+#: cache.cpp:156
 msgid "Cache error: EXISTS"
 msgstr ""
 
-#: cache.cpp:215
+#: cache.cpp:217
 msgid "Cache error: GET"
 msgstr ""
 
-#: cache.cpp:105
+#: cache.cpp:107
 msgid "Cache error: PUT"
 msgstr ""
 
@@ -153,19 +153,19 @@ msgstr ""
 msgid "Enable GPSd"
 msgstr ""
 
-#: gpxlayer.cpp:472
+#: tracklayer.cpp:478
 msgid "Error updating selected waypoints"
 msgstr ""
 
-#: cache.cpp:44
+#: cache.cpp:46
 msgid "Failed to open / create cache database"
 msgstr ""
 
-#: gpxlayer.cpp:289 gpxlayer.cpp:312
+#: tracklayer.cpp:289 tracklayer.cpp:312
 msgid "Failed to open GPX file"
 msgstr ""
 
-#: gpxlayer.cpp:409
+#: tracklayer.cpp:415
 msgid "Failed to save GPX data"
 msgstr ""
 
@@ -193,11 +193,11 @@ msgstr ""
 msgid "GPSd"
 msgstr ""
 
-#: mapctrl.cpp:278
+#: wgt_map.cpp:278
 msgid "GPSd error"
 msgstr ""
 
-#: mapctrl.cpp:37
+#: wgt_map.cpp:37
 msgid "GPX error"
 msgstr ""
 
@@ -293,7 +293,7 @@ msgstr ""
 msgid "Marker color (selected)"
 msgstr ""
 
-#: mapctrl.cpp:48 mapctrl.cpp:145 mapctrl.cpp:153 mapctrl.cpp:161
+#: wgt_map.cpp:48 wgt_map.cpp:145 wgt_map.cpp:153 wgt_map.cpp:161
 msgid "Marker error"
 msgstr ""
 
@@ -380,7 +380,7 @@ msgstr ""
 msgid "Save current track"
 msgstr ""
 
-#: mapctrl.cpp:59
+#: wgt_map.cpp:59
 msgid "Scale error"
 msgstr ""
 
@@ -408,7 +408,7 @@ msgstr ""
 msgid "Selection color"
 msgstr ""
 
-#: mapctrl.cpp:67
+#: wgt_map.cpp:67
 msgid "Selection error"
 msgstr ""
 

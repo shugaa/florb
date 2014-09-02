@@ -1,7 +1,7 @@
 #include "gfx.hpp"
 #include <iostream>
 
-namespace fgfx
+namespace florb
 {
     canvas::canvas(unsigned int w, unsigned int h) :
         m_init(false), 

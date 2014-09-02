@@ -18,8 +18,8 @@ void dlg_eleprofile::destroy_ex()
 
 void dlg_eleprofile::show_ex()
 {
-    std::vector<gpxlayer::waypoint> waypoints;
-    m_mapctrl->gpx_selection_get(waypoints);
+    std::vector<florb::tracklayer::waypoint> waypoints;
+    m_wgtmap->gpx_selection_get(waypoints);
     
     m_profile->trackpoints(waypoints);
 

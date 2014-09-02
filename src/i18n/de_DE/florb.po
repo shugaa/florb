@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-24 21:06+0200\n"
+"POT-Creation-Date: 2014-09-02 19:23+0200\n"
 "PO-Revision-Date: 2014-08-24 21:07+0100\n"
 "Last-Translator: Björn Rehm <bjoern@shugaa.de>\n"
 "Language-Team: none\n"
@@ -51,15 +51,15 @@ msgstr "Kartendownload"
 msgid "Cache"
 msgstr "Cache"
 
-#: cache.cpp:154
+#: cache.cpp:156
 msgid "Cache error: EXISTS"
 msgstr "Cache-Fehler: EXISTS"
 
-#: cache.cpp:215
+#: cache.cpp:217
 msgid "Cache error: GET"
 msgstr "Cache-Fehler: GET"
 
-#: cache.cpp:105
+#: cache.cpp:107
 msgid "Cache error: PUT"
 msgstr "Cache-Fehler: PUT"
 
@@ -155,19 +155,19 @@ msgstr "Höhe: "
 msgid "Enable GPSd"
 msgstr "GPSd aktivieren"
 
-#: gpxlayer.cpp:472
+#: tracklayer.cpp:478
 msgid "Error updating selected waypoints"
 msgstr "Fehler beim Aktualisieren der Wegpunkte"
 
-#: cache.cpp:44
+#: cache.cpp:46
 msgid "Failed to open / create cache database"
 msgstr "Konnte Cache nicht öffnen / erzeugen"
 
-#: gpxlayer.cpp:289 gpxlayer.cpp:312
+#: tracklayer.cpp:289 tracklayer.cpp:312
 msgid "Failed to open GPX file"
 msgstr "Fehler beim Laden der GPX Datei"
 
-#: gpxlayer.cpp:409
+#: tracklayer.cpp:415
 msgid "Failed to save GPX data"
 msgstr "Konnte GPX-Daten nicht speichern"
 
@@ -195,11 +195,11 @@ msgstr "Farbe GPS cursor"
 msgid "GPSd"
 msgstr "GPSd"
 
-#: mapctrl.cpp:278
+#: wgt_map.cpp:278
 msgid "GPSd error"
 msgstr "GPSd Fehler"
 
-#: mapctrl.cpp:37
+#: wgt_map.cpp:37
 msgid "GPX error"
 msgstr "GPX Fehler"
 
@@ -295,7 +295,7 @@ msgstr "Farbe Marker"
 msgid "Marker color (selected)"
 msgstr "Farbe Marker (ausgewählt)"
 
-#: mapctrl.cpp:48 mapctrl.cpp:145 mapctrl.cpp:153 mapctrl.cpp:161
+#: wgt_map.cpp:48 wgt_map.cpp:145 wgt_map.cpp:153 wgt_map.cpp:161
 msgid "Marker error"
 msgstr "Markerfehler"
 
@@ -382,7 +382,7 @@ msgstr "GPX speichern unter"
 msgid "Save current track"
 msgstr "GPX speichern unter"
 
-#: mapctrl.cpp:59
+#: wgt_map.cpp:59
 msgid "Scale error"
 msgstr "Maßstabfehler"
 
@@ -410,7 +410,7 @@ msgstr "Jetzt den gewünschten Bereich auf der Karte wählen"
 msgid "Selection color"
 msgstr "Farbe Auswahl"
 
-#: mapctrl.cpp:67
+#: wgt_map.cpp:67
 msgid "Selection error"
 msgstr "Auswahlfehler"
 

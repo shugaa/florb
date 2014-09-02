@@ -5,7 +5,7 @@ i18n_include <libintl.h>
 i18n_function gettext 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include "mapctrl.hpp"} {public global
+decl {\#include "wgt_map.hpp"} {public global
 } 
 
 decl {\#include "utils.hpp"} {private global
@@ -13,13 +13,13 @@ decl {\#include "utils.hpp"} {private global
 
 class dlg_editselection {open
 } {
-  decl {mapctrl *m_mapctrl;} {private local
+  decl {wgt_map*m_wgtmap;} {private local
   }
   decl {void show_ex();} {private local
   }
-  decl {bool handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints);} {private local
+  decl {bool handle_ok_ex(std::vector<florb::tracklayer::waypoint>& waypoints);} {selected private local
   }
-  Function {dlg_editselection(mapctrl *m)} {open
+  Function {dlg_editselection(wgt_map*m)} {open
   } {
     Fl_Window m_window {
       label {Edit waypoints} open
@@ -57,7 +57,7 @@ class dlg_editselection {open
               private xywh {5 70 210 25} type Float labeltype NO_LABEL labelsize 12 align 5
             }
             Fl_Box m_box_elevation {
-              label {Elevation [m]} selected
+              label {Elevation [m]}
               private xywh {5 95 210 20} labelsize 12 align 20
             }
             Fl_Input m_txtin_ele {
@@ -114,12 +114,13 @@ class dlg_editselection {open
         }
       }
     }
-    code {m_mapctrl = m;
+    code {m_wgtmap = m;
 
 // Set the window icon
 utils::set_window_icon(m_window);} {}
   }
-  Function {~dlg_editselection()} {} {
+  Function {~dlg_editselection()} {open
+  } {
     code {if (m_window)
     delete(m_window);} {}
   }

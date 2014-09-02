@@ -1,7 +1,7 @@
 #include <FL/fl_draw.H>
 #include <FL/x.H>
 #include "settings.hpp"
-#include "gpxlayer.hpp"
+#include "tracklayer.hpp"
 #include "wgt_eleprofile.hpp"
 
 wgt_eleprofile::wgt_eleprofile(int x, int y, int w, int h, const char *label) : 
@@ -14,7 +14,7 @@ wgt_eleprofile::~wgt_eleprofile()
 {
 }
 
-void wgt_eleprofile::trackpoints(const std::vector<gpxlayer::waypoint>& wpts)
+void wgt_eleprofile::trackpoints(const std::vector<florb::tracklayer::waypoint>& wpts)
 {
     double dst = 0.0;
     m_elemin = 0.0;
@@ -22,7 +22,7 @@ void wgt_eleprofile::trackpoints(const std::vector<gpxlayer::waypoint>& wpts)
 
     m_wpts.clear();
 
-    std::vector<gpxlayer::waypoint>::const_iterator it;
+    std::vector<florb::tracklayer::waypoint>::const_iterator it;
     for (it=wpts.begin();it!=wpts.end();++it)
     {
         point2d<double> ptmp;
@@ -169,7 +169,7 @@ void wgt_eleprofile::draw()
 
 void wgt_eleprofile::draw_profile()
 {
-    m_offscreen.fgcolor(fgfx::color(0xff,0xff,0xff));
+    m_offscreen.fgcolor(florb::color(0xff,0xff,0xff));
     m_offscreen.fillrect(0,0,w(),h());
 
     if (m_wpts.size() <= 1)
@@ -182,7 +182,7 @@ void wgt_eleprofile::draw_profile()
     double yscale = ((max-min) > 0.0) ? ((double)h())/(max-min) : 0.0;
     double xscale = ((*(m_wpts.end()-1)).x() > 0.0) ? ((double)w())/(*(m_wpts.end()-1)).x() : 0.0;
 
-    m_offscreen.fgcolor(fgfx::color(0xff,0x00,0x00));
+    m_offscreen.fgcolor(florb::color(0xff,0x00,0x00));
 
     double elast = 0.0;
     std::vector< point2d<double> >::iterator it;

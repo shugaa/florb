@@ -58,7 +58,7 @@ class dlg_settings {open
   }
   decl {void cb_units_choice_distances_ex(Fl_Widget *widget);} {private local
   }
-  decl {fgfx::color colorchooser_ex(fgfx::color c);} {private local
+  decl {florb::color colorchooser_ex(florb::color c);} {private local
   }
   decl {void tab_ui_setup_ex();} {private local
   }

@@ -6,8 +6,8 @@ void dlg_editselection::show_ex()
 {
     cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
 
-    std::vector<gpxlayer::waypoint> waypoints;
-    m_mapctrl->gpx_selection_get(waypoints);
+    std::vector<florb::tracklayer::waypoint> waypoints;
+    m_wgtmap->gpx_selection_get(waypoints);
 
     std::ostringstream os;
     os.precision(8);
@@ -81,7 +81,7 @@ void dlg_editselection::show_ex()
     m_window->hide();
 }
 
-bool dlg_editselection::handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints)
+bool dlg_editselection::handle_ok_ex(std::vector<florb::tracklayer::waypoint>& waypoints)
 {
     cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
 
@@ -103,7 +103,7 @@ bool dlg_editselection::handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints)
     {
         // Update elevation only, common for every selected
         // waypoint
-        std::vector<gpxlayer::waypoint>::iterator it;
+        std::vector<florb::tracklayer::waypoint>::iterator it;
         for (it=waypoints.begin();it!=waypoints.end();++it)
         {
             (*it).elevation(ele);
@@ -121,7 +121,7 @@ bool dlg_editselection::handle_ok_ex(std::vector<gpxlayer::waypoint>& waypoints)
     }
 
     try {
-        m_mapctrl->gpx_selection_set(waypoints);
+        m_wgtmap->gpx_selection_set(waypoints);
     } catch (std::out_of_range& e) {
         fl_alert("%s", e.what());
         return false;

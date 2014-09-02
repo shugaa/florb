@@ -28,7 +28,7 @@ void dlg_settings::create_ex()
 
 void dlg_settings::cb_btn_markercolor_ex(Fl_Widget *widget)
 {
-    fgfx::color c = colorchooser_ex(m_cfgui.markercolor());
+    florb::color c = colorchooser_ex(m_cfgui.markercolor());
     
     m_cfgui.markercolor(c);
     m_box_markercolor->color(fl_rgb_color(c.r(), c.g(), c.b()));
@@ -37,7 +37,7 @@ void dlg_settings::cb_btn_markercolor_ex(Fl_Widget *widget)
 
 void dlg_settings::cb_btn_markercolorselected_ex(Fl_Widget *widget)
 {
-    fgfx::color c = colorchooser_ex(m_cfgui.markercolorselected());
+    florb::color c = colorchooser_ex(m_cfgui.markercolorselected());
     
     m_cfgui.markercolorselected(c);
     m_box_markercolorselected->color(fl_rgb_color(c.r(), c.g(), c.b()));
@@ -46,7 +46,7 @@ void dlg_settings::cb_btn_markercolorselected_ex(Fl_Widget *widget)
 
 void dlg_settings::cb_btn_trackcolor_ex(Fl_Widget *widget)
 {
-    fgfx::color c = colorchooser_ex(m_cfgui.trackcolor());
+    florb::color c = colorchooser_ex(m_cfgui.trackcolor());
     
     m_cfgui.trackcolor(c);
     m_box_trackcolor->color(fl_rgb_color(c.r(), c.g(), c.b()));
@@ -55,7 +55,7 @@ void dlg_settings::cb_btn_trackcolor_ex(Fl_Widget *widget)
 
 void dlg_settings::cb_btn_selectioncolor_ex(Fl_Widget *widget)
 {
-    fgfx::color c = colorchooser_ex(m_cfgui.selectioncolor());
+    florb::color c = colorchooser_ex(m_cfgui.selectioncolor());
     
     m_cfgui.selectioncolor(c);
     m_box_selectioncolor->color(fl_rgb_color(c.r(), c.g(), c.b()));
@@ -64,7 +64,7 @@ void dlg_settings::cb_btn_selectioncolor_ex(Fl_Widget *widget)
 
 void dlg_settings::cb_btn_gpscursorcolor_ex(Fl_Widget *widget)
 {
-    fgfx::color c = colorchooser_ex(m_cfgui.gpscursorcolor());
+    florb::color c = colorchooser_ex(m_cfgui.gpscursorcolor());
     
     m_cfgui.gpscursorcolor(c);
     m_box_gpscursorcolor->color(fl_rgb_color(c.r(), c.g(), c.b()));
@@ -267,7 +267,7 @@ void dlg_settings::tab_tileservers_setup_ex()
         m_browser_tileservers->value(idx);
 }
 
-fgfx::color dlg_settings::colorchooser_ex(fgfx::color c)
+florb::color dlg_settings::colorchooser_ex(florb::color c)
 {
     double b = c.b() / 255.0;
     double g = c.g() / 255.0;
@@ -281,7 +281,7 @@ fgfx::color dlg_settings::colorchooser_ex(fgfx::color c)
 
     if (ret == 1)
     {
-        c = fgfx::color(
+        c = florb::color(
             (unsigned char)(r*255.0),
             (unsigned char)(g*255.0),
             (unsigned char)(b*255.0));

@@ -185,7 +185,7 @@ bool gpsdlayer::handle_evt_gpsd(const gpsdclient::event_gpsd *e)
     return true;
 };
 
-bool gpsdlayer::draw(const viewport &viewport, fgfx::canvas &os)
+bool gpsdlayer::draw(const viewport &viewport, florb::canvas &os)
 {
     if (!m_gpsdclient)
         return true;
@@ -195,7 +195,7 @@ bool gpsdlayer::draw(const viewport &viewport, fgfx::canvas &os)
 
     // TODO: Performance killer!!
     cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
-    fgfx::color color_cursor(cfgui.gpscursorcolor());
+    florb::color color_cursor(cfgui.gpscursorcolor());
 
     double t = track();
     double d2r = (M_PI/180.0);

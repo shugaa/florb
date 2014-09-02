@@ -42,7 +42,7 @@ void dlg_search::cb_btn_search_ex(Fl_Widget *widget)
 
     if (m_markerid != std::numeric_limits<size_t>::max())
     {
-        m_mapctrl->marker_remove(m_markerid);
+        m_wgtmap->marker_remove(m_markerid);
         m_markerid = std::numeric_limits<size_t>::max();
     }
 
@@ -88,7 +88,7 @@ void dlg_search::cb_browser_results_ex(Fl_Widget *widget)
     {
         if (m_markerid != std::numeric_limits<size_t>::max())
         {
-            m_mapctrl->marker_remove(m_markerid);
+            m_wgtmap->marker_remove(m_markerid);
             m_markerid = std::numeric_limits<size_t>::max();
         }
 
@@ -96,10 +96,10 @@ void dlg_search::cb_browser_results_ex(Fl_Widget *widget)
     }
 
     if (m_markerid != std::numeric_limits<size_t>::max())
-        m_mapctrl->marker_remove(m_markerid);
+        m_wgtmap->marker_remove(m_markerid);
 
-    m_markerid = m_mapctrl->marker_add(utils::wsg842merc(m_searchresults[v-1].m_pos));
-    m_mapctrl->goto_pos(m_searchresults[v-1].m_pos);
+    m_markerid = m_wgtmap->marker_add(utils::wsg842merc(m_searchresults[v-1].m_pos));
+    m_wgtmap->goto_pos(m_searchresults[v-1].m_pos);
 }
 
 void dlg_search::cb_btn_ok_ex(Fl_Widget *widget)
@@ -122,7 +122,7 @@ void dlg_search::hide_ex()
 {
     if (m_markerid != std::numeric_limits<size_t>::max())
     {
-        m_mapctrl->marker_remove(m_markerid);
+        m_wgtmap->marker_remove(m_markerid);
         m_markerid = std::numeric_limits<size_t>::max();
     }
 

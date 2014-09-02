@@ -8,20 +8,20 @@
 #include "version.hpp"
 #include "settings.hpp"
 #include "point.hpp"
-#include "gpxlayer.hpp"
+#include "tracklayer.hpp"
 
-const std::string gpxlayer::trackname = "New GPX track";
+const std::string florb::tracklayer::trackname = "New GPX track";
 
-gpxlayer::gpxlayer() :
+florb::tracklayer::tracklayer() :
     layer(),
     m_trip(0.0)
 {
     name(std::string(_(trackname.c_str())));
-    register_event_handler<gpxlayer, layer::event_mouse>(this, &gpxlayer::handle_evt_mouse);
-    register_event_handler<gpxlayer, layer::event_key>(this, &gpxlayer::handle_evt_key);
+    register_event_handler<florb::tracklayer, layer::event_mouse>(this, &florb::tracklayer::handle_evt_mouse);
+    register_event_handler<florb::tracklayer, layer::event_key>(this, &florb::tracklayer::handle_evt_key);
 }
 
-void gpxlayer::trip_update()
+void florb::tracklayer::trip_update()
 {
     // Less than 2 trackpoints, can't calculate trip
     if (m_trkpts.size() < 2) 
@@ -37,7 +37,7 @@ void gpxlayer::trip_update()
     m_trip += utils::dist(utils::merc2wsg84(p1), utils::merc2wsg84(p2));
 }
 
-void gpxlayer::trip_calcall()
+void florb::tracklayer::trip_calcall()
 {
     // Less than 2 trackpoints, can't calculate trip
     if (m_trkpts.size() < 2)
@@ -57,7 +57,7 @@ void gpxlayer::trip_calcall()
     }
 }
 
-bool gpxlayer::key(const layer::event_key* evt)
+bool florb::tracklayer::key(const layer::event_key* evt)
 {
     // We only care for the DEL key at the moment
     if (evt->key() != layer::event_key::KEY_DEL)
@@ -67,7 +67,7 @@ bool gpxlayer::key(const layer::event_key* evt)
     return true;
 }
 
-bool gpxlayer::press(const layer::event_mouse* evt)
+bool florb::tracklayer::press(const layer::event_mouse* evt)
 {
     point2d<unsigned long> pxabs;
     pxabs[0] = evt->pos().x() < 0 ? 0 : (unsigned long)evt->pos().x();
@@ -120,7 +120,7 @@ bool gpxlayer::press(const layer::event_mouse* evt)
     return true;
 }
 
-bool gpxlayer::drag(const layer::event_mouse* evt)
+bool florb::tracklayer::drag(const layer::event_mouse* evt)
 {
     // Enter drag mode
     m_selection.dragging = true;
@@ -211,7 +211,7 @@ bool gpxlayer::drag(const layer::event_mouse* evt)
     return true;
 }
 
-bool gpxlayer::release(const layer::event_mouse* evt)
+bool florb::tracklayer::release(const layer::event_mouse* evt)
 {
     // Button release on an existing item
     if ((m_selection.waypoints.size() == 1) && (m_selection.multiselect == false))
@@ -258,7 +258,7 @@ bool gpxlayer::release(const layer::event_mouse* evt)
     return true;
 }
 
-void gpxlayer::add_trackpoint(const point2d<double>& p)
+void florb::tracklayer::add_trackpoint(const point2d<double>& p)
 {
     // Add the position to the list
     point2d<double> merc(utils::wsg842merc(p));
@@ -281,7 +281,7 @@ void gpxlayer::add_trackpoint(const point2d<double>& p)
     notify(); 
 }
 
-void gpxlayer::load_track(const std::string &path)
+void florb::tracklayer::load_track(const std::string &path)
 {
     // Load the XML
     tinyxml2::XMLDocument doc;
@@ -322,7 +322,7 @@ void gpxlayer::load_track(const std::string &path)
     notify();
 };
 
-void gpxlayer::save_track(const std::string &path)
+void florb::tracklayer::save_track(const std::string &path)
 {
     // TinyXML's number parsing is locale dependent, set to "C" and restore
     // later
@@ -415,7 +415,7 @@ void gpxlayer::save_track(const std::string &path)
         throw std::runtime_error(_("Failed to save GPX data"));
 }
 
-void gpxlayer::clear_track()
+void florb::tracklayer::clear_track()
 {
    // Reset the track name
    name(std::string(_(trackname.c_str())));
@@ -431,31 +431,31 @@ void gpxlayer::clear_track()
    notify();
 }
 
-double gpxlayer::trip()
+double florb::tracklayer::trip()
 {
     return m_trip;
 }
 
-void gpxlayer::showwpmarkers(bool s)
+void florb::tracklayer::showwpmarkers(bool s)
 {
     // Set flag and request update
     m_showwpmarkers = s;
     notify();
 }
 
-void gpxlayer::notify()
+void florb::tracklayer::notify()
 {
     event_notify e;
     fire(&e);
 }
 
-size_t gpxlayer::selected()
+size_t florb::tracklayer::selected()
 {
     // Return the numer of selected waypoints
     return m_selection.waypoints.size();
 }
 
-void gpxlayer::selection_get(std::vector<waypoint>& waypoints)
+void florb::tracklayer::selection_get(std::vector<waypoint>& waypoints)
 {
     // Clear the passed vector
     waypoints.clear();
@@ -471,7 +471,7 @@ void gpxlayer::selection_get(std::vector<waypoint>& waypoints)
     }
 }
 
-void gpxlayer::selection_set(const std::vector<waypoint>& waypoints)
+void florb::tracklayer::selection_set(const std::vector<waypoint>& waypoints)
 {
     // Number of waypoints must be the same
     if (waypoints.size() != m_selection.waypoints.size())
@@ -491,7 +491,7 @@ void gpxlayer::selection_set(const std::vector<waypoint>& waypoints)
     }
 }
 
-void gpxlayer::selection_delete()
+void florb::tracklayer::selection_delete()
 {
     // No selection or no waypoints
     if ((selected() == 0) || (m_trkpts.size() == 0))
@@ -518,12 +518,12 @@ void gpxlayer::selection_delete()
     notify();
 }
 
-gpxlayer::~gpxlayer()
+florb::tracklayer::~tracklayer()
 {
     ;
 };
 
-bool gpxlayer::handle_evt_mouse(const layer::event_mouse* evt)
+bool florb::tracklayer::handle_evt_mouse(const layer::event_mouse* evt)
 {
     // Only the left mouse button is of interest
     if (!enabled())
@@ -556,7 +556,7 @@ bool gpxlayer::handle_evt_mouse(const layer::event_mouse* evt)
     return ret;
 }
 
-bool gpxlayer::handle_evt_key(const layer::event_key* evt)
+bool florb::tracklayer::handle_evt_key(const layer::event_key* evt)
 {   
     if (!enabled())
         return false;
@@ -582,7 +582,7 @@ bool gpxlayer::handle_evt_key(const layer::event_key* evt)
     return ret;
 }
 
-bool gpxlayer::draw(const viewport &vp, fgfx::canvas &os)
+bool florb::tracklayer::draw(const viewport &vp, florb::canvas &os)
 {
     if (m_trkpts.size() == 0)
         return true;
@@ -590,10 +590,10 @@ bool gpxlayer::draw(const viewport &vp, fgfx::canvas &os)
     // TODO: Performance killer!!
     cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
 
-    fgfx::color color_track(cfgui.trackcolor());
-    fgfx::color color_point(cfgui.markercolor());
-    fgfx::color color_point_hl(cfgui.markercolorselected());
-    fgfx::color color_selector(cfgui.selectioncolor());
+    florb::color color_track(cfgui.trackcolor());
+    florb::color color_point(cfgui.markercolor());
+    florb::color color_point_hl(cfgui.markercolorselected());
+    florb::color color_selector(cfgui.selectioncolor());
     unsigned int linewidth = cfgui.tracklinewidth();
 
     point2d<double> pmerc_last;
@@ -695,7 +695,7 @@ bool gpxlayer::draw(const viewport &vp, fgfx::canvas &os)
     return true;
 }
 
-void gpxlayer::parsetree(tinyxml2::XMLNode *parent)
+void florb::tracklayer::parsetree(tinyxml2::XMLNode *parent)
 {
     bool ret = true;
     tinyxml2::XMLElement *etmp = parent->ToElement();

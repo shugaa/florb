@@ -17,7 +17,7 @@ decl {\#include "event.hpp"} {public global
 decl {\#include "point.hpp"} {public global
 } 
 
-decl {\#include "mapctrl.hpp"} {public global
+decl {\#include "wgt_map.hpp"} {public global
 } 
 
 class dlg_search {open : {public event_listener}
@@ -32,7 +32,7 @@ class dlg_search {open : {public event_listener}
   }
   decl {downloader* m_downloader;} {private local
   }
-  decl {mapctrl* m_mapctrl;} {private local
+  decl {wgt_map* m_wgtmap;} {selected private local
   }
   decl {size_t m_markerid;} {private local
   }
@@ -50,7 +50,7 @@ class dlg_search {open : {public event_listener}
   }
   decl {void cb_btn_ok_ex(Fl_Widget *widget);} {private global
   }
-  decl {void cb_window_ex(Fl_Widget *widget);} {selected private global
+  decl {void cb_window_ex(Fl_Widget *widget);} {private global
   }
   decl {void process_download_ex();} {private global
   }
@@ -58,12 +58,12 @@ class dlg_search {open : {public event_listener}
   }
   decl {static void cb_download_ex(void *userdata);} {private global
   }
-  Function {dlg_search(mapctrl *mc)} {} {
+  Function {dlg_search(wgt_map* mc)} {} {
     Fl_Window m_window {
       label Search
       user_data this
       callback cb_window
-      private xywh {2240 239 500 295} type Double resizable size_range {500 295 0 0} visible
+      private xywh {2111 482 500 295} type Double resizable size_range {500 295 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 500 297} resizable
@@ -151,7 +151,7 @@ class dlg_search {open : {public event_listener}
         }
       }
     }
-    code {m_mapctrl = mc;
+    code {m_wgtmap = mc;
 create_ex();} {}
   }
   Function {~dlg_search()} {} {

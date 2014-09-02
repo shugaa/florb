@@ -14,7 +14,7 @@ decl {\#include <vector>} {public global
 decl {\#include <boost/interprocess/sync/interprocess_mutex.hpp>} {public global
 } 
 
-decl {\#include "mapctrl.hpp"} {public global
+decl {\#include "wgt_map.hpp"} {public global
 } 
 
 decl {\#include "osmlayer.hpp"} {public global
@@ -48,7 +48,7 @@ class dlg_bulkdl {open : {public event_listener}
   }
   decl {boost::interprocess::interprocess_mutex m_mutex;} {private local
   }
-  decl {mapctrl *m_mapctrl;} {private local
+  decl {wgt_map*m_wgtmap;} {private local
   }
   decl {viewport m_vp;} {private local
   }
@@ -63,7 +63,7 @@ class dlg_bulkdl {open : {public event_listener}
     code {dlg_bulkdl *dlg = static_cast<dlg_bulkdl*>(userdata);
 dlg->cb_btn_download_ex(widget);} {}
   }
-  Function {dlg_bulkdl(mapctrl *m)} {open
+  Function {dlg_bulkdl(wgt_map*m)} {open
   } {
     Fl_Window m_window {
       label {Bulk download} open selected
@@ -168,7 +168,7 @@ dlg->cb_btn_download_ex(widget);} {}
         }
       }
     }
-    code {m_mapctrl = m;
+    code {m_wgtmap = m;
 create_ex();} {}
   }
   Function {~dlg_bulkdl()} {} {

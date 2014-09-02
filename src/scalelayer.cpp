@@ -16,7 +16,7 @@ scalelayer::~scalelayer()
 {
 };
 
-bool scalelayer::draw(const viewport &viewport, fgfx::canvas &os)
+bool scalelayer::draw(const viewport &viewport, florb::canvas &os)
 {
     // Calculate coordinate in the center of the viewport
     point2d<unsigned long> ppx(viewport.x() + (viewport.w()/2), viewport.y() + (viewport.h()/2));
@@ -102,7 +102,7 @@ bool scalelayer::draw(const viewport &viewport, fgfx::canvas &os)
 #endif
 
     // Set color and font size
-    os.fgcolor(fgfx::color(0,0,0));
+    os.fgcolor(florb::color(0,0,0));
     os.fontsize(12);
 
     // Draw the scale itself

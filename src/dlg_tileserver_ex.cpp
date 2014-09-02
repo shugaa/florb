@@ -18,10 +18,10 @@ bool dlg_tileserver::show_ex(bool add)
 
     switch (m_cfgtileserver.type())
     {
-        case fgfx::image::PNG:
+        case florb::image::PNG:
             m_choice_imgtype->value(0);
             break;
-        case fgfx::image::JPG:
+        case florb::image::JPG:
             m_choice_imgtype->value(1);
             break;
         default:
@@ -101,13 +101,13 @@ bool dlg_tileserver::handle_ok_ex(bool add)
         switch (m_choice_imgtype->value())
         {
             case 0:
-                m_cfgtileserver.type(fgfx::image::PNG);
+                m_cfgtileserver.type(florb::image::PNG);
                 break;
             case 1:
-                m_cfgtileserver.type(fgfx::image::JPG);
+                m_cfgtileserver.type(florb::image::JPG);
                 break;
             default:
-                m_cfgtileserver.type(fgfx::image::PNG);
+                m_cfgtileserver.type(florb::image::PNG);
         }
 
         m_cfgtileserver.name(m_input_name->value());

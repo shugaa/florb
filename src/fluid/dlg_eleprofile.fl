@@ -5,7 +5,7 @@ i18n_include <libintl.h>
 i18n_function gettext 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include "mapctrl.hpp"} {public global
+decl {\#include "wgt_map.hpp"} {public global
 } 
 
 decl {\#include "wgt_eleprofile.hpp"} {public global
@@ -13,7 +13,7 @@ decl {\#include "wgt_eleprofile.hpp"} {public global
 
 class dlg_eleprofile {open : {public event_listener}
 } {
-  decl {mapctrl *m_mapctrl;} {private local
+  decl {wgt_map*m_wgtmap;} {private local
   }
   decl {void create_ex();} {private local
   }
@@ -23,7 +23,7 @@ class dlg_eleprofile {open : {public event_listener}
   }
   decl {bool profile_evt_mouse_ex(const wgt_eleprofile::event_mouse *e);} {private local
   }
-  Function {dlg_eleprofile(mapctrl *m)} {open
+  Function {dlg_eleprofile(wgt_map*m)} {open
   } {
     Fl_Window m_window {
       label {View elevation profile} open
@@ -107,7 +107,7 @@ class dlg_eleprofile {open : {public event_listener}
         }
       }
     }
-    code {m_mapctrl = m;
+    code {m_wgtmap = m;
 create_ex();} {}
   }
   Function {~dlg_eleprofile()} {} {
