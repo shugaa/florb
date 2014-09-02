@@ -4,8 +4,8 @@
 
 namespace YAML {
     template<>
-        struct convert<cfg_tileserver> {
-            static Node encode(const cfg_tileserver& rhs) {
+        struct convert<florb::cfg_tileserver> {
+            static Node encode(const florb::cfg_tileserver& rhs) {
                 Node node;
                 node["name"] = rhs.name();
                 node["url"] = rhs.url();
@@ -22,7 +22,7 @@ namespace YAML {
                 return node;
             }
 
-            static bool decode(const Node& node, cfg_tileserver& rhs) 
+            static bool decode(const Node& node, florb::cfg_tileserver& rhs) 
             {
                 if((!node.IsMap()) || (node.size() == 0))
                     return true;
@@ -57,14 +57,14 @@ namespace YAML {
         };
 
     template<>
-        struct convert<cfg_cache> {
-            static Node encode(const cfg_cache& rhs) {
+        struct convert<florb::cfg_cache> {
+            static Node encode(const florb::cfg_cache& rhs) {
                 Node node;
                 node["location"] = rhs.location();
                 return node;
             }
 
-            static bool decode(const Node& node, cfg_cache& rhs) 
+            static bool decode(const Node& node, florb::cfg_cache& rhs) 
             {
                 if((!node.IsMap()) || (node.size() == 0))
                     return true;
@@ -77,16 +77,16 @@ namespace YAML {
         };
 
     template<>
-        struct convert<cfg_units> {
-            static Node encode(const cfg_units& rhs) {
+        struct convert<florb::cfg_units> {
+            static Node encode(const florb::cfg_units& rhs) {
                 Node node;
 
                 switch (rhs.system_length())
                 {
-                    case (cfg_units::system::IMPERIAL):
+                    case (florb::cfg_units::system::IMPERIAL):
                         node["system_length"] = "imperial";
                         break;
-                    case (cfg_units::system::NAUTICAL):
+                    case (florb::cfg_units::system::NAUTICAL):
                         node["system_length"] = "nautical";
                         break;
                     default:
@@ -97,7 +97,7 @@ namespace YAML {
                 return node;
             }
 
-            static bool decode(const Node& node, cfg_units& rhs) 
+            static bool decode(const Node& node, florb::cfg_units& rhs) 
             {
                 if((!node.IsMap()) || (node.size() == 0))
                     return true;
@@ -106,11 +106,11 @@ namespace YAML {
                 {
                     std::string sm(node["system_length"].as<std::string>());
                     if (sm == "imperial")
-                        rhs.system_length(cfg_units::system::IMPERIAL);
+                        rhs.system_length(florb::cfg_units::system::IMPERIAL);
                     else if (sm == "nautical")
-                        rhs.system_length(cfg_units::system::NAUTICAL);
+                        rhs.system_length(florb::cfg_units::system::NAUTICAL);
                     else
-                        rhs.system_length(cfg_units::system::METRIC);
+                        rhs.system_length(florb::cfg_units::system::METRIC);
                 }
                 
                 return true;
@@ -118,8 +118,8 @@ namespace YAML {
         };
 
     template<>
-        struct convert<cfg_gpsd> {
-            static Node encode(const cfg_gpsd& rhs) {
+        struct convert<florb::cfg_gpsd> {
+            static Node encode(const florb::cfg_gpsd& rhs) {
                 Node node;
                 node["enabled"] = rhs.enabled();
                 node["host"] = rhs.host();
@@ -127,7 +127,7 @@ namespace YAML {
                 return node;
             }
 
-            static bool decode(const Node& node, cfg_gpsd& rhs) 
+            static bool decode(const Node& node, florb::cfg_gpsd& rhs) 
             {
                 if((!node.IsMap()) || (node.size() == 0))
                     return true;
@@ -146,8 +146,8 @@ namespace YAML {
         };
 
     template<>
-        struct convert<cfg_ui> {
-            static Node encode(const cfg_ui& rhs) {
+        struct convert<florb::cfg_ui> {
+            static Node encode(const florb::cfg_ui& rhs) {
                 Node node;
                 node["markercolor"] = rhs.markercolor().rgb();
                 node["markercolorselected"] = rhs.markercolorselected().rgb();
@@ -158,7 +158,7 @@ namespace YAML {
                 return node;
             }
 
-            static bool decode(const Node& node, cfg_ui& rhs) 
+            static bool decode(const Node& node, florb::cfg_ui& rhs) 
             {
                 // Use defaults
                 if((!node.IsMap()) || (node.size() == 0))
@@ -189,8 +189,8 @@ namespace YAML {
         };
 
     template<>
-        struct convert<cfg_viewport> {
-            static Node encode(const cfg_viewport& rhs) {
+        struct convert<florb::cfg_viewport> {
+            static Node encode(const florb::cfg_viewport& rhs) {
                 Node node;
                 node["lon"] = rhs.lon();
                 node["lat"] = rhs.lat();
@@ -198,7 +198,7 @@ namespace YAML {
                 return node;
             }
 
-            static bool decode(const Node& node, cfg_viewport& rhs) 
+            static bool decode(const Node& node, florb::cfg_viewport& rhs) 
             {
                 if((!node.IsMap()) || (node.size() == 0))
                 {
@@ -220,7 +220,7 @@ namespace YAML {
         };
 }
 
-class yaml_node
+class florb::yaml_node
 {
     public:
         yaml_node(YAML::Node n) : m_node(n) {};
@@ -237,7 +237,7 @@ class yaml_node
         YAML::Node m_node;  
 };
 
-class yaml_iterator
+class florb::yaml_iterator
 {
     public:
         yaml_iterator(YAML::iterator i) : m_iter(i) {};
@@ -248,7 +248,7 @@ class yaml_iterator
         YAML::iterator m_iter;  
 };
 
-node::iterator::iterator(const node& n, int be) 
+florb::node::iterator::iterator(const node& n, int be) 
 {
     if (be <= 0)
         m_ref = new yaml_iterator(n.m_ref->get().begin());
@@ -256,43 +256,43 @@ node::iterator::iterator(const node& n, int be)
         m_ref = new yaml_iterator(n.m_ref->get().end());
 }
 
-node::iterator::~iterator()
+florb::node::iterator::~iterator()
 {   
     delete m_ref;
 }
 
-bool node::iterator::operator==(iterator const& rhs) const 
+bool florb::node::iterator::operator==(iterator const& rhs) const 
 {
     return (m_ref->get() == rhs.m_ref->get());
 }
 
-bool node::iterator::operator!=(iterator const& rhs) const 
+bool florb::node::iterator::operator!=(iterator const& rhs) const 
 {
     return !(m_ref->get() == rhs.m_ref->get());
 }
 
-node::iterator& node::iterator::operator++() 
+florb::node::iterator& florb::node::iterator::operator++() 
 {
     (m_ref->get())++;
     return *this;
 }   
 
-node::iterator node::iterator::operator++(int) 
+florb::node::iterator florb::node::iterator::operator++(int) 
 {
-    iterator tmp (*this);
+    florb::node::iterator tmp (*this);
     ++(*this);
     return tmp;
 }
 
 // Bidirectional iterators are not supported by YAML-Cpp
 #if 0
-iterator& node::iterator::operator--() 
+iterator& florb::node::iterator::operator--() 
 {
     (m_ref.get())--;
     return *this;
 }
 
-iterator node::iterator::operator--(int) 
+iterator florb::node::iterator::operator--(int) 
 {
     iterator tmp (*this);
     --(*this);
@@ -300,174 +300,174 @@ iterator node::iterator::operator--(int)
 }
 #endif
 
-node node::iterator::operator* () const 
+florb::node florb::node::iterator::operator* () const 
 {
-    yaml_node *tmp = new yaml_node(*(m_ref->get()));
-    return node(tmp);
+    florb::yaml_node *tmp = new florb::yaml_node(*(m_ref->get()));
+    return florb::node(tmp);
 }
 
-settings::settings()
+florb::settings::settings()
 {
     m_cfgfile = florb::utils::appdir() + florb::utils::pathsep() + "config";
     florb::utils::mkdir(florb::utils::appdir());
 
-    m_rootnode = node(m_cfgfile);
+    m_rootnode = florb::node(m_cfgfile);
     defaults(m_cfgfile);
 }
 
-settings::~settings()
+florb::settings::~settings()
 {
     m_rootnode.serialize(m_cfgfile);
 }
 
-settings& settings::get_instance()
+florb::settings& florb::settings::get_instance()
 {
-    static settings instance;
+    static florb::settings instance;
     return instance;
 }
 
-void settings::defaults(const std::string& path)
+void florb::settings::defaults(const std::string& path)
 {
     // Tileserver default configuration
-    cfg_tileserver cfgtileserver;
+    florb::cfg_tileserver cfgtileserver;
     if((!m_rootnode["tileservers"]) || (!m_rootnode["tileservers"].is_sequence()))
     {
-        std::vector<cfg_tileserver> v;
+        std::vector<florb::cfg_tileserver> v;
         v.push_back(cfgtileserver);
 
         m_rootnode["tileservers"] = v;
     }
 
     // GPSd default configuration
-    cfg_gpsd cfggpsd = m_rootnode["gpsd"].as<cfg_gpsd>();
+    florb::cfg_gpsd cfggpsd = m_rootnode["gpsd"].as<florb::cfg_gpsd>();
     m_rootnode["gpsd"] = cfggpsd;
 
     // Cache default configuration
-    cfg_cache cfgcache = m_rootnode["cache"].as<cfg_cache>();
+    florb::cfg_cache cfgcache = m_rootnode["cache"].as<florb::cfg_cache>();
     m_rootnode["cache"] = cfgcache;
 
     // UI default configuration
-    cfg_ui cfgui = m_rootnode["ui"].as<cfg_ui>();
+    florb::cfg_ui cfgui = m_rootnode["ui"].as<florb::cfg_ui>();
     m_rootnode["ui"] = cfgui;
 
     // Viewport default configuration
-    cfg_viewport cfgvp = m_rootnode["viewport"].as<cfg_viewport>();
+    florb::cfg_viewport cfgvp = m_rootnode["viewport"].as<florb::cfg_viewport>();
     m_rootnode["viewport"] = cfgvp;
 
     // Units default configuration
-    cfg_units cfgunits = m_rootnode["units"].as<cfg_units>();
+    florb::cfg_units cfgunits = m_rootnode["units"].as<florb::cfg_units>();
     m_rootnode["units"] = cfgunits;
 }
 
-node::node(const std::string& path)
+florb::node::node(const std::string& path)
 {
-    m_ref = new yaml_node(path);
+    m_ref = new florb::yaml_node(path);
 }
 
-node::node(const node& n)
+florb::node::node(const node& n)
 {
-    m_ref = new yaml_node(n.m_ref->get());
+    m_ref = new florb::yaml_node(n.m_ref->get());
 }
 
-node::node()
+florb::node::node()
 {
-    m_ref = new yaml_node(YAML::Node());
+    m_ref = new florb::yaml_node(YAML::Node());
 }
 
-node::~node()
+florb::node::~node()
 {
     if (m_ref)
         delete m_ref;
 }
 
-bool node::is_sequence()
+bool florb::node::is_sequence()
 {
     return m_ref->get().IsSequence();
 }
 
-node node::operator[] (const int idx)
+florb::node florb::node::operator[] (const int idx)
 {
-    return node(new yaml_node(m_ref->get()[idx]));
+    return florb::node(new florb::yaml_node(m_ref->get()[idx]));
 }
 
-node node::operator[] (const std::string &name)
+florb::node florb::node::operator[] (const std::string &name)
 {
-    return node(new yaml_node(m_ref->get()[name]));
+    return florb::node(new florb::yaml_node(m_ref->get()[name]));
 }
 
-node& node::operator= (const node& n)
+florb::node& florb::node::operator= (const node& n)
 {
     if (m_ref)
         delete m_ref;
 
-    m_ref = new yaml_node(n.m_ref->get());
+    m_ref = new florb::yaml_node(n.m_ref->get());
 
     return *this;
 }
 
-template<typename T> node& node::operator= (const T& rhs)
+template<typename T> florb::node& florb::node::operator= (const T& rhs)
 {
     m_ref->get() = rhs;
     return *this;
 }
 
-node::operator bool() const 
+florb::node::operator bool() const 
 {
     return m_ref->get();
 }
 
-template<typename T> T node::as() const
+template<typename T> T florb::node::as() const
 {
     return m_ref->get().as<T>();
 }
 
-template<typename T> void node::push_back(const T& rhs)
+template<typename T> void florb::node::push_back(const T& rhs)
 {
     m_ref->get().push_back<T>(rhs);
 }
 
-void node::push_back(const node& rhs)
+void florb::node::push_back(const node& rhs)
 {
     m_ref->get().push_back(rhs.m_ref->get());
 }
 
-void node::serialize(const std::string& path)
+void florb::node::serialize(const std::string& path)
 {
     std::ofstream fout(path.c_str(), std::fstream::in|std::fstream::out|std::fstream::trunc);
     fout << m_ref->get();
 }
 
-size_t node::size()
+size_t florb::node::size()
 {
     return m_ref->get().size();
 }
 
 // This is necessary so YAML::Node template internals remain hidden from the
 // header file
-template int node::as<int>() const;
-template std::string node::as<std::string>() const;
-template cfg_tileserver node::as<cfg_tileserver>() const;
-template std::vector< cfg_tileserver > node::as< std::vector<cfg_tileserver> >() const;
-template bool node::as<bool>() const;
-template cfg_cache node::as<cfg_cache>() const;
-template cfg_gpsd node::as<cfg_gpsd>() const;
-template cfg_ui node::as<cfg_ui>() const;
-template cfg_viewport node::as<cfg_viewport>() const;
-template cfg_units node::as<cfg_units>() const;
+template int florb::node::as<int>() const;
+template std::string florb::node::as<std::string>() const;
+template florb::cfg_tileserver florb::node::as<florb::cfg_tileserver>() const;
+template std::vector< florb::cfg_tileserver > florb::node::as< std::vector<florb::cfg_tileserver> >() const;
+template bool florb::node::as<bool>() const;
+template florb::cfg_cache florb::node::as<florb::cfg_cache>() const;
+template florb::cfg_gpsd florb::node::as<florb::cfg_gpsd>() const;
+template florb::cfg_ui florb::node::as<florb::cfg_ui>() const;
+template florb::cfg_viewport florb::node::as<florb::cfg_viewport>() const;
+template florb::cfg_units florb::node::as<florb::cfg_units>() const;
 
-template void node::push_back<int>(const int& rhs);
-template void node::push_back<std::string>(const std::string& rhs);
-template void node::push_back<cfg_tileserver>(const cfg_tileserver& rhs);
+template void florb::node::push_back<int>(const int& rhs);
+template void florb::node::push_back<std::string>(const std::string& rhs);
+template void florb::node::push_back<florb::cfg_tileserver>(const florb::cfg_tileserver& rhs);
 
-template node& node::operator=<int> (const int& rhs);
-template node& node::operator=< std::vector<int> > (const std::vector<int>& rhs);
-template node& node::operator=<std::string> (const std::string& rhs);
-template node& node::operator=< std::vector<cfg_tileserver> > (const std::vector<cfg_tileserver>& rhs);
-template node& node::operator=<cfg_tileserver> (const cfg_tileserver& rhs);
-template node& node::operator=<bool> (const bool& rhs);
-template node& node::operator=<cfg_gpsd> (const cfg_gpsd& rhs);
-template node& node::operator=<cfg_ui> (const cfg_ui& rhs);
-template node& node::operator=<cfg_cache> (const cfg_cache& rhs);
-template node& node::operator=<cfg_viewport> (const cfg_viewport& rhs);
-template node& node::operator=<cfg_units> (const cfg_units& rhs);
+template florb::node& florb::node::operator=<int> (const int& rhs);
+template florb::node& florb::node::operator=< std::vector<int> > (const std::vector<int>& rhs);
+template florb::node& florb::node::operator=<std::string> (const std::string& rhs);
+template florb::node& florb::node::operator=< std::vector<florb::cfg_tileserver> > (const std::vector<florb::cfg_tileserver>& rhs);
+template florb::node& florb::node::operator=<florb::cfg_tileserver> (const florb::cfg_tileserver& rhs);
+template florb::node& florb::node::operator=<bool> (const bool& rhs);
+template florb::node& florb::node::operator=<florb::cfg_gpsd> (const cfg_gpsd& rhs);
+template florb::node& florb::node::operator=<florb::cfg_ui> (const cfg_ui& rhs);
+template florb::node& florb::node::operator=<florb::cfg_cache> (const cfg_cache& rhs);
+template florb::node& florb::node::operator=<florb::cfg_viewport> (const cfg_viewport& rhs);
+template florb::node& florb::node::operator=<florb::cfg_units> (const cfg_units& rhs);
 

@@ -10,7 +10,7 @@ void dlg_editselection::create_ex()
 
 void dlg_editselection::show_ex()
 {
-    cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
+    florb::cfg_units cfgunits = florb::settings::get_instance()["units"].as<florb::cfg_units>();
 
     std::vector<florb::tracklayer::waypoint> waypoints;
     m_wgtmap->gpx_selection_get(waypoints);
@@ -35,8 +35,8 @@ void dlg_editselection::show_ex()
     std::string elelabel;
     switch (cfgunits.system_length())
     {
-        case (cfg_units::system::IMPERIAL):
-        case (cfg_units::system::NAUTICAL):
+        case (florb::cfg_units::system::IMPERIAL):
+        case (florb::cfg_units::system::NAUTICAL):
             ele = unit::convert(unit::length::M, unit::length::FOOT, ele);
             os << " [" << unit::sistr(unit::FOOT) << "]";
             elelabel = os.str();
@@ -89,7 +89,7 @@ void dlg_editselection::show_ex()
 
 bool dlg_editselection::handle_ok_ex(std::vector<florb::tracklayer::waypoint>& waypoints)
 {
-    cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
+    florb::cfg_units cfgunits = florb::settings::get_instance()["units"].as<florb::cfg_units>();
 
     // Perform unit conversion for elevaton if necessary
     double ele = 0;
@@ -97,8 +97,8 @@ bool dlg_editselection::handle_ok_ex(std::vector<florb::tracklayer::waypoint>& w
 
     switch (cfgunits.system_length())
     {
-        case (cfg_units::system::IMPERIAL):
-        case (cfg_units::system::NAUTICAL):
+        case (florb::cfg_units::system::IMPERIAL):
+        case (florb::cfg_units::system::NAUTICAL):
             ele = unit::convert(unit::length::FOOT, unit::length::M, ele);
             break;
         default:

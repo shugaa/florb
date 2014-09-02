@@ -13,11 +13,11 @@ void dlg_settings::create_ex()
     // Set the window icon
     florb::utils::set_window_icon(m_window); 
 
-    m_cfgui = settings::get_instance()["ui"].as<cfg_ui>();
-    m_cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
-    m_cfgtileservers = settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >();
-    m_cfgcache = settings::get_instance()["cache"].as<cfg_cache>();
-    m_cfgunits = settings::get_instance()["units"].as<cfg_units>();
+    m_cfgui = florb::settings::get_instance()["ui"].as<florb::cfg_ui>();
+    m_cfggpsd = florb::settings::get_instance()["gpsd"].as<florb::cfg_gpsd>();
+    m_cfgtileservers = florb::settings::get_instance()["tileservers"].as< std::vector<florb::cfg_tileserver> >();
+    m_cfgcache = florb::settings::get_instance()["cache"].as<florb::cfg_cache>();
+    m_cfgunits = florb::settings::get_instance()["units"].as<florb::cfg_units>();
 
     tab_ui_setup_ex();
     tab_gpsd_setup_ex(); 
@@ -114,7 +114,7 @@ void dlg_settings::cb_btn_location_ex(Fl_Widget *widget)
 void dlg_settings::cb_units_choice_distances_ex(Fl_Widget *widget)
 {
     int v = m_units_choice_distances->value();
-    m_cfgunits.system_length(static_cast<cfg_units::system>(v));
+    m_cfgunits.system_length(static_cast<florb::cfg_units::system>(v));
 }
 
 void dlg_settings::cb_inp_server_ex(Fl_Widget *widget)
@@ -149,7 +149,7 @@ void dlg_settings::cb_chkbtn_enable_ex(Fl_Widget *widget)
 
 void dlg_settings::cb_btn_addserver_ex(Fl_Widget *widget)
 {
-    cfg_tileserver ts;
+    florb::cfg_tileserver ts;
     ts.name(_("My tileserver"));
     ts.url("{x}{y}{z}");
 
@@ -204,16 +204,16 @@ void dlg_settings::tab_cache_setup_ex()
 
 void dlg_settings::tab_units_setup_ex()
 {
-    cfg_units::system conf = m_cfgunits.system_length();
+    florb::cfg_units::system conf = m_cfgunits.system_length();
 
-    for (int i=0;i<cfg_units::system::ENUM_SYSTEM_END;i++)
+    for (int i=0;i<florb::cfg_units::system::ENUM_SYSTEM_END;i++)
     {
         switch (i)
         {
-            case (cfg_units::system::IMPERIAL):
+            case (florb::cfg_units::system::IMPERIAL):
                 m_units_choice_distances->add(_("Imperial"));
                 break;
-            case (cfg_units::system::NAUTICAL):
+            case (florb::cfg_units::system::NAUTICAL):
                 m_units_choice_distances->add(_("Nautical"));
                 break;
             default:
@@ -257,7 +257,7 @@ void dlg_settings::tab_tileservers_setup_ex()
 
     m_browser_tileservers->clear();
 
-    std::vector<cfg_tileserver>::iterator it;
+    std::vector<florb::cfg_tileserver>::iterator it;
     for(it=m_cfgtileservers.begin(); it!=m_cfgtileservers.end(); ++it) 
     {
         m_browser_tileservers->add((*it).name().c_str()); 
@@ -305,11 +305,11 @@ bool dlg_settings::show_ex()
     // Save
     if (ok)
     {
-        settings::get_instance()["ui"] = m_cfgui;
-        settings::get_instance()["gpsd"] = m_cfggpsd;
-        settings::get_instance()["tileservers"] = m_cfgtileservers;
-        settings::get_instance()["cache"] = m_cfgcache;
-        settings::get_instance()["units"] = m_cfgunits;
+        florb::settings::get_instance()["ui"] = m_cfgui;
+        florb::settings::get_instance()["gpsd"] = m_cfggpsd;
+        florb::settings::get_instance()["tileservers"] = m_cfgtileservers;
+        florb::settings::get_instance()["cache"] = m_cfgcache;
+        florb::settings::get_instance()["units"] = m_cfgunits;
     }
 
     m_window->hide();

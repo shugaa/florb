@@ -78,7 +78,7 @@ void markerlayer::notify()
 
 bool markerlayer::draw(const viewport &viewport, florb::canvas &os)
 {
-    cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>();
+    florb::cfg_ui cfgui = florb::settings::get_instance()["ui"].as<florb::cfg_ui>();
 
     std::vector<marker_internal>::iterator it;
     for (it=m_markers.begin();it!=m_markers.end();++it)

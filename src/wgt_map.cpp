@@ -72,14 +72,14 @@ wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
     add_event_listener(m_areaselectlayer);
 
     // Add a gpsdlayer if enabled
-    cfg_gpsd cfggpsd = settings::get_instance()["gpsd"].as<cfg_gpsd>();
+    florb::cfg_gpsd cfggpsd = florb::settings::get_instance()["gpsd"].as<florb::cfg_gpsd>();
     if (cfggpsd.enabled())
     {
         gpsd_connect(cfggpsd.host(), cfggpsd.port());
     }
 
     // Restore previous viewport
-    cfg_viewport cfgvp = settings::get_instance()["viewport"].as<cfg_viewport>();
+    florb::cfg_viewport cfgvp = florb::settings::get_instance()["viewport"].as<florb::cfg_viewport>();
 
     // Set previous zoom level
     if (cfgvp.z() > m_viewport.z())
@@ -92,7 +92,7 @@ wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
 wgt_map::~wgt_map()
 {
     // Save viewport configuration
-    cfg_viewport cfgvp = settings::get_instance()["viewport"].as<cfg_viewport>();
+    florb::cfg_viewport cfgvp = florb::settings::get_instance()["viewport"].as<florb::cfg_viewport>();
     cfgvp.z(m_viewport.z());
     florb::point2d<double> pos = florb::utils::px2wsg84(
             m_viewport.z(), 
@@ -100,7 +100,7 @@ wgt_map::~wgt_map()
 
     cfgvp.lon(pos.x());
     cfgvp.lat(pos.y());
-    settings::get_instance()["viewport"] = cfgvp;
+    florb::settings::get_instance()["viewport"] = cfgvp;
 
     // Delete all layers if active
     if (m_basemap)

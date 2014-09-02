@@ -38,7 +38,7 @@ void dlg_eleprofile::show_ex()
 
 bool dlg_eleprofile::profile_evt_mouse_ex(const wgt_eleprofile::event_mouse *e)
 {
-    cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
+    florb::cfg_units cfgunits = florb::settings::get_instance()["units"].as<florb::cfg_units>();
 
     std::ostringstream ss; 
 
@@ -49,11 +49,11 @@ bool dlg_eleprofile::profile_evt_mouse_ex(const wgt_eleprofile::event_mouse *e)
     unit::length dst_ele;
     switch (cfgunits.system_length())
     {
-        case (cfg_units::system::NAUTICAL):
+        case (florb::cfg_units::system::NAUTICAL):
             dst_trip = unit::length::SEA_MILE;
             dst_ele = unit::length::FOOT;
             break;
-        case (cfg_units::system::IMPERIAL):
+        case (florb::cfg_units::system::IMPERIAL):
             dst_trip = unit::length::ENGLISH_MILE;
             dst_ele = unit::length::FOOT;
             break;

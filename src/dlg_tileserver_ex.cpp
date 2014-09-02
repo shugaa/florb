@@ -81,10 +81,10 @@ bool dlg_tileserver::handle_ok_ex(bool add)
         // Make sure there is no other tile server with the same name
         if (add)
         {
-            node section = settings::get_instance()["tileservers"];
-            for(node::iterator it=section.begin(); it!=section.end(); ++it) 
+            florb::node section = florb::settings::get_instance()["tileservers"];
+            for(florb::node::iterator it=section.begin(); it!=section.end(); ++it) 
             {
-                if ((*it).as<cfg_tileserver>().name() == std::string(m_input_name->value()))
+                if ((*it).as<florb::cfg_tileserver>().name() == std::string(m_input_name->value()))
                 {
                     ret = false;
                     break;
@@ -122,7 +122,7 @@ bool dlg_tileserver::handle_ok_ex(bool add)
     return ret;
 }
 
-cfg_tileserver dlg_tileserver::tileserver_ex()
+florb::cfg_tileserver dlg_tileserver::tileserver_ex()
 {
     // Return a copy of the local confuguratin data for the tileserver
     return m_cfgtileserver;

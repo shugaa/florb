@@ -16,15 +16,15 @@ decl {\#include <vector>} {public global
 
 class dlg_settings {open
 } {
-  decl {cfg_ui m_cfgui;} {private local
+  decl {florb::cfg_ui m_cfgui;} {private local
   }
-  decl {cfg_gpsd m_cfggpsd;} {private local
+  decl {florb::cfg_gpsd m_cfggpsd;} {private local
   }
-  decl {std::vector<cfg_tileserver> m_cfgtileservers;} {private local
+  decl {florb::cfg_cache m_cfgcache;} {private local
   }
-  decl {cfg_cache m_cfgcache;} {private local
+  decl {florb::cfg_units m_cfgunits;} {private local
   }
-  decl {cfg_units m_cfgunits;} {private local
+  decl {std::vector<florb::cfg_tileserver> m_cfgtileservers;} {selected private local
   }
   decl {bool show_ex();} {private local
   }
@@ -92,7 +92,7 @@ class dlg_settings {open
             private xywh {5 5 490 250} resizable
           } {
             Fl_Group {} {
-              label Interface selected
+              label Interface
               private xywh {10 25 480 225}
             } {
               Fl_Pack {} {open

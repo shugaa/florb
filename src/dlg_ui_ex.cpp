@@ -55,7 +55,7 @@ void sighandler_ex(int sig)
 
 void dlg_ui::update_statusbar_ex()
 {
-    cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
+    florb::cfg_units cfgunits = florb::settings::get_instance()["units"].as<florb::cfg_units>();
 
     std::ostringstream ss; 
 
@@ -77,10 +77,10 @@ void dlg_ui::update_statusbar_ex()
     unit::length dst;
     switch (cfgunits.system_length())
     {
-        case (cfg_units::system::NAUTICAL):
+        case (florb::cfg_units::system::NAUTICAL):
             dst = unit::length::SEA_MILE;
             break;
-        case (cfg_units::system::IMPERIAL):
+        case (florb::cfg_units::system::IMPERIAL):
             dst = unit::length::ENGLISH_MILE;
             break;
         default:
@@ -198,11 +198,11 @@ void dlg_ui::update_choice_map_ex(void)
     m_choice_overlay->clear();
     m_choice_overlay->add(_("None"));
 
-    // Get the configured tileservers from the settings and populate the widgets
-    node section = settings::get_instance()["tileservers"];
-    for(node::iterator it=section.begin(); it!=section.end(); ++it) {
-        m_choice_basemap->add((*it).as<cfg_tileserver>().name().c_str());
-        m_choice_overlay->add((*it).as<cfg_tileserver>().name().c_str());
+    // Get the configured tileservers from the florb::settings and populate the widgets
+    florb::node section = florb::settings::get_instance()["tileservers"];
+    for(florb::node::iterator it=section.begin(); it!=section.end(); ++it) {
+        m_choice_basemap->add((*it).as<florb::cfg_tileserver>().name().c_str());
+        m_choice_overlay->add((*it).as<florb::cfg_tileserver>().name().c_str());
     }
 
     // If there are any connfigured tileservers at all...
@@ -215,7 +215,7 @@ void dlg_ui::update_choice_map_ex(void)
             idxover = 0;
 
         // Pick the tileserver config item at index idxbase
-        cfg_tileserver ts = section[idxbase].as<cfg_tileserver>(); 
+        florb::cfg_tileserver ts = section[idxbase].as<florb::cfg_tileserver>(); 
    
         // Try to create a basemap
         try {
@@ -232,7 +232,7 @@ void dlg_ui::update_choice_map_ex(void)
 
         if (idxover > 0)
         {
-            ts = section[idxover-1].as<cfg_tileserver>();
+            ts = section[idxover-1].as<florb::cfg_tileserver>();
 
             // Try to create a basemap
             try {
@@ -432,17 +432,17 @@ void dlg_ui::garminul_ex()
 
 void dlg_ui::settings_ex()
 {
-    // Create settings dialog
+    // Create florb::settings dialog
     if (!m_dlg_settings)
         m_dlg_settings = new dlg_settings;
 
     // If the settings were updated
     if (m_dlg_settings->show())
     {
-        settings &s = settings::get_instance();
+        florb::settings &s = florb::settings::get_instance();
         
         // Connect / disconnect GPSD
-        cfg_gpsd cfggpsd = s["gpsd"].as<cfg_gpsd>();
+        florb::cfg_gpsd cfggpsd = s["gpsd"].as<florb::cfg_gpsd>();
         if (cfggpsd.enabled())
         {
             if (!m_wgtmap->gpsd_connected())
@@ -543,7 +543,7 @@ void dlg_ui::cb_choice_basemap_ex(Fl_Widget *widget)
     int idx = m_choice_basemap->value();
 
     // Get all configured tileservers
-    std::vector<cfg_tileserver> tileservers(settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >());
+    std::vector<florb::cfg_tileserver> tileservers(florb::settings::get_instance()["tileservers"].as< std::vector<florb::cfg_tileserver> >());
 
     // Try to create a basemap using the selected tile server configuration
     try {
@@ -570,7 +570,7 @@ void dlg_ui::cb_choice_overlay_ex(Fl_Widget *widget)
     if (idx > 0)
     {
         // Get all configured tileservers
-        std::vector<cfg_tileserver> tileservers(settings::get_instance()["tileservers"].as< std::vector<cfg_tileserver> >());
+        std::vector<florb::cfg_tileserver> tileservers(florb::settings::get_instance()["tileservers"].as< std::vector<florb::cfg_tileserver> >());
 
         // Try to create a basemap using the selected tile server configuration
         try {

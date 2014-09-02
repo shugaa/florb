@@ -10,7 +10,7 @@ decl {\#include "settings.hpp"} {public global
 
 class dlg_tileserver {open
 } {
-  decl {cfg_tileserver m_cfgtileserver;} {private local
+  decl {florb::cfg_tileserver m_cfgtileserver;} {private local
   }
   decl {std::string m_title;} {private local
   }
@@ -20,7 +20,7 @@ class dlg_tileserver {open
   }
   decl {bool handle_ok_ex(bool add);} {private local
   }
-  decl {cfg_tileserver tileserver_ex();} {private local
+  decl {florb::cfg_tileserver tileserver_ex();} {private local
   }
   decl {void cb_spinner_zmin_ex(Fl_Widget *widget);} {private local
   }
@@ -36,7 +36,7 @@ dlg->cb_spinner_zmin_ex(widget);} {}
     code {dlg_tileserver *dlg = static_cast<dlg_tileserver*>(userdata);
 dlg->cb_spinner_zmax_ex(widget);} {}
   }
-  Function {dlg_tileserver(const std::string& title, const cfg_tileserver& c)} {} {
+  Function {dlg_tileserver(const std::string& title, const florb::cfg_tileserver& c)} {} {
     Fl_Window m_window {
       label {Edit tileserver}
       private xywh {2231 351 380 220} type Double hide resizable modal size_range {380 220 0 0}
@@ -199,7 +199,7 @@ create_ex();} {}
   } {
     code {return show_ex(add);} {}
   }
-  Function {tileserver()} {return_type cfg_tileserver
+  Function {tileserver()} {return_type florb::cfg_tileserver
   } {
     code {return tileserver_ex();} {}
   }

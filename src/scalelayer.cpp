@@ -120,15 +120,15 @@ bool scalelayer::draw(const viewport &viewport, florb::canvas &os)
         usrc = unit::length::KM;
     }
 
-    cfg_units cfgunits = settings::get_instance()["units"].as<cfg_units>();
+    florb::cfg_units cfgunits = florb::settings::get_instance()["units"].as<florb::cfg_units>();
 
     unit::length udst = unit::length::KM;
     switch (cfgunits.system_length())
     {
-        case (cfg_units::system::IMPERIAL):
+        case (florb::cfg_units::system::IMPERIAL):
             udst = (usrc == unit::length::M) ? unit::length::FOOT : unit::length::ENGLISH_MILE;
             break;
-        case (cfg_units::system::NAUTICAL):
+        case (florb::cfg_units::system::NAUTICAL):
             udst = (usrc == unit::length::M) ? unit::length::FOOT : unit::length::SEA_MILE;
             break;
         default:

@@ -138,7 +138,7 @@ bool areaselectlayer::draw(const viewport &viewport, florb::canvas &os)
         return true;
 
     // TODO: Performance killer!!
-    cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>();
+    florb::cfg_ui cfgui = florb::settings::get_instance()["ui"].as<florb::cfg_ui>();
     
     os.fgcolor(cfgui.selectioncolor());
     os.line(m_p1.x(), m_p1.y(), m_p2.x(), m_p1.y(), 1);

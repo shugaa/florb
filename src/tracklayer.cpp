@@ -588,7 +588,7 @@ bool florb::tracklayer::draw(const viewport &vp, florb::canvas &os)
         return true;
 
     // TODO: Performance killer!!
-    cfg_ui cfgui = settings::get_instance()["ui"].as<cfg_ui>(); 
+    florb::cfg_ui cfgui = florb::settings::get_instance()["ui"].as<florb::cfg_ui>(); 
 
     florb::color color_track(cfgui.trackcolor());
     florb::color color_point(cfgui.markercolor());

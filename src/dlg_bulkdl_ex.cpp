@@ -32,9 +32,9 @@ bool dlg_bulkdl::show_ex()
 {
     // Populate the map selector
     m_choice_map->clear();
-    node section = settings::get_instance()["tileservers"];
-    for(node::iterator it=section.begin(); it!=section.end(); ++it) {
-        m_choice_map->add((*it).as<cfg_tileserver>().name().c_str());
+    florb::node section = florb::settings::get_instance()["tileservers"];
+    for(florb::node::iterator it=section.begin(); it!=section.end(); ++it) {
+        m_choice_map->add((*it).as<florb::cfg_tileserver>().name().c_str());
     }
     m_choice_map->value(0);
 
@@ -128,8 +128,8 @@ std::vector<unsigned int> dlg_bulkdl::parse_zoomlevels_ex()
       ret.end());
 
     // Check for zoom levels greater or smaller than what the tileserver supports
-    cfg_tileserver cfgtileserver = 
-        settings::get_instance()["tileservers"][m_choice_map->value()].as<cfg_tileserver>();
+    florb::cfg_tileserver cfgtileserver = 
+        florb::settings::get_instance()["tileservers"][m_choice_map->value()].as<florb::cfg_tileserver>();
     for (std::vector<unsigned int>::iterator it=ret.begin();it!=ret.end();++it)
     {
         if (((*it) < cfgtileserver.zmin()) ||
@@ -242,8 +242,8 @@ void dlg_bulkdl::startdl_ex()
 
         for (;;)
         {
-            cfg_tileserver cfgtileserver = 
-                settings::get_instance()["tileservers"][m_choice_map->value()].as<cfg_tileserver>();
+            florb::cfg_tileserver cfgtileserver = 
+                florb::settings::get_instance()["tileservers"][m_choice_map->value()].as<florb::cfg_tileserver>();
 
             try {
                 osml = new osmlayer(
