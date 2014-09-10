@@ -968,6 +968,6 @@ void florb::wgt_map::draw()
         dpy_dst += (h() - (int)m_viewport.h())/2;
 
     // Draw offscreen onto widget
-    fl_copy_offscreen(x()+dpx_dst, y()+dpy_dst, m_viewport.w(), m_viewport.h(), m_offscreen.buf(), dpx_src, dpy_src);
+    fl_copy_offscreen(x()+dpx_dst, y()+dpy_dst, m_viewport.w()-dpx_dst, m_viewport.h()-dpy_dst, m_offscreen.buf(), dpx_src, dpy_src);
 }
 
