@@ -441,12 +441,11 @@ void dlg_ui::settings_ex()
     {
         florb::settings &s = florb::settings::get_instance();
         
-        // Connect / disconnect GPSD
+        // Connect / reconnect / disconnect GPSd
         florb::cfg_gpsd cfggpsd = s["gpsd"].as<florb::cfg_gpsd>();
         if (cfggpsd.enabled())
         {
-            if (!m_wgtmap->gpsd_connected())
-                m_wgtmap->gpsd_connect(cfggpsd.host(), cfggpsd.port());
+            m_wgtmap->gpsd_connect(cfggpsd.host(), cfggpsd.port());
         }
         else
         {

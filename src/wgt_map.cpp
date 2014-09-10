@@ -71,17 +71,17 @@ florb::wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
     m_areaselectlayer->add_event_listener(this);
     add_event_listener(m_areaselectlayer);
 
-    // Add a gpsdlayer if enabled
+    // Add a gpsdlayer
+    m_gpsdlayer = new gpsdlayer();
+    m_gpsdlayer->add_event_listener(this);
+
+    // Connect to gpsd if configured
     florb::cfg_gpsd cfggpsd = florb::settings::get_instance()["gpsd"].as<florb::cfg_gpsd>();
     if (cfggpsd.enabled())
-    {
         gpsd_connect(cfggpsd.host(), cfggpsd.port());
-    }
 
     // Restore previous viewport
     florb::cfg_viewport cfgvp = florb::settings::get_instance()["viewport"].as<florb::cfg_viewport>();
-
-    // Set previous zoom level
     if (cfgvp.z() > m_viewport.z())
         m_viewport.z(cfgvp.z(), m_viewport.w()/2, m_viewport.h()/2);
 
@@ -106,11 +106,11 @@ florb::wgt_map::~wgt_map()
     if (m_basemap)
         delete m_basemap;
 
-    if (m_tracklayer)
-        delete m_tracklayer;
-
     if (m_overlay)
         delete m_overlay;
+
+    if (m_tracklayer)
+        delete m_tracklayer;
 
     if (m_scale)
         delete m_scale;
@@ -260,37 +260,24 @@ std::string florb::wgt_map::gpx_trackname()
 
 bool florb::wgt_map::gpsd_connected()
 {
-    if (!m_gpsdlayer)
-        return false;
-
     return m_gpsdlayer->connected();
 }
 
 void florb::wgt_map::gpsd_connect(const std::string& host, const std::string& port)
 {
-    if (m_gpsdlayer)
-        gpsd_disconnect();
+    gpsd_disconnect();
 
     try {
-        m_gpsdlayer = new gpsdlayer(host, port);
-    } catch (...) {
-        m_gpsdlayer = NULL;
-        throw std::runtime_error(_("GPSd error"));
+        m_gpsdlayer->connect(host, port);
+    } catch (std::runtime_error& e) {
+        throw e;
     }
-
-    m_gpsdlayer->add_event_listener(this);
 }
 
 void florb::wgt_map::gpsd_disconnect()
 {
-    // Not connected in the first place
-    if (!m_gpsdlayer)
-        return;
-
     // Disconnect
-    remove_event_listener(m_gpsdlayer);
-    delete m_gpsdlayer;
-    m_gpsdlayer = NULL;
+    m_gpsdlayer->disconnect();
     
     // Refresh display and notify
     refresh();
@@ -312,9 +299,6 @@ void florb::wgt_map::gpsd_lock(bool start)
 
 int florb::wgt_map::gpsd_mode()
 {
-    if (!m_gpsdlayer)
-        throw 0;
-
     return m_gpsdlayer->mode();
 }
 
@@ -909,9 +893,7 @@ void florb::wgt_map::draw()
 
     // No, it isn't, update the offscreen viewport
     if (vp_tmp < m_viewport)
-    {
         dirty(true);
-    }
 
     // Map is dirty, force redraw
     if (dirty() && !dragging())
@@ -958,11 +940,8 @@ void florb::wgt_map::draw()
             dirty(true);
 
         // Draw the gpsd layer
-        if (m_gpsdlayer)
-        {
-            if (!m_gpsdlayer->draw(m_viewport_off, m_offscreen))
-                dirty(true);
-        }
+        if (!m_gpsdlayer->draw(m_viewport_off, m_offscreen))
+            dirty(true);
 
         // Draw the areaselect layer
         if (!m_areaselectlayer->draw(m_viewport_off, m_offscreen))

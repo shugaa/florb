@@ -10,7 +10,7 @@
 class gpsdlayer : public florb::layer
 {
     public:
-        gpsdlayer(const std::string& host, const std::string& port);
+        gpsdlayer();
         ~gpsdlayer();
 
         bool draw(const viewport &viewport, florb::canvas &os);
@@ -20,6 +20,8 @@ class gpsdlayer : public florb::layer
         double mode();
         bool valid();
         bool connected();
+        void connect(const std::string& host, const std::string& port);
+        void disconnect();
 
         class event_status;
         class event_motion;

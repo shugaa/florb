@@ -6,7 +6,7 @@
 #include "point.hpp"
 #include "gpsdlayer.hpp"
 
-gpsdlayer::gpsdlayer(const std::string& host, const std::string& port) :
+gpsdlayer::gpsdlayer() :
     layer(),
     m_pos(0.0, 0.0),
     m_track(0.0),
@@ -16,18 +16,12 @@ gpsdlayer::gpsdlayer(const std::string& host, const std::string& port) :
     m_gpsdclient(NULL)
 {
     name(std::string("GPSD"));
-
-    m_gpsdclient = new gpsdclient(host, port);
-    if (!m_gpsdclient)
-        throw 0;
-
     register_event_handler<gpsdlayer, gpsdclient::event_gpsd>(this, &gpsdlayer::handle_evt_gpsd);
-    m_gpsdclient->add_event_listener(this);
 };
 
 gpsdlayer::~gpsdlayer()
 {
-    if (m_gpsdclient)
+    if (m_gpsdclient != NULL)
         delete m_gpsdclient;
 };
 
@@ -109,6 +103,37 @@ void gpsdlayer::connected(bool c)
     m_mutex.lock();
     m_connected = c;
     m_mutex.unlock();
+}
+
+void gpsdlayer::connect(const std::string& host, const std::string& port)
+{
+    // Disconnect first if necessary
+    disconnect();
+
+    try {
+    m_gpsdclient = new gpsdclient(host, port);
+    } catch (std::runtime_error& e) {
+        throw e;
+    } 
+
+    m_gpsdclient->add_event_listener(this);
+}
+
+void gpsdlayer::disconnect()
+{
+    if (m_gpsdclient != NULL)
+    {
+        delete m_gpsdclient;
+        m_gpsdclient = NULL;
+    }
+
+    pos(florb::point2d<double>(0.0,0.0));
+    track(0.0);
+    mode(gpsdclient::FIX_NONE);
+    valid(false);
+    connected(false);
+
+    fire_event_status();
 }
 
 void gpsdlayer::cb_fire_event_motion(void* userdata)

@@ -1,4 +1,5 @@
 #include "gpsdclient.hpp"
+#include "utils.hpp"
 
 gpsdclient::gpsdclient(const std::string host, const std::string port) : 
     m_host(host),
@@ -12,7 +13,7 @@ gpsdclient::gpsdclient(const std::string host, const std::string port) :
 {
     m_thread = new boost::thread(boost::bind(&gpsdclient::worker, this));
     if (!m_thread)
-        throw 0;
+        throw std::runtime_error(_("GPSd error"));
 }
 
 gpsdclient::~gpsdclient()
