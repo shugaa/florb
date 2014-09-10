@@ -89,6 +89,10 @@ namespace florb
 
             // Utility methods
             void refresh();
+            bool dragging();
+            void dragging(bool d);
+            bool dirty();
+            void dirty(bool d);
 
             // Widget event handling routines
             int handle_move(int event);
@@ -130,12 +134,13 @@ namespace florb
 
             florb::point2d<int> m_mousepos;
             viewport m_viewport;
-            viewport m_viewport_map;
+            viewport m_viewport_off;
             florb::canvas m_offscreen;
-            florb::canvas m_offscreen_map;
+
             bool m_lockcursor;
             bool m_recordtrack;
-            bool m_dragmode;
+            bool m_dragging;
+            bool m_dirty;
 
         protected:
             void draw();

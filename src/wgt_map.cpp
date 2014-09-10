@@ -13,12 +13,12 @@ florb::wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
     m_gpsdlayer(NULL),
     m_mousepos(0, 0),
     m_viewport(w, h),
-    m_viewport_map(0, 0),
-    m_offscreen(w,h),
-    m_offscreen_map(w+256, h+256),
+    m_viewport_off(0, 0),
+    m_offscreen(w, h),
     m_lockcursor(false),
     m_recordtrack(false),
-    m_dragmode(false)
+    m_dragging(false),
+    m_dirty(false)
 {
     // Register event handlers for layer events
     register_event_handler<florb::wgt_map, gpsdlayer::event_status>(this, &florb::wgt_map::gpsd_evt_status);
@@ -348,7 +348,7 @@ void florb::wgt_map::basemap(
     add_event_listener(m_basemap);
 
     // Invalidate map buffer
-    m_viewport_map.w(0);
+    m_viewport_off.w(0);
 
     // Redraw
     refresh();
@@ -392,7 +392,7 @@ void florb::wgt_map::clear_overlay()
     }
 
     // Invalidate map buffer
-    m_viewport_map.w(0);
+    m_viewport_off.w(0);
 
     refresh();
 }
@@ -465,12 +465,32 @@ void florb::wgt_map::refresh()
     redraw();
 }
 
+void florb::wgt_map::dragging(bool d)
+{
+    m_dragging = d;
+}
+
+bool florb::wgt_map::dragging()
+{
+    return m_dragging;
+}
+
+void florb::wgt_map::dirty(bool d)
+{
+    m_dirty = d;
+}
+
+bool florb::wgt_map::dirty()
+{
+    return m_dirty;
+}
+
 florb::point2d<int> florb::wgt_map::vp_relative(const florb::point2d<int>& pos)
 {
     // Convert to widget-relative coordinates first
     florb::point2d<int> ret(pos.x()-x(), pos.y()-y());
 
-    // Calculate the widget<->viewport delta and get the viewport-relative
+    // Calculate the widget <-> viewport delta and get the viewport-absolute
     // return coordinates
     if (w() > (int)m_viewport.w())
         ret[0] -= (w() - (int)m_viewport.w())/2;
@@ -498,6 +518,8 @@ bool florb::wgt_map::vp_inside(const florb::point2d<int>& pos)
 
 bool florb::wgt_map::gpsd_evt_motion(const gpsdlayer::event_motion *e)
 {
+    dirty(true);
+
     // Track recording on, add current position
     if (m_recordtrack)
         m_tracklayer->add_trackpoint(e->pos());
@@ -517,6 +539,7 @@ bool florb::wgt_map::gpsd_evt_motion(const gpsdlayer::event_motion *e)
 
 bool florb::wgt_map::gpsd_evt_status(const gpsdlayer::event_status *e)
 {
+    dirty(true);
     refresh();
     event_notify en;
     fire(&en);
@@ -525,12 +548,14 @@ bool florb::wgt_map::gpsd_evt_status(const gpsdlayer::event_status *e)
 
 bool florb::wgt_map::osm_evt_notify(const osmlayer::event_notify *e)
 {
+    dirty(true);
     refresh();
     return true;
 }
 
 bool florb::wgt_map::gpx_evt_notify(const florb::tracklayer::event_notify *e)
 {
+    dirty(true);
     refresh();
 
     // Make sure the trip display is updated
@@ -542,6 +567,7 @@ bool florb::wgt_map::gpx_evt_notify(const florb::tracklayer::event_notify *e)
 
 bool florb::wgt_map::marker_evt_notify(const markerlayer::event_notify *e)
 {
+    dirty(true);
     refresh();
     return true;
 }
@@ -551,7 +577,7 @@ bool florb::wgt_map::areaselect_evt_done(const areaselectlayer::event_done *e)
     // disable areaselectlayer
     m_areaselectlayer->enable(false);
 
-    // Enable florb::tracklayer
+    // Enable tracklayer
     m_tracklayer->enable(true);
 
     // Fire event
@@ -563,6 +589,7 @@ bool florb::wgt_map::areaselect_evt_done(const areaselectlayer::event_done *e)
 
 bool florb::wgt_map::areaselect_evt_notify(const areaselectlayer::event_notify *e)
 {
+    dirty(true);
     refresh();
     return true;
 }
@@ -627,7 +654,7 @@ int florb::wgt_map::handle_release(int event)
     if (m_overlay)
         m_overlay->dlenable(true);
 
-    m_dragmode = false;
+    dragging(false);
 
     // Cursor reset
     fl_cursor(FL_CURSOR_CROSS);
@@ -671,7 +698,7 @@ int florb::wgt_map::handle_drag(int event)
         if (m_overlay)
             m_overlay->dlenable(false);
 
-        m_dragmode=true;
+        dragging(true);
 
         // Move the viewport accordingly and redraw
         m_viewport.move((long)dx, (long)dy); 
@@ -864,26 +891,6 @@ int florb::wgt_map::handle(int event)
 
 void florb::wgt_map::draw() 
 {
-    // Basemap and overlay rendering complete?
-    static bool map_dirty = true;
-    static bool dirty_before_drag = false;
-
-    // If the map was dirty before a drag operation, we need to make sure it is
-    // still dirty afterwards.
-    if (m_dragmode)
-    {
-        if (map_dirty)
-            dirty_before_drag = true;
-    }
-    else
-    {
-        if (dirty_before_drag)
-        {
-            map_dirty = true;
-            dirty_before_drag = false;
-        }
-    }
-
     // Make sure redraw() has been called previously
     if ((damage() & FL_DAMAGE_ALL) == 0) 
         return;
@@ -896,92 +903,92 @@ void florb::wgt_map::draw()
     // to be generated.
     fl_rectf(x(), y(), w(), h(), 80, 80, 80);
 
-    // resize the offscreent o match the viewport
-    m_offscreen.resize(m_viewport.w(), m_viewport.h());
-
-    // Check whether the master viewport is well within the map viewport
-    viewport vp_tmp(m_viewport_map);
+    // Check whether the master viewport is well within the offscreen viewport
+    viewport vp_tmp(m_viewport_off);
     vp_tmp.intersect(m_viewport);
 
-    // No, it isn't
+    // No, it isn't, update the offscreen viewport
     if (vp_tmp < m_viewport)
     {
-        // Only recreate the map viewport if not dragging.
-        if (!m_dragmode)
-        {
-            m_viewport_map = m_viewport; 
-            m_viewport_map.w(m_viewport_map.w()+256);
-            m_viewport_map.h(m_viewport_map.h()+256);
-            m_offscreen_map.resize(m_viewport_map.w(), m_viewport_map.h());
-            vp_tmp = m_viewport;
-            map_dirty = true;
-        }
-        else
-        {
-            map_dirty = false;
-        }
+        dirty(true);
     }
 
     // Map is dirty, force redraw
-    if (map_dirty)
+    if (dirty() && !dragging())
     {
-        m_offscreen_map.fgcolor(florb::color(0xc06e6e));
-        m_offscreen_map.fillrect(0,0, m_viewport_map.w(), m_viewport_map.h());
+        m_viewport_off = m_viewport; 
+          
+#if 0
+        // We can't have a larger offscreen viewport atm because then the scale
+        // would always be drawn outside the visible area.
+        m_viewport_off.w(m_viewport.w()+256);
+        m_viewport_off.h(m_viewport.h()+256);
+#endif
+        m_offscreen.resize(m_viewport_off.w(), m_viewport_off.h());
 
-        map_dirty = false;
+        m_offscreen.fgcolor(florb::color(0xc06e6e));
+        m_offscreen.fillrect(0,0, m_offscreen.w(), m_offscreen.h());
+
+        dirty(false);
 
         // Draw the basemap
         if (m_basemap)
         {
-            if (!m_basemap->draw(m_viewport_map, m_offscreen_map))
-                map_dirty = true;
+            if (!m_basemap->draw(m_viewport_off, m_offscreen))
+                dirty(true);
         }
 
         // Draw the overlay
         if (m_overlay)
         {
-            if (!m_overlay->draw(m_viewport_map, m_offscreen_map))
-                map_dirty = true;
+            if (!m_overlay->draw(m_viewport_off, m_offscreen))
+                dirty(true);
         }
+
+        // Draw the scale
+        if (!m_scale->draw(m_viewport_off, m_offscreen))
+            dirty(true);
+
+        // Draw the gpx layer
+        if (!m_tracklayer->draw(m_viewport_off, m_offscreen))
+            dirty(true);
+
+        // Draw the marker layer
+        if (!m_markerlayer->draw(m_viewport_off, m_offscreen))
+            dirty(true);
+
+        // Draw the gpsd layer
+        if (m_gpsdlayer)
+        {
+            if (!m_gpsdlayer->draw(m_viewport_off, m_offscreen))
+                dirty(true);
+        }
+
+        // Draw the areaselect layer
+        if (!m_areaselectlayer->draw(m_viewport_off, m_offscreen))
+            dirty(true);
     }
 
-    // Background-fill the master canvas
-    m_offscreen.fgcolor(florb::color(0xc06e6e));
-    m_offscreen.fillrect(0,0, m_viewport.w(), m_viewport.h());
+    // Calculate delta viewport / viewport_off
+    int dpx_src = 0, dpy_src = 0, dpx_dst = 0, dpy_dst = 0;
+    
+    if (m_viewport_off.x() > m_viewport.x())
+        dpx_dst = m_viewport_off.x() - m_viewport.x();
+    else
+        dpx_src = m_viewport.x() - m_viewport_off.x();
 
-    // Copy map offscreen to master offscreen
-    m_offscreen.draw(
-        m_offscreen_map,
-        vp_tmp.x() - m_viewport_map.x(),
-        vp_tmp.y() - m_viewport_map.y(),
-        vp_tmp.w(),
-        vp_tmp.h(),
-        vp_tmp.x() - m_viewport.x(),
-        vp_tmp.y() - m_viewport.y());
-            
-    // Draw the scale
-    m_scale->draw(m_viewport, m_offscreen);
+    if (m_viewport_off.y() > m_viewport.y())
+        dpy_dst = m_viewport_off.y() - m_viewport.y();
+    else
+        dpy_src = m_viewport.y() - m_viewport_off.y();
 
-    // Draw the gpx layer
-    m_tracklayer->draw(m_viewport, m_offscreen);
-
-    // Draw the marker layer
-    m_markerlayer->draw(m_viewport, m_offscreen);
-
-    // Draw the gpsd layer
-    if (m_gpsdlayer)
-        m_gpsdlayer->draw(m_viewport, m_offscreen);
-
-    // Draw the areaselect layer
-    m_areaselectlayer->draw(m_viewport, m_offscreen);
-
-    // Blit the generated viewport canvas onto the widget (centered)
-    int dpx = 0, dpy = 0;
+    // Additional delta if viewport smaller than map widget 
     if (w() > (int)m_viewport.w())
-        dpx = (w() - (int)m_viewport.w())/2;
+        dpx_dst += (w() - (int)m_viewport.w())/2;
     if (h() > (int)m_viewport.h())
-        dpy = (h() - (int)m_viewport.h())/2;
+        dpy_dst += (h() - (int)m_viewport.h())/2;
 
-    fl_copy_offscreen(x()+dpx, y()+dpy, m_viewport.w(), m_viewport.h(), m_offscreen.buf(), 0, 0);
+    // Draw offscreen onto widget
+    fl_copy_offscreen(x()+dpx_dst, y()+dpy_dst, m_viewport.w(), m_viewport.h(), m_offscreen.buf(), dpx_src, dpy_src);
 }
 

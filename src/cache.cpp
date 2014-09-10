@@ -87,7 +87,7 @@ void cache::put(int z, int x, int y, time_t expires, const std::vector<char> &bu
         of.write(&(buf[0]), buf.size());
         of.close();
 
-        oss << dbextension;
+        oss << cache::dbextension;
 
         of.open(oss.str().c_str(), std::ios::out | std::ios::trunc);
         if (!of.is_open())

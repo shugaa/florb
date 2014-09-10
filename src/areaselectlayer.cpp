@@ -75,6 +75,10 @@ bool areaselectlayer::press(const florb::layer::event_mouse* evt)
     if (m_p1.y() >= evt->vp().h())
         m_p1[1] = evt->vp().h()-1;
 
+    // Convert to absolute map coordinate
+    m_p1.x(m_p1.x() + evt->vp().x());
+    m_p1.y(m_p1.y() + evt->vp().y());
+
     return true;
 }
 
@@ -92,6 +96,10 @@ bool areaselectlayer::drag(const florb::layer::event_mouse* evt)
     else if (evt->pos().y() >= (int)evt->vp().h())
         px[1] = evt->vp().h()-1;
 
+    // Convert to absolute map coordinate
+    px.x(px.x() + evt->vp().x());
+    px.y(px.y() + evt->vp().y());
+
     m_p2 = px;
 
     // Trigger redraw
@@ -103,8 +111,8 @@ bool areaselectlayer::drag(const florb::layer::event_mouse* evt)
 bool areaselectlayer::release(const florb::layer::event_mouse* evt)
 {
     m_vp = viewport(
-        evt->vp().x() + ((m_p1.x() > m_p2.x()) ? m_p2.x() : m_p1.x()),
-        evt->vp().y() + ((m_p1.y() > m_p2.y()) ? m_p2.y() : m_p1.y()),
+        (m_p1.x() > m_p2.x()) ? m_p2.x() : m_p1.x(),
+        (m_p1.y() > m_p2.y()) ? m_p2.y() : m_p1.y(),
         evt->vp().z(),
         (m_p1.x() > m_p2.x()) ? m_p1.x()-m_p2.x() : m_p2.x()-m_p1.x(),
         (m_p1.y() > m_p2.y()) ? m_p1.y()-m_p2.y() : m_p2.y()-m_p1.y());
@@ -140,11 +148,14 @@ bool areaselectlayer::draw(const viewport &viewport, florb::canvas &os)
     // TODO: Performance killer!!
     florb::cfg_ui cfgui = florb::settings::get_instance()["ui"].as<florb::cfg_ui>();
     
+    florb::point2d<int> p1(m_p1.x()-viewport.x(), m_p1.y()-viewport.y());
+    florb::point2d<int> p2(m_p2.x()-viewport.x(), m_p2.y()-viewport.y());
+
     os.fgcolor(cfgui.selectioncolor());
-    os.line(m_p1.x(), m_p1.y(), m_p2.x(), m_p1.y(), 1);
-    os.line(m_p2.x(), m_p1.y(), m_p2.x(), m_p2.y(), 1);
-    os.line(m_p2.x(), m_p2.y(), m_p1.x(), m_p2.y(), 1);
-    os.line(m_p1.x(), m_p2.y(), m_p1.x(), m_p1.y(), 1);
+    os.line(p1.x(), p1.y(), p2.x(), p1.y(), 1);
+    os.line(p2.x(), p1.y(), p2.x(), p2.y(), 1);
+    os.line(p2.x(), p2.y(), p1.x(), p2.y(), 1);
+    os.line(p1.x(), p2.y(), p1.x(), p1.y(), 1);
 
     return true;
 };
