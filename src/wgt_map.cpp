@@ -883,10 +883,6 @@ void florb::wgt_map::draw()
     m_viewport.w((unsigned long)w());
     m_viewport.h((unsigned long)h());
 
-    // Fill the canvas in case it is not entirely covered by the viewport image
-    // to be generated.
-    fl_rectf(x(), y(), w(), h(), 80, 80, 80);
-
     // Check whether the master viewport is well within the offscreen viewport
     viewport vp_tmp(m_viewport_off);
     vp_tmp.intersect(m_viewport);
@@ -967,7 +963,18 @@ void florb::wgt_map::draw()
     if (h() > (int)m_viewport.h())
         dpy_dst += (h() - (int)m_viewport.h())/2;
 
+    // Fill the canvas in case it is not entirely covered by the viewport image
+    // to be generated.
+    fl_rectf(x(), y(), w(), h(), 80, 80, 80);
+
     // Draw offscreen onto widget
-    fl_copy_offscreen(x()+dpx_dst, y()+dpy_dst, m_viewport.w()-dpx_dst, m_viewport.h()-dpy_dst, m_offscreen.buf(), dpx_src, dpy_src);
+    fl_copy_offscreen(
+            x()+dpx_dst, 
+            y()+dpy_dst, 
+            m_viewport.w()-dpx_dst, 
+            m_viewport.h()-dpy_dst, 
+            m_offscreen.buf(), 
+            dpx_src, 
+            dpy_src);
 }
 

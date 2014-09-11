@@ -7,7 +7,8 @@
 #include "viewport.hpp"
 #include "gpsdclient.hpp"
 
-class gpsdlayer : public florb::layer
+class gpsdlayer : 
+    public florb::layer
 {
     public:
         gpsdlayer();

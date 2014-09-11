@@ -1,16 +1,19 @@
 #ifndef LAYER_HPP
 #define LAYER_HPP
 
-#include <set>
 #include <string>
 #include "gfx.hpp"
 #include "viewport.hpp"
 #include "point.hpp"
 #include "event.hpp"
+#include "objtracker.hpp"
 
 namespace florb
 {
-    class layer : public event_listener, public event_generator
+    class layer : 
+        public event_listener, 
+        public event_generator, 
+        public florb::objtracker<florb::layer>
     {
         public:
             layer();
@@ -18,15 +21,12 @@ namespace florb
 
             virtual bool draw(const viewport &viewport, florb::canvas &c) = 0;
             const std::string& name() const;
-
-            static bool is_instance(layer* l);
             void enable(bool en);
 
             // Predefined layer events
             class event_mouse;
             class event_key;
         private:
-            static std::set<layer*> m_instances;
             std::string m_name;
             bool m_enabled;
 

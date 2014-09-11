@@ -2,19 +2,16 @@
 #include <FL/Fl.H>
 #include "layer.hpp"
 
-std::set<florb::layer*> florb::layer::m_instances;
-
 florb::layer::layer() :
     m_name("N/A"),
     m_enabled(true)
 {
-    m_instances.insert(this);
+    add_instance(this);
 };
 
 florb::layer::~layer()
 {
-    // Not a valid layer instance anymore
-    m_instances.erase(m_instances.find(this));
+    del_instance(this);
 };
 
 const std::string& florb::layer::name() const
@@ -36,12 +33,3 @@ void florb::layer::enable(bool en)
 {
     m_enabled = en;
 };
-
-bool florb::layer::is_instance(layer* l)
-{
-    std::set<layer*>::iterator it = m_instances.find(l);
-    if (it == m_instances.end())
-        return false;
-
-    return true;
-}
