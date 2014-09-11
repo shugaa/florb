@@ -21,8 +21,8 @@ florb::wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
     m_dirty(false)
 {
     // Register event handlers for layer events
-    register_event_handler<florb::wgt_map, gpsdlayer::event_status>(this, &florb::wgt_map::gpsd_evt_status);
-    register_event_handler<florb::wgt_map, gpsdlayer::event_motion>(this, &florb::wgt_map::gpsd_evt_motion);
+    register_event_handler<florb::wgt_map, florb::gpsdlayer::event_status>(this, &florb::wgt_map::gpsd_evt_status);
+    register_event_handler<florb::wgt_map, florb::gpsdlayer::event_motion>(this, &florb::wgt_map::gpsd_evt_motion);
     register_event_handler<florb::wgt_map, osmlayer::event_notify>(this, &florb::wgt_map::osm_evt_notify);
     register_event_handler<florb::wgt_map, florb::tracklayer::event_notify>(this, &florb::wgt_map::gpx_evt_notify);
     register_event_handler<florb::wgt_map, markerlayer::event_notify>(this, &florb::wgt_map::marker_evt_notify);
@@ -72,7 +72,7 @@ florb::wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
     add_event_listener(m_areaselectlayer);
 
     // Add a gpsdlayer
-    m_gpsdlayer = new gpsdlayer();
+    m_gpsdlayer = new florb::gpsdlayer();
     m_gpsdlayer->add_event_listener(this);
 
     // Connect to gpsd if configured
@@ -500,7 +500,7 @@ bool florb::wgt_map::vp_inside(const florb::point2d<int>& pos)
     return true;
 }
 
-bool florb::wgt_map::gpsd_evt_motion(const gpsdlayer::event_motion *e)
+bool florb::wgt_map::gpsd_evt_motion(const florb::gpsdlayer::event_motion *e)
 {
     dirty(true);
 
@@ -521,7 +521,7 @@ bool florb::wgt_map::gpsd_evt_motion(const gpsdlayer::event_motion *e)
     return true;
 }
 
-bool florb::wgt_map::gpsd_evt_status(const gpsdlayer::event_status *e)
+bool florb::wgt_map::gpsd_evt_status(const florb::gpsdlayer::event_status *e)
 {
     dirty(true);
     refresh();

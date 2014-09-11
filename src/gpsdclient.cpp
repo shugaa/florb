@@ -1,7 +1,7 @@
 #include "gpsdclient.hpp"
 #include "utils.hpp"
 
-gpsdclient::gpsdclient(const std::string host, const std::string port) : 
+florb::gpsdclient::gpsdclient(const std::string host, const std::string port) : 
     m_host(host),
     m_port(port),
     m_thread(NULL),
@@ -11,12 +11,12 @@ gpsdclient::gpsdclient(const std::string host, const std::string port) :
     m_pos(0.0, 0.0),
     m_track(0.0)
 {
-    m_thread = new boost::thread(boost::bind(&gpsdclient::worker, this));
+    m_thread = new boost::thread(boost::bind(&florb::gpsdclient::worker, this));
     if (!m_thread)
         throw std::runtime_error(_("GPSd error"));
 }
 
-gpsdclient::~gpsdclient()
+florb::gpsdclient::~gpsdclient()
 {
     if (m_thread) 
     {
@@ -26,7 +26,7 @@ gpsdclient::~gpsdclient()
     }
 }
 
-bool gpsdclient::exit()
+bool florb::gpsdclient::exit()
 {
     m_mutex.lock();
     bool ret = m_exit;
@@ -34,14 +34,14 @@ bool gpsdclient::exit()
 
     return ret;
 }
-void gpsdclient::exit(bool e)
+void florb::gpsdclient::exit(bool e)
 {
     m_mutex.lock();
     m_exit = e;
     m_mutex.unlock();
 }
 
-void gpsdclient::connected(bool c)
+void florb::gpsdclient::connected(bool c)
 {
     m_mutex.lock();
 
@@ -58,7 +58,7 @@ void gpsdclient::connected(bool c)
     m_mutex.unlock();
 }
 
-bool gpsdclient::connected(void)
+bool florb::gpsdclient::connected(void)
 {
     m_mutex.lock();
     bool ret = m_connected;
@@ -67,7 +67,7 @@ bool gpsdclient::connected(void)
     return ret;   
 }
 
-void gpsdclient::mode(int m)
+void florb::gpsdclient::mode(int m)
 {
     m_mutex.lock();
 
@@ -83,7 +83,7 @@ void gpsdclient::mode(int m)
     m_mutex.unlock();
 }
 
-int gpsdclient::mode(void)
+int florb::gpsdclient::mode(void)
 {
     m_mutex.lock();
     int ret = m_mode;
@@ -92,14 +92,14 @@ int gpsdclient::mode(void)
     return ret;   
 }
 
-void gpsdclient::track(double t)
+void florb::gpsdclient::track(double t)
 {
     m_mutex.lock();
     m_track = t;
     m_mutex.unlock();
 }
 
-double gpsdclient::track(void)
+double florb::gpsdclient::track(void)
 {
     m_mutex.lock();
     double ret = m_track;
@@ -108,14 +108,14 @@ double gpsdclient::track(void)
     return ret;   
 }
 
-void gpsdclient::pos(const florb::point2d<double>& p)
+void florb::gpsdclient::pos(const florb::point2d<double>& p)
 {
     m_mutex.lock();
     m_pos = p;
     m_mutex.unlock();
 }
 
-void gpsdclient::pos(double lon, double lat)
+void florb::gpsdclient::pos(double lon, double lat)
 {
     m_mutex.lock();
     m_pos.x(lon);
@@ -124,7 +124,7 @@ void gpsdclient::pos(double lon, double lat)
 }
 
 
-florb::point2d<double> gpsdclient::pos(void)
+florb::point2d<double> florb::gpsdclient::pos(void)
 {
     m_mutex.lock();
     florb::point2d<double> ret(m_pos);
@@ -133,17 +133,15 @@ florb::point2d<double> gpsdclient::pos(void)
     return ret;   
 }
 
-void gpsdclient::fire_event_gpsd(void)
+void florb::gpsdclient::fire_event_gpsd(void)
 {
-    event_gpsd ge(m_connected, m_mode, m_pos, m_track);
+    florb::gpsdclient::event_gpsd ge(m_connected, m_mode, m_pos, m_track);
     fire(&ge);
 }
 
-void gpsdclient::worker(void)
+void florb::gpsdclient::worker(void)
 {
-
     int rc;
-   
     for (;;)
     {
         rc = gps_open(m_host.c_str(), m_port.c_str(), &m_gpsdata);
@@ -204,7 +202,7 @@ void gpsdclient::worker(void)
     fire_event_gpsd();
 }
 
-bool gpsdclient::handle_set()
+bool florb::gpsdclient::handle_set()
 {
     bool ret = false;
 

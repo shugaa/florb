@@ -98,11 +98,11 @@ void dlg_ui::update_statusbar_ex()
     {
         switch(m_wgtmap->gpsd_mode())
         {
-            case (gpsdclient::FIX_2D):
+            case (florb::gpsdclient::FIX_2D):
                 m_box_fix->color(FL_GREEN);
                 m_box_fix->label("2D");
                 break;
-            case (gpsdclient::FIX_3D):
+            case (florb::gpsdclient::FIX_3D):
                 m_box_fix->color(FL_GREEN);
                 m_box_fix->label("3D");
                 break;

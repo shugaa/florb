@@ -107,8 +107,8 @@ namespace florb
             bool vp_inside(const florb::point2d<int>& pos);
 
             // GPSd-layer event handlers
-            bool gpsd_evt_motion(const gpsdlayer::event_motion *e);
-            bool gpsd_evt_status(const gpsdlayer::event_status *e);
+            bool gpsd_evt_motion(const florb::gpsdlayer::event_motion *e);
+            bool gpsd_evt_status(const florb::gpsdlayer::event_status *e);
 
             // Basemap-layer event handlers
             bool osm_evt_notify(const osmlayer::event_notify *e);
@@ -129,7 +129,7 @@ namespace florb
             scalelayer *m_scale;
             florb::tracklayer *m_tracklayer;
             markerlayer *m_markerlayer;
-            gpsdlayer *m_gpsdlayer;
+            florb::gpsdlayer *m_gpsdlayer;
             areaselectlayer *m_areaselectlayer;
 
             florb::point2d<int> m_mousepos;
