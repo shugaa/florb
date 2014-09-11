@@ -117,7 +117,7 @@ namespace florb
             bool gpx_evt_notify(const florb::tracklayer::event_notify *e);
 
             // Marker layer event handlers
-            bool marker_evt_notify(const markerlayer::event_notify *e);
+            bool marker_evt_notify(const florb::markerlayer::event_notify *e);
 
             // Area selection layer event handlers
             bool areaselect_evt_done(const areaselectlayer::event_done *e);
@@ -128,7 +128,7 @@ namespace florb
             osmlayer *m_overlay;
             scalelayer *m_scale;
             florb::tracklayer *m_tracklayer;
-            markerlayer *m_markerlayer;
+            florb::markerlayer *m_markerlayer;
             florb::gpsdlayer *m_gpsdlayer;
             areaselectlayer *m_areaselectlayer;
 

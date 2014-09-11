@@ -231,6 +231,7 @@ void downloader::worker()
 
     curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, timeout());
     curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, timeout()); 
+    curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1); 
 
     for (;;)
     {

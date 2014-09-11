@@ -6,16 +6,16 @@
 #include "point.hpp"
 #include "markerlayer.hpp"
 
-markerlayer::markerlayer()
+florb::markerlayer::markerlayer()
 {
     name(std::string("Marker"));
 };
 
-markerlayer::~markerlayer()
+florb::markerlayer::~markerlayer()
 {
 };
 
-size_t markerlayer::add(const florb::point2d<double> &pmerc)
+size_t florb::markerlayer::add(const florb::point2d<double> &pmerc)
 {
     size_t i = 0;
     for (;i<m_markers.size();i++)
@@ -40,7 +40,7 @@ size_t markerlayer::add(const florb::point2d<double> &pmerc)
     return i;
 };
 
-void markerlayer::add(const florb::point2d<double> &pmerc, size_t id)
+void florb::markerlayer::add(const florb::point2d<double> &pmerc, size_t id)
 {
     marker_internal tmp;
     tmp.p = pmerc;
@@ -50,7 +50,7 @@ void markerlayer::add(const florb::point2d<double> &pmerc, size_t id)
     notify();
 };
 
-void markerlayer::remove(size_t id)
+void florb::markerlayer::remove(size_t id)
 {
     std::vector<marker_internal>::iterator it;
     for (it=m_markers.begin();it!=m_markers.end();++it)
@@ -64,19 +64,19 @@ void markerlayer::remove(size_t id)
     notify();
 };
 
-void markerlayer::clear() 
+void florb::markerlayer::clear() 
 {
     m_markers.clear();
     notify();
 };
 
-void markerlayer::notify()
+void florb::markerlayer::notify()
 {
     event_notify e;
     fire(&e);
 }
 
-bool markerlayer::draw(const viewport &viewport, florb::canvas &os)
+bool florb::markerlayer::draw(const viewport &viewport, florb::canvas &os)
 {
     florb::cfg_ui cfgui = florb::settings::get_instance()["ui"].as<florb::cfg_ui>();
 
