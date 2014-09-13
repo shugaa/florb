@@ -25,7 +25,7 @@ void dlg_bulkdl::create_ex()
     active_ex(false);
 
     // Register event handler for osmlayer notify events
-    register_event_handler<dlg_bulkdl, osmlayer::event_notify>(this, &dlg_bulkdl::osm_evt_notify_ex);
+    register_event_handler<dlg_bulkdl, florb::osmlayer::event_notify>(this, &dlg_bulkdl::osm_evt_notify_ex);
 }
 
 bool dlg_bulkdl::show_ex()
@@ -196,7 +196,7 @@ void dlg_bulkdl::cb_window_ex(Fl_Widget *w, void *userdata)
 void dlg_bulkdl::startdl_ex()
 {
     static std::size_t levelidx = 0;
-    static osmlayer *osml = NULL;
+    static florb::osmlayer *osml = NULL;
 
     // All done or canceled. Clean up and reset UI
     if ((levelidx >= m_zoomlevels.size()) || (cancel_ex()))
@@ -246,7 +246,7 @@ void dlg_bulkdl::startdl_ex()
                 florb::settings::get_instance()["tileservers"][m_choice_map->value()].as<florb::cfg_tileserver>();
 
             try {
-                osml = new osmlayer(
+                osml = new florb::osmlayer(
                     cfgtileserver.name(), 
                     cfgtileserver.url(), 
                     cfgtileserver.zmin(), 
@@ -330,7 +330,7 @@ void dlg_bulkdl::startdl_ex()
     m_progress_status->value((int)(coverage*100.0));
 }
 
-bool dlg_bulkdl::osm_evt_notify_ex(const osmlayer::event_notify *e)
+bool dlg_bulkdl::osm_evt_notify_ex(const florb::osmlayer::event_notify *e)
 {
     // osmlayer has new tiles
     Fl::awake(cb_startdl_ex, this);

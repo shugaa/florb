@@ -9,11 +9,11 @@
 #define TILE_H                  (256)
 #define DLQSIZE                 (100)
 
-const std::string osmlayer::wcard_x = "{x}";
-const std::string osmlayer::wcard_y = "{y}";
-const std::string osmlayer::wcard_z = "{z}";
+const std::string florb::osmlayer::wcard_x = "{x}";
+const std::string florb::osmlayer::wcard_y = "{y}";
+const std::string florb::osmlayer::wcard_z = "{z}";
 
-const char osmlayer::tile_empty[] = \
+const char florb::osmlayer::tile_empty[] = \
 	"\x89\x50\x4E\x47\x0D\x0A\x1A\x0A\x00\x00\x00\x0D\x49\x48\x44\x52\x00\x00\x01\x00" \
 	"\x00\x00\x01\x00\x08\x06\x00\x00\x00\x5C\x72\xA8\x66\x00\x00\x00\x06\x62\x4B\x47" \
 	"\x44\x00\xFF\x00\xFF\x00\xFF\xA0\xBD\xA7\x93\x00\x00\x00\x09\x70\x48\x59\x73\x00" \
@@ -34,7 +34,7 @@ const char osmlayer::tile_empty[] = \
 	"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x78\x03\x01\x3C\x00\x01\xD8\x29\x43" \
 	"\x04\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82";
 
-class osmlayer::tileinfo
+class florb::osmlayer::tileinfo
 {
     public:
         tileinfo(int z, int x, int y) :
@@ -52,7 +52,7 @@ class osmlayer::tileinfo
         int m_y;
 };
 
-osmlayer::osmlayer(
+florb::osmlayer::osmlayer(
         const std::string& nm,  
         const std::string& url, 
         unsigned int zmin,
@@ -74,31 +74,31 @@ osmlayer::osmlayer(
     // Create cache
     florb::cfg_cache cfgcache = florb::settings::get_instance()["cache"].as<florb::cfg_cache>();
     try {
-        m_cache = new cache(cfgcache.location(), nm, /*florb::utils::extension(url)*/ std::string());
+        m_cache = new florb::cache(cfgcache.location(), nm, /*florb::utils::extension(url)*/ std::string());
     } catch (std::runtime_error& e) {
         throw e;
     }
 
     // Create the requested number of download threads
     try {
-        m_downloader = new downloader(parallel);
+        m_downloader = new florb::downloader(parallel);
     } catch (std::runtime_error& e) {
         delete m_cache;
         throw e;
     }
 
-    // Register event handlers
-    register_event_handler<osmlayer, downloader::event_complete>(this, &osmlayer::evt_downloadcomplete);
+    // Register event handlere
+    register_event_handler<osmlayer, florb::downloader::event_complete>(this, &florb::osmlayer::evt_downloadcomplete);
     m_downloader->add_event_listener(this);
 };
 
-osmlayer::~osmlayer()
+florb::osmlayer::~osmlayer()
 {
     // destroy the downloader
     delete m_downloader;
 
     // Destroy all download userdata
-    std::vector<tileinfo*>::iterator it;
+    std::vector<florb::osmlayer::tileinfo*>::iterator it;
     for (it=m_tileinfos.begin();it!=m_tileinfos.end();++it)
     {
         delete (*it);
@@ -108,12 +108,12 @@ osmlayer::~osmlayer()
     delete m_cache;
 };
 
-void osmlayer::nice(long ms)
+void florb::osmlayer::nice(long ms)
 {
     m_downloader->nice(ms);
 }
 
-void osmlayer::process_downloads()
+void florb::osmlayer::process_downloads()
 {
     // Don't proces any downloads if disabled
     if (!m_dlenable)
@@ -122,13 +122,13 @@ void osmlayer::process_downloads()
     bool ret = false; 
 
     // Cache all downloaded tiles
-    downloader::download dtmp;
+    florb::downloader::download dtmp;
     while (m_downloader->get(dtmp))
     {
-        std::vector<tileinfo*>::iterator it = 
+        std::vector<florb::osmlayer::tileinfo*>::iterator it = 
             std::find(m_tileinfos.begin(), m_tileinfos.end(), dtmp.userdata());
 
-        tileinfo *ti;
+        florb::osmlayer::tileinfo *ti;
         if (it == m_tileinfos.end())
         {
             continue; 
@@ -179,12 +179,12 @@ void osmlayer::process_downloads()
 
     if (ret) 
     {
-        event_notify e;
+        florb::osmlayer::event_notify e;
         fire(&e);
     }
 }
 
-void osmlayer::dlenable(bool e)
+void florb::osmlayer::dlenable(bool e)
 {
     m_dlenable = e;
     if (e)
@@ -193,12 +193,12 @@ void osmlayer::dlenable(bool e)
         process_downloads();
 
         //Kickstart the downloader
-        event_notify ev;
+        florb::osmlayer::event_notify ev;
         fire(&ev);
     }
 }
 
-void osmlayer::cb_download(void *userdata)
+void florb::osmlayer::cb_download(void *userdata)
 {
     // This might be a callback for an already destroyed layer instance
     layer *l = static_cast<layer*>(userdata);
@@ -212,13 +212,13 @@ void osmlayer::cb_download(void *userdata)
     osml->process_downloads();
 }
 
-bool osmlayer::evt_downloadcomplete(const downloader::event_complete *e)
+bool florb::osmlayer::evt_downloadcomplete(const florb::downloader::event_complete *e)
 {
     Fl::awake(cb_download, this);
     return true;
 }
 
-void osmlayer::download_qtile(int z, int x, int y)
+void florb::osmlayer::download_qtile(int z, int x, int y)
 {
     if (!m_dlenable)
         return;
@@ -226,7 +226,7 @@ void osmlayer::download_qtile(int z, int x, int y)
         return;
 
     // Check whether the requested tile is already being processed
-    std::vector<tileinfo*>::iterator it;
+    std::vector<florb::osmlayer::tileinfo*>::iterator it;
     for (it=m_tileinfos.begin();it!=m_tileinfos.end();++it)
     {
         if (((*it)->z() == z) && ((*it)->x() == x) && ((*it)->y() == y))
@@ -234,7 +234,7 @@ void osmlayer::download_qtile(int z, int x, int y)
     }
 
     // Create the userdata component to be attached to the download
-    tileinfo *ti = new tileinfo(z, x, y);
+    florb::osmlayer::tileinfo *ti = new florb::osmlayer::tileinfo(z, x, y);
 
     // Construct the download URL
     std::ostringstream sz, sx, sy;
@@ -244,17 +244,17 @@ void osmlayer::download_qtile(int z, int x, int y)
 
     std::string url(m_url);
     
-    std::size_t idx = url.find(osmlayer::wcard_z);
+    std::size_t idx = url.find(florb::osmlayer::wcard_z);
     if (idx != std::string::npos)
-        url.replace(idx, osmlayer::wcard_z.length(), sz.str());
+        url.replace(idx, florb::osmlayer::wcard_z.length(), sz.str());
 
-    idx = url.find(osmlayer::wcard_x);
+    idx = url.find(florb::osmlayer::wcard_x);
     if (idx != std::string::npos)
-        url.replace(idx, osmlayer::wcard_x.length(), sx.str());
+        url.replace(idx, florb::osmlayer::wcard_x.length(), sx.str());
 
-    idx = url.find(osmlayer::wcard_y);
+    idx = url.find(florb::osmlayer::wcard_y);
     if (idx != std::string::npos)
-        url.replace(idx, osmlayer::wcard_y.length(), sy.str());
+        url.replace(idx, florb::osmlayer::wcard_y.length(), sy.str());
 
     // Try to queue this URL for downloading
     bool ret = m_downloader->queue(url, ti);
@@ -269,7 +269,7 @@ void osmlayer::download_qtile(int z, int x, int y)
         delete ti;
 }
 
-bool osmlayer::draw(const viewport &vp, florb::canvas &os)
+bool florb::osmlayer::draw(const viewport &vp, florb::canvas &os)
 {
     if ((vp.z() < m_zmin) || (vp.z() > m_zmax))
     {
@@ -281,7 +281,7 @@ bool osmlayer::draw(const viewport &vp, florb::canvas &os)
     return drawvp(vp, &os, NULL, NULL);
 }
 
-bool osmlayer::download(const viewport &vp, double& coverage)
+bool florb::osmlayer::download(const viewport &vp, double& coverage)
 {
     static unsigned long ttotal = 0;
     static unsigned long tnok = 0;
@@ -300,7 +300,7 @@ bool osmlayer::download(const viewport &vp, double& coverage)
     return rc;
 }
 
-bool osmlayer::drawvp(const viewport &vp, florb::canvas *c, unsigned long *ttotal, unsigned long *tnok)
+bool florb::osmlayer::drawvp(const viewport &vp, florb::canvas *c, unsigned long *ttotal, unsigned long *tnok)
 {
     // Reset statistics
     if (ttotal != NULL) (*ttotal) = 0;
@@ -334,13 +334,13 @@ bool osmlayer::drawvp(const viewport &vp, florb::canvas *c, unsigned long *ttota
               else
                   rc = m_cache->get(vp.z(), tx, ty, m_imgbuf);
           } catch (std::runtime_error& e) {
-              rc = cache::NOTFOUND;
+              rc = florb::cache::NOTFOUND;
           }
           
           // Draw the tile if we either have a valid or expired version of it...
           if (c != NULL)
           {
-              if ((rc != cache::NOTFOUND) && 
+              if ((rc != florb::cache::NOTFOUND) && 
                   (m_imgbuf.size() != 0))
               {
                   florb::image img(m_type, (unsigned char*)(&m_imgbuf[0]), m_imgbuf.size());
@@ -349,8 +349,8 @@ bool osmlayer::drawvp(const viewport &vp, florb::canvas *c, unsigned long *ttota
           }
 
           // Tile not in cache or expired, schedule for downloading
-          if ((rc == cache::EXPIRED) || 
-              (rc == cache::NOTFOUND))
+          if ((rc == florb::cache::EXPIRED) || 
+              (rc == florb::cache::NOTFOUND))
           {
               if (tnok != NULL) (*tnok)++;
               download_qtile(vp.z(), tx, ty);

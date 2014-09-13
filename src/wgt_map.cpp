@@ -23,11 +23,11 @@ florb::wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
     // Register event handlers for layer events
     register_event_handler<florb::wgt_map, florb::gpsdlayer::event_status>(this, &florb::wgt_map::gpsd_evt_status);
     register_event_handler<florb::wgt_map, florb::gpsdlayer::event_motion>(this, &florb::wgt_map::gpsd_evt_motion);
-    register_event_handler<florb::wgt_map, osmlayer::event_notify>(this, &florb::wgt_map::osm_evt_notify);
+    register_event_handler<florb::wgt_map, florb::osmlayer::event_notify>(this, &florb::wgt_map::osm_evt_notify);
     register_event_handler<florb::wgt_map, florb::tracklayer::event_notify>(this, &florb::wgt_map::gpx_evt_notify);
-    register_event_handler<florb::wgt_map, markerlayer::event_notify>(this, &florb::wgt_map::marker_evt_notify);
-    register_event_handler<florb::wgt_map, areaselectlayer::event_done>(this, &florb::wgt_map::areaselect_evt_done);
-    register_event_handler<florb::wgt_map, areaselectlayer::event_notify>(this, &florb::wgt_map::areaselect_evt_notify);
+    register_event_handler<florb::wgt_map, florb::markerlayer::event_notify>(this, &florb::wgt_map::marker_evt_notify);
+    register_event_handler<florb::wgt_map, florb::areaselectlayer::event_done>(this, &florb::wgt_map::areaselect_evt_done);
+    register_event_handler<florb::wgt_map, florb::areaselectlayer::event_notify>(this, &florb::wgt_map::areaselect_evt_notify);
 
     // Add a GPX layer
     try {
@@ -53,7 +53,7 @@ florb::wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
 
     // Add a scale layer
     try {
-        m_scale = new scalelayer();
+        m_scale = new florb::scalelayer();
     } catch (...) {
         m_scale = NULL;
         throw std::runtime_error(_("Scale error"));
@@ -61,7 +61,7 @@ florb::wgt_map::wgt_map(int x, int y, int w, int h, const char *label) :
 
     // Add an area selection layer
     try {
-        m_areaselectlayer = new areaselectlayer();
+        m_areaselectlayer = new florb::areaselectlayer();
     } catch (...) {
         m_areaselectlayer = NULL;
         throw std::runtime_error(_("Selection error"));
@@ -310,7 +310,7 @@ void florb::wgt_map::basemap(
                 unsigned int parallel,
                 int imgtype)
 {
-    osmlayer *lold = m_basemap;
+    florb::osmlayer *lold = m_basemap;
     m_basemap = NULL;
 
     // Destroy the orig
@@ -322,7 +322,7 @@ void florb::wgt_map::basemap(
 
     // Create a new basemap layer
     try {
-        m_basemap = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
+        m_basemap = new florb::osmlayer(name, url, zmin, zmax, parallel, imgtype);
     } catch (std::runtime_error& e) {
         m_basemap = NULL;
         throw e;
@@ -350,7 +350,7 @@ void florb::wgt_map::overlay(
 
     // Create a new overlay layer
     try {
-        m_overlay = new osmlayer(name, url, zmin, zmax, parallel, imgtype);
+        m_overlay = new florb::osmlayer(name, url, zmin, zmax, parallel, imgtype);
     } catch (std::runtime_error& e) {
         m_overlay = NULL;
         throw e;
@@ -365,7 +365,7 @@ void florb::wgt_map::overlay(
 
 void florb::wgt_map::clear_overlay()
 {
-    osmlayer *lold = m_overlay;
+    florb::osmlayer *lold = m_overlay;
     m_overlay = NULL;
 
     // Destroy the orig
@@ -530,7 +530,7 @@ bool florb::wgt_map::gpsd_evt_status(const florb::gpsdlayer::event_status *e)
     return true;
 }
 
-bool florb::wgt_map::osm_evt_notify(const osmlayer::event_notify *e)
+bool florb::wgt_map::osm_evt_notify(const florb::osmlayer::event_notify *e)
 {
     dirty(true);
     refresh();
@@ -556,7 +556,7 @@ bool florb::wgt_map::marker_evt_notify(const markerlayer::event_notify *e)
     return true;
 }
 
-bool florb::wgt_map::areaselect_evt_done(const areaselectlayer::event_done *e)
+bool florb::wgt_map::areaselect_evt_done(const florb::areaselectlayer::event_done *e)
 {
     // disable areaselectlayer
     m_areaselectlayer->enable(false);
@@ -571,7 +571,7 @@ bool florb::wgt_map::areaselect_evt_done(const areaselectlayer::event_done *e)
     return true;
 }
 
-bool florb::wgt_map::areaselect_evt_notify(const areaselectlayer::event_notify *e)
+bool florb::wgt_map::areaselect_evt_notify(const florb::areaselectlayer::event_notify *e)
 {
     dirty(true);
     refresh();

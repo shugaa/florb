@@ -17,13 +17,12 @@ decl {\#include "event.hpp"} {public global
 decl {\#include "point.hpp"} {public global
 } 
 
-decl {\#include "wgt_map.hpp"} {selected public global
+decl {\#include "wgt_map.hpp"} {public global
 } 
 
 class dlg_search {open : {public event_listener}
 } {
-  class searchresult {open
-  } {
+  class searchresult {} {
     decl {std::string m_displayname;} {public local
     }
     decl {florb::point2d<double> m_pos;} {public local
@@ -31,7 +30,7 @@ class dlg_search {open : {public event_listener}
   }
   decl {std::vector<searchresult> m_searchresults;} {private local
   }
-  decl {downloader* m_downloader;} {private local
+  decl {florb::downloader* m_downloader;} {private local
   }
   decl {florb::wgt_map* m_wgtmap;} {private local
   }
@@ -55,7 +54,7 @@ class dlg_search {open : {public event_listener}
   }
   decl {void process_download_ex();} {private global
   }
-  decl {bool evt_downloadcomplete_ex(const downloader::event_complete *e);} {private global
+  decl {bool evt_downloadcomplete_ex(const florb::downloader::event_complete *e);} {selected private global
   }
   decl {static void cb_download_ex(void *userdata);} {private global
   }

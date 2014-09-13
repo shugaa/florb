@@ -6,9 +6,9 @@
 #include "cache.hpp"
 #include "utils.hpp"
 
-const std::string cache::dbextension = ".dat";
+const std::string florb::cache::dbextension = ".dat";
 
-cache::cache(const std::string& url, const std::string& session, const std::string& ext) :
+florb::cache::cache(const std::string& url, const std::string& session, const std::string& ext) :
     m_url(url),
     m_session(session),
     m_ext(ext)
@@ -47,11 +47,11 @@ cache::cache(const std::string& url, const std::string& session, const std::stri
     }
 };
 
-cache::~cache()
+florb::cache::~cache()
 {
 };
 
-void cache::put(int z, int x, int y, time_t expires, const std::vector<char> &buf)
+void florb::cache::put(int z, int x, int y, time_t expires, const std::vector<char> &buf)
 {
     if ((z < 0) || (x < 0) || (y < 0))
         return;
@@ -87,7 +87,7 @@ void cache::put(int z, int x, int y, time_t expires, const std::vector<char> &bu
         of.write(&(buf[0]), buf.size());
         of.close();
 
-        oss << cache::dbextension;
+        oss << florb::cache::dbextension;
 
         of.open(oss.str().c_str(), std::ios::out | std::ios::trunc);
         if (!of.is_open())
@@ -108,7 +108,7 @@ void cache::put(int z, int x, int y, time_t expires, const std::vector<char> &bu
     }
 }
 
-int cache::exists(int z, int x, int y)
+int florb::cache::exists(int z, int x, int y)
 {
     if ((z < 0) || (x < 0) || (y < 0))
         return false;
@@ -159,7 +159,7 @@ int cache::exists(int z, int x, int y)
     return rc;
 }
 
-int cache::get(int z, int x, int y, std::vector<char> &buf)
+int florb::cache::get(int z, int x, int y, std::vector<char> &buf)
 {
     if ((z < 0) || (x < 0) || (y < 0))
         return NOTFOUND;

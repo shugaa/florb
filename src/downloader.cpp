@@ -8,7 +8,7 @@
 #include "version.hpp"
 #include "downloader.hpp"
 
-downloader::downloader(int nthreads) : 
+florb::downloader::downloader(int nthreads) : 
     m_timeout(10),
     m_nice(0),
     m_stat(0),
@@ -17,11 +17,11 @@ downloader::downloader(int nthreads) :
 {
     for (int i=0;i<nthreads;i++)
     {
-        workerinfo *ti;
+        florb::downloader::workerinfo *ti;
         try {
             // Try to create a new worker thread
-            ti = new workerinfo(
-                new boost::thread(boost::bind(&downloader::worker, this)));
+            ti = new florb::downloader::workerinfo(
+                new boost::thread(boost::bind(&florb::downloader::worker, this)));
         } catch (...) {
             // Delete all previously created threads
             do_exit(true);
@@ -34,17 +34,11 @@ downloader::downloader(int nthreads) :
             throw std::runtime_error(_("Failed to start downloader"));
         }
 
-#if 0
-        struct sched_param param;
-        param.sched_priority = 0;
-        pthread_setschedparam(ti->t()->native_handle(), SCHED_RR, &param);
-#endif
-
         m_workers.push_back(ti);
     }
 }
 
-downloader::~downloader()
+florb::downloader::~downloader()
 {
     // Set exit flag
     do_exit(true);
@@ -56,7 +50,7 @@ downloader::~downloader()
     }
 
     // Join all active threads and delete them
-    std::vector<workerinfo*>::iterator it;
+    std::vector<florb::downloader::workerinfo*>::iterator it;
     for (it=m_workers.begin();it!=m_workers.end();++it)
     {
         (*it)->t()->join();
@@ -64,14 +58,14 @@ downloader::~downloader()
     }
 }
 
-void downloader::nice(long ms)
+void florb::downloader::nice(long ms)
 {
     m_mutex.lock();
     m_nice = ms;
     m_mutex.unlock();
 }
 
-long downloader::nice()
+long florb::downloader::nice()
 {   
     long ret;
 
@@ -82,7 +76,7 @@ long downloader::nice()
     return ret;
 }
 
-std::size_t downloader::stat()
+std::size_t florb::downloader::stat()
 {
     m_mutex.lock();
     std::size_t ret = m_stat;
@@ -91,21 +85,21 @@ std::size_t downloader::stat()
     return ret;
 }
 
-void downloader::stat(std::size_t s)
+void florb::downloader::stat(std::size_t s)
 {
     m_mutex.lock();
     m_stat = s;
     m_mutex.unlock();
 }
 
-void downloader::timeout(size_t sec)
+void florb::downloader::timeout(size_t sec)
 {
     m_mutex.lock();
     m_timeout = sec;
     m_mutex.unlock();
 }
 
-size_t downloader::timeout()
+size_t florb::downloader::timeout()
 {
     size_t ret;
 
@@ -116,7 +110,7 @@ size_t downloader::timeout()
     return ret;
 }
 
-bool downloader::queue(const std::string& url, void* userdata)
+bool florb::downloader::queue(const std::string& url, void* userdata)
 {   
     if (do_exit())
         return false;
@@ -131,8 +125,8 @@ bool downloader::queue(const std::string& url, void* userdata)
 
     // Find an existing item in the list
     bool newitem = false;
-    download_internal d(this, urle, userdata);
-    std::vector<download_internal>::iterator it;
+    florb::downloader::download_internal d(this, urle, userdata);
+    std::vector<florb::downloader::download_internal>::iterator it;
     for (it=m_queue.begin(); it!=m_queue.end(); ++it)
     {
         if ((*it) == d)
@@ -142,7 +136,7 @@ bool downloader::queue(const std::string& url, void* userdata)
     // Existing item, boost priority
     if (it != m_queue.end())
     {
-        download_internal dtmp = (*it);
+        florb::downloader::download_internal dtmp = (*it);
         m_queue.erase(it);
         m_queue.push_back(dtmp);
     }
@@ -164,7 +158,7 @@ bool downloader::queue(const std::string& url, void* userdata)
     return newitem;
 }
 
-size_t downloader::qsize()
+size_t florb::downloader::qsize()
 {
     size_t ret;
     m_mutex.lock();
@@ -174,7 +168,7 @@ size_t downloader::qsize()
     return ret;
 }
 
-bool downloader::get(download& dl)
+bool florb::downloader::get(florb::downloader::download& dl)
 {
     bool ret = false;
 
@@ -197,14 +191,14 @@ bool downloader::get(download& dl)
     return ret;
 }
 
-void downloader::do_exit(bool i)
+void florb::downloader::do_exit(bool i)
 {
     m_mutex.lock();
     m_exit = i;
     m_mutex.unlock();
 }
 
-bool downloader::do_exit(void)
+bool florb::downloader::do_exit(void)
 {
     bool ret;
 
@@ -215,7 +209,7 @@ bool downloader::do_exit(void)
     return ret;
 }
 
-void downloader::worker()
+void florb::downloader::worker()
 {
     CURL *curl_handle = curl_easy_init();
 
@@ -244,7 +238,7 @@ void downloader::worker()
 
         // Get a download item from the list
         m_mutex.lock();
-        download_internal dl = *(m_queue.end()-1);
+        florb::downloader::download_internal dl = *(m_queue.end()-1);
         m_queue.erase(m_queue.end()-1);
         m_mutex.unlock();
 
@@ -285,19 +279,23 @@ void downloader::worker()
     curl_easy_cleanup(curl_handle);
 }
 
-size_t downloader::cb_data(void *ptr, size_t size, size_t nmemb, void *data)
+size_t florb::downloader::cb_data(void *ptr, size_t size, size_t nmemb, void *data)
 {
-    download_internal *d = reinterpret_cast<download_internal*>(data);
+    florb::downloader::download_internal *d = 
+        reinterpret_cast<florb::downloader::download_internal*>(data);
+    
     return d->dldr()->handle_data(ptr, size, nmemb, d->buf());
 }
 
-size_t downloader::cb_header(void *ptr, size_t size, size_t nmemb, void *data) 
+size_t florb::downloader::cb_header(void *ptr, size_t size, size_t nmemb, void *data) 
 {
-    download_internal *d = reinterpret_cast<download_internal*>(data);
+    florb::downloader::download_internal *d = 
+        reinterpret_cast<florb::downloader::download_internal*>(data);
+
     return d->dldr()->handle_header(ptr, size, nmemb, d->expires());
 }
 
-size_t downloader::handle_data(void *ptr, size_t size, size_t nmemb, std::vector<char>& buf)
+size_t florb::downloader::handle_data(void *ptr, size_t size, size_t nmemb, std::vector<char>& buf)
 {
     size_t realsize = size * nmemb;
     size_t currentsize = buf.size();
@@ -308,7 +306,7 @@ size_t downloader::handle_data(void *ptr, size_t size, size_t nmemb, std::vector
     return realsize;
 }
 
-size_t downloader::handle_header(void *ptr, size_t size, size_t nmemb, time_t& expires) 
+size_t florb::downloader::handle_header(void *ptr, size_t size, size_t nmemb, time_t& expires) 
 {
     size_t realsize = size * nmemb;
     std::string line;

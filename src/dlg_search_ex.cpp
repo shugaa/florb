@@ -14,14 +14,14 @@ void dlg_search::create_ex()
     florb::utils::set_window_icon(m_window);
 
     try {
-        m_downloader = new downloader(1);
+        m_downloader = new florb::downloader(1);
     } catch (std::runtime_error& e) {
         m_window->hide();
         throw e;
     }
 
     m_downloader->timeout(20);
-    register_event_handler<dlg_search, downloader::event_complete>(this, &dlg_search::evt_downloadcomplete_ex);
+    register_event_handler<dlg_search, florb::downloader::event_complete>(this, &dlg_search::evt_downloadcomplete_ex);
     m_downloader->add_event_listener(this);
 }
 
@@ -144,7 +144,7 @@ void dlg_search::process_download_ex()
     // Parse response
     for (;;)
     {
-        downloader::download dtmp;
+        florb::downloader::download dtmp;
         if (!m_downloader->get(dtmp))
             break;
 
@@ -204,7 +204,7 @@ void dlg_search::cb_download_ex(void *userdata)
     d->process_download_ex();
 }
 
-bool dlg_search::evt_downloadcomplete_ex(const downloader::event_complete *e)
+bool dlg_search::evt_downloadcomplete_ex(const florb::downloader::event_complete *e)
 {
     Fl::awake(cb_download_ex, this);
     return true;

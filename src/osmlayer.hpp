@@ -9,62 +9,65 @@
 #include "gfx.hpp"
 #include "settings.hpp"
 
-class osmlayer : public florb::layer
+namespace florb
 {
-    public:
-        osmlayer(
-            const std::string& nm,  
-            const std::string& url, 
-            unsigned int zmin,
-            unsigned int zmax,
-            unsigned int parallel,
-            int imgtype);
-        ~osmlayer();
-        bool draw(const viewport &vp, florb::canvas &c);
-        bool download(const viewport& vp, double& coverage);
-        void nice(long ms);
+    class osmlayer : public florb::layer
+    {
+        public:
+            osmlayer(
+                    const std::string& nm,  
+                    const std::string& url, 
+                    unsigned int zmin,
+                    unsigned int zmax,
+                    unsigned int parallel,
+                    int imgtype);
+            ~osmlayer();
+            bool draw(const viewport &vp, florb::canvas &c);
+            bool download(const viewport& vp, double& coverage);
+            void nice(long ms);
 
-        int zoom_min() { return m_zmin; };
-        int zoom_max() { return m_zmax; };
-        void dlenable(bool e);
+            int zoom_min() { return m_zmin; };
+            int zoom_max() { return m_zmax; };
+            void dlenable(bool e);
 
-        static const std::string wcard_x;
-        static const std::string wcard_y;
-        static const std::string wcard_z;
+            static const std::string wcard_x;
+            static const std::string wcard_y;
+            static const std::string wcard_z;
 
-        class event_notify;
+            class event_notify;
 
-    private:
-        static const char tile_empty[];
+        private:
+            static const char tile_empty[];
 
-        class tileinfo;
+            class tileinfo;
 
-        std::string m_name;
-        std::string m_url;
-        unsigned int m_zmin;
-        unsigned int m_zmax;
-        unsigned int m_parallel;
-        int m_type;
-        
-        cache *m_cache;
-        std::vector<char> m_imgbuf;
-        std::vector<tileinfo*> m_tileinfos;
-        downloader* m_downloader;
-        bool m_dlenable;
+            std::string m_name;
+            std::string m_url;
+            unsigned int m_zmin;
+            unsigned int m_zmax;
+            unsigned int m_parallel;
+            int m_type;
 
-        static void cb_download(void *userdata);
-        void process_downloads();
+            florb::cache *m_cache;
+            std::vector<char> m_imgbuf;
+            std::vector<tileinfo*> m_tileinfos;
+            florb::downloader* m_downloader;
+            bool m_dlenable;
 
-        bool drawvp(const viewport &viewport, florb::canvas *c, unsigned long *ttotal, unsigned long *tnok);
-        void download_qtile(int z, int x, int y);
-        bool evt_downloadcomplete(const downloader::event_complete *e);
-};
+            static void cb_download(void *userdata);
+            void process_downloads();
 
-class osmlayer::event_notify : public event_base
-{
-    public:
-        event_notify() {};
-        ~event_notify() {};
+            bool drawvp(const viewport &viewport, florb::canvas *c, unsigned long *ttotal, unsigned long *tnok);
+            void download_qtile(int z, int x, int y);
+            bool evt_downloadcomplete(const florb::downloader::event_complete *e);
+    };
+
+    class osmlayer::event_notify : public event_base
+    {
+        public:
+            event_notify() {};
+            ~event_notify() {};
+    };
 };
 
 #endif // OSMLAYER_HPP

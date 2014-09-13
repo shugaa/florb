@@ -7,16 +7,16 @@
 #include "settings.hpp"
 #include "scalelayer.hpp"
 
-scalelayer::scalelayer()
+florb::scalelayer::scalelayer()
 {
     name(std::string("Scale"));
 };
 
-scalelayer::~scalelayer()
+florb::scalelayer::~scalelayer()
 {
 };
 
-bool scalelayer::draw(const viewport &viewport, florb::canvas &os)
+bool florb::scalelayer::draw(const viewport &viewport, florb::canvas &os)
 {
     // Calculate coordinate in the center of the viewport
     florb::point2d<unsigned long> ppx(viewport.x() + (viewport.w()/2), viewport.y() + (viewport.h()/2));

@@ -14,7 +14,7 @@ decl {\#include <vector>} {public global
 decl {\#include <boost/interprocess/sync/interprocess_mutex.hpp>} {public global
 } 
 
-decl {\#include "wgt_map.hpp"} {selected public global
+decl {\#include "wgt_map.hpp"} {public global
 } 
 
 decl {\#include "osmlayer.hpp"} {public global
@@ -28,7 +28,7 @@ class dlg_bulkdl {open : {public event_listener}
   }
   decl {void cb_btn_download_ex(Fl_Widget *widget);} {private local
   }
-  decl {bool osm_evt_notify_ex(const osmlayer::event_notify *e);} {private local
+  decl {bool osm_evt_notify_ex(const florb::osmlayer::event_notify *e);} {selected private local
   }
   decl {void startdl_ex();} {private local
   }

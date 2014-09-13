@@ -111,7 +111,7 @@ namespace florb
             bool gpsd_evt_status(const florb::gpsdlayer::event_status *e);
 
             // Basemap-layer event handlers
-            bool osm_evt_notify(const osmlayer::event_notify *e);
+            bool osm_evt_notify(const florb::osmlayer::event_notify *e);
 
             // GPX-layer event handlers
             bool gpx_evt_notify(const florb::tracklayer::event_notify *e);
@@ -124,13 +124,13 @@ namespace florb
             bool areaselect_evt_notify(const areaselectlayer::event_notify *e);
 
             // Layers
-            osmlayer *m_basemap;
-            osmlayer *m_overlay;
-            scalelayer *m_scale;
+            florb::osmlayer *m_basemap;
+            florb::osmlayer *m_overlay;
+            florb::scalelayer *m_scale;
             florb::tracklayer *m_tracklayer;
             florb::markerlayer *m_markerlayer;
             florb::gpsdlayer *m_gpsdlayer;
-            areaselectlayer *m_areaselectlayer;
+            florb::areaselectlayer *m_areaselectlayer;
 
             florb::point2d<int> m_mousepos;
             viewport m_viewport;

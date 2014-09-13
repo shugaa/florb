@@ -6,19 +6,19 @@
 #include "settings.hpp"
 #include "areaselectlayer.hpp"
 
-areaselectlayer::areaselectlayer() :
+florb::areaselectlayer::areaselectlayer() :
     m_p1(-1,-1),
     m_p2(-1,-1)
 {
     name(std::string("AreaSelect"));
-    register_event_handler<areaselectlayer, florb::layer::event_mouse>(this, &areaselectlayer::handle_evt_mouse);
+    register_event_handler<areaselectlayer, florb::layer::event_mouse>(this, &florb::areaselectlayer::handle_evt_mouse);
 };
 
-areaselectlayer::~areaselectlayer()
+florb::areaselectlayer::~areaselectlayer()
 {
 };
 
-void areaselectlayer::clear()
+void florb::areaselectlayer::clear()
 {
     m_p1[0] = -1;
     m_p1[1] = -1;
@@ -28,7 +28,7 @@ void areaselectlayer::clear()
     notify();
 }
 
-bool areaselectlayer::handle_evt_mouse(const florb::layer::event_mouse* evt)
+bool florb::areaselectlayer::handle_evt_mouse(const florb::layer::event_mouse* evt)
 {
     if (!enabled())
     {
@@ -64,7 +64,7 @@ bool areaselectlayer::handle_evt_mouse(const florb::layer::event_mouse* evt)
     return ret;
 }
 
-bool areaselectlayer::press(const florb::layer::event_mouse* evt)
+bool florb::areaselectlayer::press(const florb::layer::event_mouse* evt)
 {
     m_p1[0] = evt->pos().x() < 0 ? 0 : (unsigned long)evt->pos().x();
     m_p1[1] = evt->pos().y() < 0 ? 0 : (unsigned long)evt->pos().y();
@@ -82,7 +82,7 @@ bool areaselectlayer::press(const florb::layer::event_mouse* evt)
     return true;
 }
 
-bool areaselectlayer::drag(const florb::layer::event_mouse* evt)
+bool florb::areaselectlayer::drag(const florb::layer::event_mouse* evt)
 {
     florb::point2d<unsigned long> px(evt->pos().x(), evt->pos().y());
     
@@ -108,7 +108,7 @@ bool areaselectlayer::drag(const florb::layer::event_mouse* evt)
     return true;
 }
 
-bool areaselectlayer::release(const florb::layer::event_mouse* evt)
+bool florb::areaselectlayer::release(const florb::layer::event_mouse* evt)
 {
     m_vp = viewport(
         (m_p1.x() > m_p2.x()) ? m_p2.x() : m_p1.x(),
@@ -122,19 +122,19 @@ bool areaselectlayer::release(const florb::layer::event_mouse* evt)
     return true;
 }
 
-void areaselectlayer::done()
+void florb::areaselectlayer::done()
 {
-    event_done e(m_vp);
+    florb::areaselectlayer::event_done e(m_vp);
     fire(&e);
 }
 
-void areaselectlayer::notify()
+void florb::areaselectlayer::notify()
 {
-    event_notify e;
+    florb::areaselectlayer::event_notify e;
     fire(&e);
 }
 
-bool areaselectlayer::draw(const viewport &viewport, florb::canvas &os)
+bool florb::areaselectlayer::draw(const viewport &viewport, florb::canvas &os)
 {
     if (m_p1.x() < 0)
         return true;
