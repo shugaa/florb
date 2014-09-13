@@ -113,33 +113,33 @@ bool florb::scalelayer::draw(const viewport &viewport, florb::canvas &os)
         5);
 
     // Generate the info text
-    unit::length usrc = unit::length::M;
+    florb::unit::length usrc = florb::unit::length::M;
     if (slm >= 1000.0)
     {
         slm /= 1000.0;
-        usrc = unit::length::KM;
+        usrc = florb::unit::length::KM;
     }
 
     florb::cfg_units cfgunits = florb::settings::get_instance()["units"].as<florb::cfg_units>();
 
-    unit::length udst = unit::length::KM;
+    florb::unit::length udst = florb::unit::length::KM;
     switch (cfgunits.system_length())
     {
         case (florb::cfg_units::system::IMPERIAL):
-            udst = (usrc == unit::length::M) ? unit::length::FOOT : unit::length::ENGLISH_MILE;
+            udst = (usrc == florb::unit::length::M) ? florb::unit::length::FOOT : florb::unit::length::ENGLISH_MILE;
             break;
         case (florb::cfg_units::system::NAUTICAL):
-            udst = (usrc == unit::length::M) ? unit::length::FOOT : unit::length::SEA_MILE;
+            udst = (usrc == florb::unit::length::M) ? florb::unit::length::FOOT : florb::unit::length::SEA_MILE;
             break;
         default:
-            udst = (usrc == unit::length::M) ? unit::length::M : unit::length::KM;
+            udst = (usrc == florb::unit::length::M) ? florb::unit::length::M : florb::unit::length::KM;
             break;
     }
 
     std::ostringstream oss;
     oss.precision(1);
     oss.setf(std::ios::fixed, std::ios::floatfield);
-    oss << unit::convert(usrc, udst, slm) << " " << unit::sistr(udst);
+    oss << florb::unit::convert(usrc, udst, slm) << " " << florb::unit::sistr(udst);
 
     // Draw the info text
     os.text(oss.str(), 20, viewport.h()-34);

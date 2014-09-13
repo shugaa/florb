@@ -120,8 +120,8 @@ namespace florb
             bool marker_evt_notify(const florb::markerlayer::event_notify *e);
 
             // Area selection layer event handlers
-            bool areaselect_evt_done(const areaselectlayer::event_done *e);
-            bool areaselect_evt_notify(const areaselectlayer::event_notify *e);
+            bool areaselect_evt_done(const florb::areaselectlayer::event_done *e);
+            bool areaselect_evt_notify(const florb::areaselectlayer::event_notify *e);
 
             // Layers
             florb::osmlayer *m_basemap;

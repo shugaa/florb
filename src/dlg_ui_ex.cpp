@@ -74,24 +74,24 @@ void dlg_ui::update_statusbar_ex()
     ss << _("Lat: ") << pos.y() << "°";
     m_txtout_lat->value(ss.str().c_str());
 
-    unit::length dst;
+    florb::unit::length dst;
     switch (cfgunits.system_length())
     {
         case (florb::cfg_units::system::NAUTICAL):
-            dst = unit::length::SEA_MILE;
+            dst = florb::unit::length::SEA_MILE;
             break;
         case (florb::cfg_units::system::IMPERIAL):
-            dst = unit::length::ENGLISH_MILE;
+            dst = florb::unit::length::ENGLISH_MILE;
             break;
         default:
-            dst = unit::length::KM;
+            dst = florb::unit::length::KM;
             break;
     }
 
     ss.precision(2);
     ss.setf(std::ios::fixed, std::ios::floatfield);
     ss.str("");
-    ss << _("Trip: ") << unit::convert(unit::length::KM, dst, m_wgtmap->gpx_trip()) << " " << unit::sistr(dst);
+    ss << _("Trip: ") << florb::unit::convert(florb::unit::length::KM, dst, m_wgtmap->gpx_trip()) << " " << florb::unit::sistr(dst);
     m_txtout_trip->value(ss.str().c_str());
 
     if (m_wgtmap->gpsd_connected())

@@ -5,7 +5,6 @@
 #include <iterator>
 #include "gfx.hpp"
 #include "utils.hpp"
-#include "unit.hpp"
 
 // The YAML namespace defines an enumerator "None". This clashes with a
 // definition of "None" in X.h which is included by FLTK. So if there is any

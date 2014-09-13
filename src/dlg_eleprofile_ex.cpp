@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include "unit.hpp"
 #include "fluid/dlg_eleprofile.hpp"
 
 void dlg_eleprofile::create_ex()
@@ -45,21 +46,21 @@ bool dlg_eleprofile::profile_evt_mouse_ex(const wgt_eleprofile::event_mouse *e)
     ss.precision(2);
     ss.setf(std::ios::fixed, std::ios::floatfield);
 
-    unit::length dst_trip;
-    unit::length dst_ele;
+    florb::unit::length dst_trip;
+    florb::unit::length dst_ele;
     switch (cfgunits.system_length())
     {
         case (florb::cfg_units::system::NAUTICAL):
-            dst_trip = unit::length::SEA_MILE;
-            dst_ele = unit::length::FOOT;
+            dst_trip = florb::unit::length::SEA_MILE;
+            dst_ele = florb::unit::length::FOOT;
             break;
         case (florb::cfg_units::system::IMPERIAL):
-            dst_trip = unit::length::ENGLISH_MILE;
-            dst_ele = unit::length::FOOT;
+            dst_trip = florb::unit::length::ENGLISH_MILE;
+            dst_ele = florb::unit::length::FOOT;
             break;
         default:
-            dst_trip = unit::length::KM;
-            dst_ele = unit::length::M;
+            dst_trip = florb::unit::length::KM;
+            dst_ele = florb::unit::length::M;
             break;
     }
 
@@ -67,11 +68,11 @@ bool dlg_eleprofile::profile_evt_mouse_ex(const wgt_eleprofile::event_mouse *e)
     static std::string strele;
 
     ss.str("");
-    ss << _("Trip: ") << unit::convert(unit::length::KM, dst_trip, e->trip()) << " " << unit::sistr(dst_trip);
+    ss << _("Trip: ") << florb::unit::convert(florb::unit::length::KM, dst_trip, e->trip()) << " " << florb::unit::sistr(dst_trip);
     strtrip = ss.str();
 
     ss.str("");
-    ss << _("Elevation: ") << unit::convert(unit::length::M, dst_ele, e->ele()) << " " << unit::sistr(dst_ele);
+    ss << _("Elevation: ") << florb::unit::convert(florb::unit::length::M, dst_ele, e->ele()) << " " << florb::unit::sistr(dst_ele);
     strele = ss.str();
     
     m_box_trip->label(strtrip.c_str());

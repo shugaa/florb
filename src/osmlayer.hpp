@@ -50,7 +50,7 @@ namespace florb
 
             florb::cache *m_cache;
             std::vector<char> m_imgbuf;
-            std::vector<tileinfo*> m_tileinfos;
+            std::vector<florb::osmlayer::tileinfo*> m_tileinfos;
             florb::downloader* m_downloader;
             bool m_dlenable;
 

@@ -2,7 +2,7 @@
 #include "utils.hpp"
 #include "unit.hpp"
 
-const unit::si unit::m_si_length[] =
+const florb::unit::si florb::unit::m_si_length[] =
 {
     {M,             _("m")},
     {KM,            _("km")},
@@ -14,7 +14,7 @@ const unit::si unit::m_si_length[] =
     {FOOT,          _("ft")},
 };
 
-const unit::conv unit::m_conv_length[] =
+const florb::unit::conv florb::unit::m_conv_length[] =
 {
     {M,                 1.0},
     {KM,                1000.0},
@@ -26,7 +26,7 @@ const unit::conv unit::m_conv_length[] =
     {FOOT,              0.3048},
 };
 
-double unit::gen_convert(int src, int dst, double val, const unit::conv *sc, size_t len)
+double florb::unit::gen_convert(int src, int dst, double val, const florb::unit::conv *sc, size_t len)
 {
     // Convert src to base unit
     for (size_t i=0;i<len;i++)
@@ -56,7 +56,7 @@ double unit::gen_convert(int src, int dst, double val, const unit::conv *sc, siz
     return val;
 }
 
-std::string unit::gen_sistr(int spec, const unit::si *ssi, size_t len)
+std::string florb::unit::gen_sistr(int spec, const florb::unit::si *ssi, size_t len)
 {
     std::string ret;
     bool found = false;
@@ -76,7 +76,7 @@ std::string unit::gen_sistr(int spec, const unit::si *ssi, size_t len)
     return _(ret.c_str());
 }
 
-double unit::convert(unit::length src, unit::length dst, double val)
+double florb::unit::convert(florb::unit::length src, florb::unit::length dst, double val)
 {
     return gen_convert(
             static_cast<int>(src), 
@@ -86,7 +86,7 @@ double unit::convert(unit::length src, unit::length dst, double val)
             sizeof(m_conv_length)/sizeof(m_conv_length[0]));
 }
 
-std::string unit::sistr(length spec)
+std::string florb::unit::sistr(florb::unit::length spec)
 {
     return gen_sistr(
             static_cast<int>(spec), 

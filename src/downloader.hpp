@@ -45,10 +45,10 @@ namespace florb
             bool do_exit(void);
             void do_exit(bool i);
 
-            std::vector<download_internal> m_queue;
-            std::vector<download_internal> m_done;
+            std::vector<florb::downloader::download_internal> m_queue;
+            std::vector<florb::downloader::download_internal> m_done;
 
-            std::vector<workerinfo*> m_workers;
+            std::vector<florb::downloader::workerinfo*> m_workers;
             size_t m_timeout;
             long m_nice;
             std::size_t m_stat;

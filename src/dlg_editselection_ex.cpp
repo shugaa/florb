@@ -1,5 +1,6 @@
 #include <FL/fl_ask.H>
 #include "settings.hpp"
+#include "unit.hpp"
 #include "fluid/dlg_editselection.hpp"
 
 void dlg_editselection::create_ex()
@@ -37,13 +38,13 @@ void dlg_editselection::show_ex()
     {
         case (florb::cfg_units::system::IMPERIAL):
         case (florb::cfg_units::system::NAUTICAL):
-            ele = unit::convert(unit::length::M, unit::length::FOOT, ele);
-            os << " [" << unit::sistr(unit::FOOT) << "]";
+            ele = florb::unit::convert(florb::unit::length::M, florb::unit::length::FOOT, ele);
+            os << " [" << florb::unit::sistr(florb::unit::FOOT) << "]";
             elelabel = os.str();
             m_box_elevation->label(elelabel.c_str());
             break;
         default:
-            os << " [" << unit::sistr(unit::M) << "]";
+            os << " [" << florb::unit::sistr(florb::unit::M) << "]";
             elelabel = os.str();
             m_box_elevation->label(elelabel.c_str());
             break;
@@ -99,7 +100,7 @@ bool dlg_editselection::handle_ok_ex(std::vector<florb::tracklayer::waypoint>& w
     {
         case (florb::cfg_units::system::IMPERIAL):
         case (florb::cfg_units::system::NAUTICAL):
-            ele = unit::convert(unit::length::FOOT, unit::length::M, ele);
+            ele = florb::unit::convert(florb::unit::length::FOOT, florb::unit::length::M, ele);
             break;
         default:
             break;
