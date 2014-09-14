@@ -934,7 +934,7 @@ void florb::wgt_map::draw()
     }
 
     // Calculate delta viewport / viewport_off
-    int dpx_src = 0, dpy_src = 0, dpx_dst = 0, dpy_dst = 0;
+    int dpx_src = 0, dpy_src = 0, dpx_dst = 0, dpy_dst = 0, dpx_wgt = 0, dpy_wgt = 0;
     
     if (m_viewport_off.x() > m_viewport.x())
         dpx_dst = m_viewport_off.x() - m_viewport.x();
@@ -948,9 +948,9 @@ void florb::wgt_map::draw()
 
     // Additional delta if viewport smaller than map widget 
     if (w() > (int)m_viewport.w())
-        dpx_dst += (w() - (int)m_viewport.w())/2;
+        dpx_wgt = (w() - (int)m_viewport.w())/2;
     if (h() > (int)m_viewport.h())
-        dpy_dst += (h() - (int)m_viewport.h())/2;
+        dpy_wgt += (h() - (int)m_viewport.h())/2;
 
     // Fill the canvas in case it is not entirely covered by the viewport image
     // to be generated.
@@ -958,8 +958,8 @@ void florb::wgt_map::draw()
 
     // Draw offscreen onto widget
     fl_copy_offscreen(
-            x()+dpx_dst, 
-            y()+dpy_dst, 
+            x()+dpx_dst+dpx_wgt, 
+            y()+dpy_dst+dpy_wgt, 
             m_viewport_off.w()-((dpx_dst>dpx_src) ? dpx_dst : dpx_src), 
             m_viewport_off.h()-((dpy_dst>dpy_src) ? dpy_dst : dpy_src), 
             m_offscreen.buf(), 
