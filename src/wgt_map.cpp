@@ -883,25 +883,14 @@ void florb::wgt_map::draw()
     m_viewport.w((unsigned long)w());
     m_viewport.h((unsigned long)h());
 
-    // Check whether the master viewport is well within the offscreen viewport
-    viewport vp_tmp(m_viewport_off);
-    vp_tmp.intersect(m_viewport);
-
-    // No, it isn't, update the offscreen viewport
-    if (vp_tmp != m_viewport)
+    // Current offscreen viewport != viewport, regenerate
+    if (m_viewport_off != m_viewport)
         dirty(true);
 
     // Map is dirty, force redraw
     if (dirty() && !dragging())
     {
         m_viewport_off = m_viewport; 
-          
-#if 0
-        // We can't have a larger offscreen viewport atm because then the scale
-        // would always be drawn outside the visible area.
-        m_viewport_off.w(m_viewport.w()+256);
-        m_viewport_off.h(m_viewport.h()+256);
-#endif
         m_offscreen.resize(m_viewport_off.w(), m_viewport_off.h());
 
         m_offscreen.fgcolor(florb::color(0xc06e6e));
@@ -971,8 +960,8 @@ void florb::wgt_map::draw()
     fl_copy_offscreen(
             x()+dpx_dst, 
             y()+dpy_dst, 
-            m_viewport.w()-dpx_dst, 
-            m_viewport.h()-dpy_dst, 
+            m_viewport_off.w()-((dpx_dst>dpx_src) ? dpx_dst : dpx_src), 
+            m_viewport_off.h()-((dpy_dst>dpy_src) ? dpy_dst : dpy_src), 
             m_offscreen.buf(), 
             dpx_src, 
             dpy_src);
