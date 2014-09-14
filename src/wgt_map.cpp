@@ -888,7 +888,7 @@ void florb::wgt_map::draw()
     vp_tmp.intersect(m_viewport);
 
     // No, it isn't, update the offscreen viewport
-    if (vp_tmp < m_viewport)
+    if (vp_tmp != m_viewport)
         dirty(true);
 
     // Map is dirty, force redraw
