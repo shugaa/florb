@@ -310,14 +310,12 @@ void florb::wgt_map::basemap(
                 unsigned int parallel,
                 int imgtype)
 {
-    florb::osmlayer *lold = m_basemap;
-    m_basemap = NULL;
-
     // Destroy the orig
-    if (lold)
+    if (m_basemap)
     {
-        remove_event_listener(lold);
-        delete lold;
+        remove_event_listener(m_basemap);
+        delete m_basemap;
+        m_basemap = NULL;
     }
 
     // Create a new basemap layer
@@ -333,8 +331,6 @@ void florb::wgt_map::basemap(
 
     // Invalidate map buffer
     m_viewport_off.w(0);
-
-    // Redraw
     refresh();
 }
 
@@ -365,19 +361,16 @@ void florb::wgt_map::overlay(
 
 void florb::wgt_map::clear_overlay()
 {
-    florb::osmlayer *lold = m_overlay;
-    m_overlay = NULL;
-
     // Destroy the orig
-    if (lold)
+    if (m_overlay)
     {
-        remove_event_listener(lold);
-        delete lold;
+        remove_event_listener(m_overlay);
+        delete m_overlay;
+        m_overlay = NULL;
     }
 
     // Invalidate map buffer
     m_viewport_off.w(0);
-
     refresh();
 }
 
