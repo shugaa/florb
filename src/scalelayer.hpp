@@ -12,7 +12,7 @@ namespace florb
             scalelayer();
             ~scalelayer();
 
-            bool draw(const viewport &viewport, florb::canvas &os);
+            bool draw(const florb::viewport &viewport, florb::canvas &os);
         private:
     };
 };

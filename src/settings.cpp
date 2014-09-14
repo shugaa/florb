@@ -465,9 +465,9 @@ template florb::node& florb::node::operator=<std::string> (const std::string& rh
 template florb::node& florb::node::operator=< std::vector<florb::cfg_tileserver> > (const std::vector<florb::cfg_tileserver>& rhs);
 template florb::node& florb::node::operator=<florb::cfg_tileserver> (const florb::cfg_tileserver& rhs);
 template florb::node& florb::node::operator=<bool> (const bool& rhs);
-template florb::node& florb::node::operator=<florb::cfg_gpsd> (const cfg_gpsd& rhs);
-template florb::node& florb::node::operator=<florb::cfg_ui> (const cfg_ui& rhs);
-template florb::node& florb::node::operator=<florb::cfg_cache> (const cfg_cache& rhs);
-template florb::node& florb::node::operator=<florb::cfg_viewport> (const cfg_viewport& rhs);
-template florb::node& florb::node::operator=<florb::cfg_units> (const cfg_units& rhs);
+template florb::node& florb::node::operator=<florb::cfg_gpsd> (const florb::cfg_gpsd& rhs);
+template florb::node& florb::node::operator=<florb::cfg_ui> (const florb::cfg_ui& rhs);
+template florb::node& florb::node::operator=<florb::cfg_cache> (const florb::cfg_cache& rhs);
+template florb::node& florb::node::operator=<florb::cfg_viewport> (const florb::cfg_viewport& rhs);
+template florb::node& florb::node::operator=<florb::cfg_units> (const florb::cfg_units& rhs);
 

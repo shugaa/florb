@@ -19,7 +19,7 @@ namespace florb
             layer();
             virtual ~layer();
 
-            virtual bool draw(const viewport &viewport, florb::canvas &c) = 0;
+            virtual bool draw(const florb::viewport &viewport, florb::canvas &c) = 0;
             const std::string& name() const;
             void enable(bool en);
 
@@ -38,7 +38,7 @@ namespace florb
     class layer::event_mouse : public event_base
     {
         public:
-            event_mouse(const viewport& vp, int action, int button, florb::point2d<int> pos) :
+            event_mouse(const florb::viewport& vp, int action, int button, florb::point2d<int> pos) :
                 event_base(),
                 m_viewport(vp),
                 m_action(action),
@@ -47,7 +47,7 @@ namespace florb
         {};
             ~event_mouse() {}; 
 
-            const viewport& vp() const { return m_viewport; }; 
+            const florb::viewport& vp() const { return m_viewport; }; 
             int action() const { return m_action; };
             int button() const { return m_button; };
             florb::point2d<int> pos() const { return m_pos; };

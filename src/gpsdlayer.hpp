@@ -16,7 +16,7 @@ namespace florb
             gpsdlayer();
             ~gpsdlayer();
 
-            bool draw(const viewport &viewport, florb::canvas &os);
+            bool draw(const florb::viewport &viewport, florb::canvas &os);
 
             const florb::point2d<double> pos();
             double track(); 

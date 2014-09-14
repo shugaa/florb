@@ -25,7 +25,7 @@ namespace florb {
             bool handle_evt_mouse(const florb::layer::event_mouse* evt);
             bool handle_evt_key(const florb::layer::event_key* evt);
 
-            bool draw(const viewport& vp, florb::canvas& os);
+            bool draw(const florb::viewport& vp, florb::canvas& os);
             void load_track(const std::string &path);
             void save_track(const std::string &path);
             void clear_track();

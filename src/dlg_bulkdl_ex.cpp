@@ -295,7 +295,7 @@ void dlg_bulkdl::startdl_ex()
     // Generate a viewport for the respective zoom level. Every member
     // (x/y/w/h) is initialized separately to make use of the viewport's bounds
     // checking, which the constructor does not do (yet).
-    viewport vp_tmp(0,0,m_zoomlevels[levelidx],0,0);
+    florb::viewport vp_tmp(0,0,m_zoomlevels[levelidx],0,0);
     vp_tmp.w(((ppx2.x() - ppx1.x()) == 0) ? 1 : (ppx2.x() - ppx1.x()));
     vp_tmp.h(((ppx2.y() - ppx1.y()) == 0) ? 1 : (ppx2.y() - ppx1.y()));
     vp_tmp.x(ppx1.x());

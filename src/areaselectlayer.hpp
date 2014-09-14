@@ -18,7 +18,7 @@ namespace florb
             bool handle_evt_mouse(const layer::event_mouse* evt);
 
             void clear();
-            bool draw(const viewport &viewport, florb::canvas &os);
+            bool draw(const florb::viewport &viewport, florb::canvas &os);
         private:
 
             bool press(const layer::event_mouse* evt);
@@ -36,11 +36,11 @@ namespace florb
     class areaselectlayer::event_done : public event_base
     {
         public:
-            event_done(const viewport& vp) : m_vp(vp) {};
+            event_done(const florb::viewport& vp) : m_vp(vp) {};
             ~event_done() {};
 
-            void vp(const viewport& vp) {m_vp = vp;};
-            const viewport& vp() const { return m_vp; };
+            void vp(const florb::viewport& vp) {m_vp = vp;};
+            const florb::viewport& vp() const { return m_vp; };
         private:
             viewport m_vp;
     };

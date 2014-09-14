@@ -28,7 +28,7 @@ class dlg_bulkdl {open : {public event_listener}
   }
   decl {void cb_btn_download_ex(Fl_Widget *widget);} {private local
   }
-  decl {bool osm_evt_notify_ex(const florb::osmlayer::event_notify *e);} {selected private local
+  decl {bool osm_evt_notify_ex(const florb::osmlayer::event_notify *e);} {private local
   }
   decl {void startdl_ex();} {private local
   }
@@ -50,7 +50,7 @@ class dlg_bulkdl {open : {public event_listener}
   }
   decl {florb::wgt_map*m_wgtmap;} {private local
   }
-  decl {viewport m_vp;} {private local
+  decl {florb::viewport m_vp;} {private local
   }
   decl {std::vector<unsigned int> m_zoomlevels;} {private local
   }
@@ -63,8 +63,7 @@ class dlg_bulkdl {open : {public event_listener}
     code {dlg_bulkdl *dlg = static_cast<dlg_bulkdl*>(userdata);
 dlg->cb_btn_download_ex(widget);} {}
   }
-  Function {dlg_bulkdl(florb::wgt_map*m)} {open
-  } {
+  Function {dlg_bulkdl(florb::wgt_map*m)} {} {
     Fl_Window m_window {
       label {Bulk download} open
       private xywh {1702 246 380 190} type Double resizable modal size_range {380 190 0 0} visible
@@ -175,7 +174,7 @@ create_ex();} {}
     code {if (m_window)
     delete(m_window);} {}
   }
-  Function {show(const viewport& vp)} {open return_type bool
+  Function {show(const florb::viewport& vp)} {open selected return_type bool
   } {
     code {m_vp = vp;
 return show_ex();} {}

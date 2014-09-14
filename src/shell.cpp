@@ -10,13 +10,13 @@
 #include "utils.hpp"
 #include "shell.hpp"
 
-shell::shell() :
+florb::shell::shell() :
     m_pid(-1),
     m_exitstatus(false)
 {
 };
 
-shell::~shell()
+florb::shell::~shell()
 {
     if (m_pid > 0)
     {
@@ -24,7 +24,7 @@ shell::~shell()
     }
 };
 
-bool shell::run(const std::string& cmd)
+bool florb::shell::run(const std::string& cmd)
 {
     // Reset exit status for subsequet runs
     m_exitstatus = false;
@@ -84,7 +84,7 @@ bool shell::run(const std::string& cmd)
     return true;
 }
 
-bool shell::wait()
+bool florb::shell::wait()
 {
     // Already exited, not started or child
     if (m_pid <= 0)
@@ -118,7 +118,7 @@ bool shell::wait()
     return m_exitstatus;
 }
 
-bool shell::readln(std::string& str)
+bool florb::shell::readln(std::string& str)
 {
     bool ok = true;
 
@@ -209,7 +209,7 @@ bool shell::readln(std::string& str)
     return ok;
 }
 
-void shell::child()
+void florb::shell::child()
 {
     int rc;
 

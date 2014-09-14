@@ -22,8 +22,8 @@ namespace florb
                     unsigned int parallel,
                     int imgtype);
             ~osmlayer();
-            bool draw(const viewport &vp, florb::canvas &c);
-            bool download(const viewport& vp, double& coverage);
+            bool draw(const florb::viewport &vp, florb::canvas &c);
+            bool download(const florb::viewport& vp, double& coverage);
             void nice(long ms);
 
             int zoom_min() { return m_zmin; };
@@ -57,7 +57,7 @@ namespace florb
             static void cb_download(void *userdata);
             void process_downloads();
 
-            bool drawvp(const viewport &viewport, florb::canvas *c, unsigned long *ttotal, unsigned long *tnok);
+            bool drawvp(const florb::viewport &viewport, florb::canvas *c, unsigned long *ttotal, unsigned long *tnok);
             void download_qtile(int z, int x, int y);
             bool evt_downloadcomplete(const florb::downloader::event_complete *e);
     };

@@ -15,7 +15,7 @@ void dlg_garminul::show_ex()
 {
     m_choice_device->clear();
 
-    shell sh;
+    florb::shell sh;
     sh.run("gpsbabel -i garmin -f usb:-1");
     std::string tmp;
     while(sh.readln(tmp))
@@ -70,7 +70,7 @@ void dlg_garminul::cb_btn_upload_ex(Fl_Widget *widget)
     int idx = m_choice_device->value();
     os << "gpsbabel -t -i gpx -f " << m_path << " -x track,title=\"" << m_input_title->value() << "\" -o garmin -F usb:" << idx;
 
-    shell sh;
+    florb::shell sh;
     sh.run(os.str());
 
     std::string line;

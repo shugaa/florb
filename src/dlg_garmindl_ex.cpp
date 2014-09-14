@@ -20,7 +20,7 @@ void dlg_garmindl::create_ex()
 
 bool dlg_garmindl::show_ex()
 {
-    shell sh;
+    florb::shell sh;
     sh.run("gpsbabel -i garmin -f usb:-1");
 
     m_choice_device->clear();
@@ -84,7 +84,7 @@ void dlg_garmindl::cb_btn_download_ex(Fl_Widget *widget)
     int idx = m_choice_device->value();
     os << "gpsbabel -vs -t -i garmin -f usb:" << idx << " -x track,name=\"ACTIVE*\" -o gpx -F " << m_path;
 
-    shell sh;
+    florb::shell sh;
     sh.run(os.str());
 
     std::string line;

@@ -15,7 +15,7 @@ namespace florb
 
             class event_notify;
 
-            bool draw(const viewport &viewport, florb::canvas &os);
+            bool draw(const florb::viewport &viewport, florb::canvas &os);
 
             size_t add(const florb::point2d<double> &pmerc);
             void add(const florb::point2d<double> &pmerc, size_t id);

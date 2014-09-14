@@ -156,10 +156,10 @@ namespace florb
     class wgt_map::event_endselect : public event_base
     {
         public:
-            event_endselect(const viewport& vp) : m_vp(vp) {};
+            event_endselect(const florb::viewport& vp) : m_vp(vp) {};
             ~event_endselect() {};
 
-            const viewport& vp() const { return m_vp; };
+            const florb::viewport& vp() const { return m_vp; };
         private:
             viewport m_vp;
     };

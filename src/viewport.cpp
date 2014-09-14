@@ -5,11 +5,11 @@
 #include "viewport.hpp"
 #include "utils.hpp"
 
-viewport::viewport(unsigned long w, unsigned long h)
+florb::viewport::viewport(unsigned long w, unsigned long h)
 {
     // See which zoomlevel fits best for the size request
     m_dim = 0;
-    for (m_z=ZMIN;m_z<=ZMAX;m_z++)
+    for (m_z=florb::viewport::ZMIN;m_z<=florb::viewport::ZMAX;m_z++)
     {
         m_dim = florb::utils::dim(m_z);
 
@@ -25,7 +25,7 @@ viewport::viewport(unsigned long w, unsigned long h)
     m_y = (m_dim <= m_h) ? 0 : (m_dim-m_h)/2;
 };
 
-viewport::viewport(unsigned long x, unsigned long y, unsigned int z, unsigned long w, unsigned long h) :
+florb::viewport::viewport(unsigned long x, unsigned long y, unsigned int z, unsigned long w, unsigned long h) :
     m_x(x), 
     m_y(y), 
     m_z(z), 
@@ -35,7 +35,7 @@ viewport::viewport(unsigned long x, unsigned long y, unsigned int z, unsigned lo
 {
 };
 
-viewport::viewport() :
+florb::viewport::viewport() :
     m_x(0), 
     m_y(0), 
     m_z(0), 
@@ -45,11 +45,11 @@ viewport::viewport() :
 {
 };
 
-viewport::~viewport()
+florb::viewport::~viewport()
 {
 };
 
-void viewport::intersect(const viewport& vp)
+void florb::viewport::intersect(const florb::viewport& vp)
 {
    // Zoom level different, there can be no intersection
    if (z() != vp.z()) {
@@ -83,7 +83,7 @@ void viewport::intersect(const viewport& vp)
    m_h = ((ay2 < by2) ? (ay2 - m_y) : (by2 - m_y));
 }
 
-void viewport::move(long dx, long dy)
+void florb::viewport::move(long dx, long dy)
 {
     // Move in x direction
     if (dx >= 0)
@@ -109,7 +109,7 @@ void viewport::move(long dx, long dy)
        m_y = m_dim - m_h;
 };
 
-void viewport::x(unsigned long x)
+void florb::viewport::x(unsigned long x)
 {
    m_x = x;
    
@@ -118,7 +118,7 @@ void viewport::x(unsigned long x)
        m_x = m_dim - m_w;
 }
 
-void viewport::y(unsigned long y)
+void florb::viewport::y(unsigned long y)
 {
    m_y = y;
 
@@ -127,7 +127,7 @@ void viewport::y(unsigned long y)
        m_y = m_dim - m_h;
 }
 
-void viewport::w(unsigned long w)
+void florb::viewport::w(unsigned long w)
 {
    // Viewport can not be larger than the map
    if (w > m_dim)
@@ -149,7 +149,7 @@ void viewport::w(unsigned long w)
       m_x = m_dim - m_w;
 }
 
-void viewport::h(unsigned long h)
+void florb::viewport::h(unsigned long h)
 {
    // Viewport can not be larger than the map
    if (h > m_dim)
@@ -171,12 +171,12 @@ void viewport::h(unsigned long h)
       m_y = m_dim - m_h;
 }
 
-void viewport::z(unsigned int z, unsigned long x, unsigned long y)
+void florb::viewport::z(unsigned int z, unsigned long x, unsigned long y)
 {
    // Invalid zoom values
-   if (z > ZMAX)
+   if (z > florb::viewport::ZMAX)
       return;
-   if (z < ZMIN)
+   if (z < florb::viewport::ZMIN)
       return;
 
    // Coordinates outside viewport
@@ -213,7 +213,7 @@ void viewport::z(unsigned int z, unsigned long x, unsigned long y)
       m_y = m_dim - m_h;
 }
 
-bool viewport::cmp(const viewport& vp) 
+bool florb::viewport::cmp(const florb::viewport& vp) 
 {
     if (vp.m_x != m_x)
         return false;
