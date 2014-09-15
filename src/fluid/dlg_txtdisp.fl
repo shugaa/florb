@@ -8,9 +8,14 @@ code_name {.cxx}
 decl {\#include <FL/Fl_Text_Buffer.H>} {public global
 } 
 
-class dlg_about {open
+decl {\#include <string>} {public global
+} 
+
+class dlg_txtdisp {open
 } {
   decl {Fl_Text_Buffer *m_buf;} {private local
+  }
+  decl {std::string m_title;} {selected private local
   }
   decl {void create_ex();} {private local
   }
@@ -18,11 +23,16 @@ class dlg_about {open
   }
   decl {void show_ex();} {private local
   }
-  Function {dlg_about()} {open
+  decl {void clear_ex();} {private local
+  }
+  decl {void title_ex(const std::string& t);} {private local
+  }
+  decl {void append_ex(const std::string& s);} {private local
+  }
+  Function {dlg_txtdisp()} {open
   } {
-    Fl_Window m_window {
-      label {About / License} open
-      private xywh {2169 240 500 295} type Double resizable modal size_range {500 295 0 0} visible
+    Fl_Window m_window {open
+      private xywh {1531 292 500 295} type Double resizable modal size_range {500 295 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 500 297} resizable
@@ -36,7 +46,7 @@ class dlg_about {open
           Fl_Box {} {
             private xywh {0 5 5 250}
           }
-          Fl_Text_Display m_display {selected
+          Fl_Text_Display m_display {
             private xywh {5 5 490 250} box BORDER_BOX textfont 4 resizable
           }
           Fl_Box {} {
@@ -83,11 +93,23 @@ class dlg_about {open
     }
     code {create_ex();} {}
   }
-  Function {~dlg_about()} {} {
+  Function {~dlg_txtdisp()} {} {
     code {destroy_ex();} {}
   }
   Function {show()} {return_type void
   } {
     code {show_ex();} {}
+  }
+  Function {clear()} {return_type void
+  } {
+    code {clear_ex();} {}
+  }
+  Function {append(const std::string& s)} {return_type void
+  } {
+    code {append_ex(s);} {}
+  }
+  Function {title(const std::string& t)} {open return_type void
+  } {
+    code {title_ex(t);} {}
   }
 } 

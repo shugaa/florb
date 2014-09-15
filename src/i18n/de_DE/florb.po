@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-02 19:23+0200\n"
-"PO-Revision-Date: 2014-08-24 21:07+0100\n"
+"POT-Creation-Date: 2014-09-15 21:17+0200\n"
+"PO-Revision-Date: 2014-09-15 21:18+0100\n"
 "Last-Translator: Björn Rehm <bjoern@shugaa.de>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -23,11 +23,11 @@ msgstr ""
 msgid "A tile server with the same name already exists."
 msgstr "Ein gleichnamiger Kachelserver existiert bereits."
 
-#: dlg_ui_ex.cpp:169
+#: dlg_ui_ex.cpp:177
 msgid "About"
 msgstr "Über florb"
 
-#: fluid/dlg_about.cpp:7
+#: fluid/dlg_txtdisp.cpp:7
 msgid "About / License"
 msgstr "Über florb / Lizenz"
 
@@ -39,7 +39,7 @@ msgstr "Kachelserver hinzufügen"
 msgid "Add tileserver"
 msgstr "Kachelserver hinzufügen"
 
-#: fluid/dlg_ui.cpp:940
+#: fluid/dlg_ui.cpp:942
 msgid "Base"
 msgstr "Basiskarte"
 
@@ -69,11 +69,11 @@ msgstr "Cache-Fehler: PUT"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: dlg_ui_ex.cpp:156
+#: dlg_ui_ex.cpp:164
 msgid "Clear"
 msgstr "Track löschen"
 
-#: fluid/dlg_ui.cpp:867
+#: fluid/dlg_ui.cpp:869
 msgid "Clear current track"
 msgstr "Track löschen"
 
@@ -81,7 +81,7 @@ msgstr "Track löschen"
 msgid "Delay [ms]"
 msgstr "Verzögerung [ms]"
 
-#: dlg_ui_ex.cpp:158 fluid/dlg_ui.cpp:887
+#: dlg_ui_ex.cpp:166 fluid/dlg_ui.cpp:889
 msgid "Delete waypoints"
 msgstr "Wegpunkte löschen"
 
@@ -113,11 +113,11 @@ msgstr "Download fehlgeschlagen!"
 msgid "Download OK"
 msgstr "Download OK"
 
-#: dlg_ui_ex.cpp:160
+#: dlg_ui_ex.cpp:168
 msgid "Download from device"
 msgstr "Von Gerät herunterladen"
 
-#: dlg_ui_ex.cpp:151 fluid/dlg_settings.cpp:326 fluid/dlg_settings.cpp:350
+#: dlg_ui_ex.cpp:159 fluid/dlg_settings.cpp:326 fluid/dlg_settings.cpp:350
 #: fluid/dlg_settings.cpp:374 fluid/dlg_settings.cpp:398
 #: fluid/dlg_settings.cpp:422
 msgid "Edit"
@@ -131,11 +131,11 @@ msgstr "Kachelserver bearbeiten"
 msgid "Edit tileserver"
 msgstr "Kachelserver bearbeiten"
 
-#: dlg_ui_ex.cpp:157 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:877
+#: dlg_ui_ex.cpp:165 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:879
 msgid "Edit waypoints"
 msgstr "Wegpunkte bearbeiten"
 
-#: fluid/dlg_editselection.cpp:42 dlg_editselection_ex.cpp:25
+#: fluid/dlg_editselection.cpp:42 dlg_editselection_ex.cpp:32
 msgid "Elevation"
 msgstr "Höhe"
 
@@ -147,7 +147,7 @@ msgstr "Höhe [m]"
 msgid "Elevation profile"
 msgstr "Höhenprofil"
 
-#: dlg_eleprofile_ex.cpp:74
+#: dlg_eleprofile_ex.cpp:75
 msgid "Elevation: "
 msgstr "Höhe: "
 
@@ -179,11 +179,11 @@ msgstr "Konnte Downloader nicht starten"
 msgid "Failure parsing zoomlevel description."
 msgstr "Fehler in der Zoomstufen-Beschreibung"
 
-#: dlg_ui_ex.cpp:146
+#: dlg_ui_ex.cpp:154
 msgid "File"
 msgstr "Datei"
 
-#: dlg_ui_ex.cpp:117 dlg_ui_ex.cpp:179
+#: dlg_ui_ex.cpp:125 dlg_ui_ex.cpp:188
 msgid "GPS"
 msgstr "GPS"
 
@@ -191,11 +191,11 @@ msgstr "GPS"
 msgid "GPS cursor color"
 msgstr "Farbe GPS cursor"
 
-#: dlg_ui_ex.cpp:163 fluid/dlg_settings.cpp:452
+#: dlg_ui_ex.cpp:171 fluid/dlg_settings.cpp:452
 msgid "GPSd"
 msgstr "GPSd"
 
-#: wgt_map.cpp:278
+#: gpsdclient.cpp:16
 msgid "GPSd error"
 msgstr "GPSd Fehler"
 
@@ -203,11 +203,11 @@ msgstr "GPSd Fehler"
 msgid "GPX error"
 msgstr "GPX Fehler"
 
-#: dlg_ui_ex.cpp:164 fluid/dlg_ui.cpp:903
+#: dlg_ui_ex.cpp:172 fluid/dlg_ui.cpp:905
 msgid "Go to cursor"
 msgstr "Gehe zu Position"
 
-#: dlg_ui_ex.cpp:168
+#: dlg_ui_ex.cpp:176
 msgid "Help"
 msgstr "Hilfe"
 
@@ -247,7 +247,7 @@ msgstr "Ungültige Umwandlung"
 msgid "Invalid zoomlevel specified for this map."
 msgstr "Ungültige Zoomstufe für diese Karte"
 
-#: dlg_ui_ex.cpp:74
+#: dlg_ui_ex.cpp:82
 msgid "Lat: "
 msgstr "Breite: "
 
@@ -259,7 +259,7 @@ msgstr "Breite"
 msgid "Latitude [°]"
 msgstr "Breite [°]"
 
-#: fluid/dlg_ui.cpp:841
+#: fluid/dlg_ui.cpp:843
 msgid "Load GPX file"
 msgstr "GPX laden"
 
@@ -267,11 +267,11 @@ msgstr "GPX laden"
 msgid "Location"
 msgstr "Verzeichnis"
 
-#: dlg_ui_ex.cpp:166 fluid/dlg_ui.cpp:913
+#: dlg_ui_ex.cpp:174 fluid/dlg_ui.cpp:915
 msgid "Lock to cursor"
 msgstr "Position folgen"
 
-#: dlg_ui_ex.cpp:70
+#: dlg_ui_ex.cpp:78
 msgid "Lon: "
 msgstr "Länge: "
 
@@ -303,7 +303,7 @@ msgstr "Markerfehler"
 msgid "Max. z"
 msgstr "Max. z"
 
-#: fluid/dlg_ui.cpp:821
+#: fluid/dlg_ui.cpp:823
 msgid "Menu"
 msgstr "Menü"
 
@@ -331,22 +331,22 @@ msgstr "Nautisch"
 msgid "No devices found"
 msgstr "Keine Geräte gefunden"
 
-#: dlg_ui_ex.cpp:199
+#: dlg_ui_ex.cpp:208
 msgid "None"
 msgstr "Kein"
 
 #: fluid/dlg_eleprofile.cpp:71 fluid/dlg_bulkdl.cpp:86
 #: fluid/dlg_settings.cpp:643 fluid/dlg_tileserver.cpp:127
 #: fluid/dlg_garminul.cpp:74 fluid/dlg_editselection.cpp:76
-#: fluid/dlg_about.cpp:47 fluid/dlg_garmindl.cpp:65 fluid/dlg_search.cpp:67
+#: fluid/dlg_garmindl.cpp:65 fluid/dlg_search.cpp:67 fluid/dlg_txtdisp.cpp:47
 msgid "OK"
 msgstr "OK"
 
-#: dlg_ui_ex.cpp:147
+#: dlg_ui_ex.cpp:155
 msgid "Open GPX"
 msgstr "GPX laden"
 
-#: fluid/dlg_ui.cpp:949
+#: fluid/dlg_ui.cpp:951
 msgid "Overlay"
 msgstr "Overlay"
 
@@ -362,11 +362,11 @@ msgstr "Bitte eine URL für diesen Server angeben!"
 msgid "Port"
 msgstr "Port"
 
-#: dlg_ui_ex.cpp:149
+#: dlg_ui_ex.cpp:157
 msgid "Quit"
 msgstr "Beenden"
 
-#: dlg_ui_ex.cpp:165 fluid/dlg_ui.cpp:924
+#: dlg_ui_ex.cpp:173 fluid/dlg_ui.cpp:926
 msgid "Record track"
 msgstr "Track aufzeichnen"
 
@@ -374,11 +374,11 @@ msgstr "Track aufzeichnen"
 msgid "Remove tileserver"
 msgstr "Kachelserver löschen"
 
-#: dlg_ui_ex.cpp:148
+#: dlg_ui_ex.cpp:156
 msgid "Save GPX as"
 msgstr "GPX speichern unter"
 
-#: fluid/dlg_ui.cpp:851
+#: fluid/dlg_ui.cpp:853
 msgid "Save current track"
 msgstr "GPX speichern unter"
 
@@ -386,7 +386,7 @@ msgstr "GPX speichern unter"
 msgid "Scale error"
 msgstr "Maßstabfehler"
 
-#: dlg_ui_ex.cpp:153 fluid/dlg_search.cpp:7 fluid/dlg_search.cpp:26
+#: dlg_ui_ex.cpp:161 fluid/dlg_search.cpp:7 fluid/dlg_search.cpp:26
 msgid "Search"
 msgstr "Suchen"
 
@@ -398,11 +398,11 @@ msgstr "Cache Verzeichnis auswählen"
 msgid "Select color"
 msgstr "Farbe wählen"
 
-#: dlg_ui_ex.cpp:329
+#: dlg_ui_ex.cpp:338
 msgid "Select download area"
 msgstr "Bereich für Download wählen"
 
-#: dlg_ui_ex.cpp:328
+#: dlg_ui_ex.cpp:337
 msgid "Select the desired area on the map now"
 msgstr "Jetzt den gewünschten Bereich auf der Karte wählen"
 
@@ -418,11 +418,11 @@ msgstr "Auswahlfehler"
 msgid "Server"
 msgstr "Server"
 
-#: dlg_ui_ex.cpp:152 fluid/dlg_settings.cpp:298
+#: dlg_ui_ex.cpp:160 fluid/dlg_settings.cpp:298
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: dlg_ui_ex.cpp:159
+#: dlg_ui_ex.cpp:167
 msgid "Show waypoint markers"
 msgstr "Zeige Wegpunktmarkierungen"
 
@@ -430,7 +430,7 @@ msgstr "Zeige Wegpunktmarkierungen"
 msgid "Sim. downloads"
 msgstr "Gleichz. Downl."
 
-#: fluid/dlg_ui.cpp:970
+#: fluid/dlg_ui.cpp:972
 msgid "Slippy Map"
 msgstr "Kartenansicht"
 
@@ -438,7 +438,7 @@ msgstr "Kartenansicht"
 msgid "Tileservers"
 msgstr "Kachelserver"
 
-#: dlg_ui_ex.cpp:155
+#: dlg_ui_ex.cpp:163
 msgid "Track"
 msgstr "Track"
 
@@ -454,7 +454,7 @@ msgstr "Breite Track"
 msgid "Track title"
 msgstr "Track Name"
 
-#: dlg_ui_ex.cpp:94 dlg_eleprofile_ex.cpp:70
+#: dlg_ui_ex.cpp:102 dlg_eleprofile_ex.cpp:71
 msgid "Trip: "
 msgstr "Strecke: "
 
@@ -478,9 +478,13 @@ msgstr "Hochladen fehlgeschlagen!"
 msgid "Upload OK"
 msgstr "Hochladen OK"
 
-#: dlg_ui_ex.cpp:161
+#: dlg_ui_ex.cpp:169
 msgid "Upload to device"
 msgstr "Hochladen auf Gerät"
+
+#: dlg_ui_ex.cpp:178
+msgid "Usage"
+msgstr "Bedienung"
 
 #: fluid/dlg_eleprofile.cpp:7
 msgid "View elevation profile"
@@ -494,11 +498,11 @@ msgstr "Zoom "
 msgid "Zoom levels"
 msgstr "Zoomstufen"
 
-#: dlg_ui_ex.cpp:62
+#: dlg_ui_ex.cpp:70
 msgid "Zoom: "
 msgstr "Zoom: "
 
-#: fluid/dlg_ui.cpp:817
+#: fluid/dlg_ui.cpp:819
 msgid "florb"
 msgstr "florb"
 

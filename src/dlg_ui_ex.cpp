@@ -11,6 +11,18 @@
 #include "utils.hpp"
 #include "unit.hpp"
 #include "fluid/dlg_ui.hpp"
+#include "version.hpp"
+
+extern "C" 
+{
+    extern char _binary_res_LICENSE_txt_start;
+    extern char _binary_res_LICENSE_txt_end;
+    extern char _binary_res_LICENSE_txt_size;
+
+    extern char _binary_res_KEYS_txt_start;
+    extern char _binary_res_KEYS_txt_end;
+    extern char _binary_res_KEYS_txt_size;
+}
 
 static dlg_ui *ui;
 
@@ -167,6 +179,7 @@ void dlg_ui::create_ex(void)
     // Help
     m_menuitem_help->label(_("Help"));
     m_menuitem_help_about->label(_("About"));
+    m_menuitem_help_usage->label(_("Usage"));
 
     // Populate the Basemap selector
     update_choice_map_ex();
@@ -472,11 +485,35 @@ void dlg_ui::search_ex()
 void dlg_ui::about_ex()
 {
     // Show about dialog
-    if (!m_dlg_about)
-        m_dlg_about = new dlg_about;
+    if (!m_dlg_txtdisp)
+        m_dlg_txtdisp = new dlg_txtdisp;
 
-    m_dlg_about->show();
+    std::string v(std::string(_("Version: ")) + std::string(FLORB_PROGSTR));
+    std::string l(&_binary_res_LICENSE_txt_start, (size_t)&_binary_res_LICENSE_txt_size);
+
+    m_dlg_txtdisp->title(_("About / License"));
+    m_dlg_txtdisp->clear();
+    m_dlg_txtdisp->append(v);
+    m_dlg_txtdisp->append("\n\n");
+    m_dlg_txtdisp->append(l);
+
+    m_dlg_txtdisp->show();
 }
+void dlg_ui::usage_ex()
+{
+    // Show about dialog
+    if (!m_dlg_txtdisp)
+        m_dlg_txtdisp = new dlg_txtdisp;
+
+    std::string u(&_binary_res_KEYS_txt_start, (size_t)&_binary_res_KEYS_txt_size);
+
+    m_dlg_txtdisp->title(_("Usage"));
+    m_dlg_txtdisp->clear();
+    m_dlg_txtdisp->append(u);
+
+    m_dlg_txtdisp->show();
+}
+
 
 void dlg_ui::cb_btn_loadtrack_ex(Fl_Widget *widget)
 {
@@ -665,6 +702,9 @@ void dlg_ui::cb_menu_ex(Fl_Widget *widget)
     else if (mit == m_menuitem_help_about) { 
         about_ex();
     }
+    else if (mit == m_menuitem_help_usage) { 
+        usage_ex();
+    }
 
     m_wgtmap->take_focus();
 }
@@ -690,7 +730,7 @@ void dlg_ui::hide_ex()
     if (m_dlg_search)           delete m_dlg_search;
     if (m_dlg_editselection)    delete m_dlg_editselection;
     if (m_dlg_settings)         delete m_dlg_settings;
-    if (m_dlg_about)            delete m_dlg_about;
+    if (m_dlg_txtdisp)          delete m_dlg_txtdisp;
     if (m_dlg_bulkdl)           delete m_dlg_bulkdl;
     if (m_dlg_eleprofile)       delete m_dlg_eleprofile;
 

@@ -14,7 +14,7 @@ decl {\#include <curl/curl.h>} {private global
 decl {\#include "dlg_ui.hpp"} {private global
 } 
 
-decl {\#include "wgt_map.hpp"} {selected public global
+decl {\#include "wgt_map.hpp"} {public global
 } 
 
 decl {\#include "event.hpp"} {public global
@@ -35,7 +35,7 @@ decl {\#include "dlg_editselection.hpp"} {public global
 decl {\#include "dlg_settings.hpp"} {public global
 } 
 
-decl {\#include "dlg_about.hpp"} {public global
+decl {\#include "dlg_txtdisp.hpp"} {public global
 } 
 
 decl {\#include "dlg_bulkdl.hpp"} {public global
@@ -62,7 +62,7 @@ class dlg_ui {open : {public event_listener}
   }
   decl {dlg_editselection *m_dlg_editselection;} {private local
   }
-  decl {dlg_about *m_dlg_about;} {private local
+  decl {dlg_txtdisp *m_dlg_txtdisp;} {private local
   }
   decl {dlg_bulkdl *m_dlg_bulkdl;} {private local
   }
@@ -93,6 +93,8 @@ class dlg_ui {open : {public event_listener}
   decl {void search_ex(void);} {private local
   }
   decl {void about_ex(void);} {private local
+  }
+  decl {void usage_ex(void);} {selected private local
   }
   decl {void update_choice_map_ex(void);} {private local
   }
@@ -204,8 +206,8 @@ ui->cb_choice_overlay_ex(widget);} {}
     Fl_Window m_window {
       label florb
       user_data this
-      callback cb_close
-      private xywh {1441 232 805 565} type Double align 80 resizable size_range {605 465 0 0} visible
+      callback cb_close open
+      private xywh {1524 220 805 565} type Double align 80 resizable size_range {605 465 0 0} visible
     } {
       Fl_Pack {} {open
         private xywh {0 0 805 565} resizable
@@ -307,6 +309,10 @@ ui->cb_choice_overlay_ex(widget);} {}
             MenuItem m_menuitem_help_about {
               label About
               private xywh {0 0 100 20}
+            }
+            MenuItem m_menuitem_help_usage {
+              label Usage
+              private xywh {10 10 100 20}
             }
           }
         }
