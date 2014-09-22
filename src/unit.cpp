@@ -31,7 +31,7 @@ double florb::unit::gen_convert(int src, int dst, double val, const florb::unit:
     // Convert src to base unit
     for (size_t i=0;i<len;i++)
     {
-        if (m_conv_length[i].dst == src)
+        if (sc[i].dst == src)
         {
             val *= sc[i].fac;
             break;
@@ -42,7 +42,7 @@ double florb::unit::gen_convert(int src, int dst, double val, const florb::unit:
     bool found = false;
     for (size_t i=0;i<len;i++)
     {
-        if (m_conv_length[i].dst == dst)
+        if (sc[i].dst == dst)
         {
             val /= sc[i].fac;
             found = true;
