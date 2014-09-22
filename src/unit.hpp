@@ -24,7 +24,7 @@ namespace florb
             };
 
             static double convert(florb::unit::length src, florb::unit::length dst, double val);
-            static std::string sistr(length spec);
+            static std::string sistr(florb::unit::length spec);
 
         private:
 
