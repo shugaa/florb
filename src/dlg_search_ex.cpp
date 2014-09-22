@@ -114,6 +114,10 @@ void dlg_search::cb_window_ex(Fl_Widget *widget)
 
 void dlg_search::show_ex()
 {
+    // Focus on query input
+    m_input_query->position(0, std::string(m_input_query->value()).length());
+    m_input_query->take_focus();
+
     // Show the window
     m_window->show();
 }
