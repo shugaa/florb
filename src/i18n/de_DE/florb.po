@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-15 21:17+0200\n"
-"PO-Revision-Date: 2014-09-15 21:18+0100\n"
+"POT-Creation-Date: 2014-09-25 16:30+0200\n"
+"PO-Revision-Date: 2014-09-25 16:31+0100\n"
 "Last-Translator: Björn Rehm <bjoern@shugaa.de>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -19,15 +19,106 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.5.4\n"
 
+#: res/LICENSE.res:1
+msgid "Copyright (c) 2014, Björn Rehm (bjoern@shugaa.de)"
+msgstr "Copyright (c) 2014, Björn Rehm (bjoern@shugaa.de)"
+
+#: res/LICENSE.res:3
+msgid ""
+"Permission is hereby granted, free of charge, to any person obtaining a "
+"copy\n"
+"of this software and associated documentation files (the \"Software\"), to "
+"deal\n"
+"in the Software without restriction, including without limitation the "
+"rights\n"
+"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+"copies of the Software, and to permit persons to whom the Software is\n"
+"furnished to do so, subject to the following conditions:"
+msgstr ""
+"Permission is hereby granted, free of charge, to any person obtaining a "
+"copy\n"
+"of this software and associated documentation files (the \"Software\"), to "
+"deal\n"
+"in the Software without restriction, including without limitation the "
+"rights\n"
+"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+"copies of the Software, and to permit persons to whom the Software is\n"
+"furnished to do so, subject to the following conditions:"
+
+#: res/LICENSE.res:10
+msgid ""
+"The above copyright notice and this permission notice shall be included in\n"
+"all copies or substantial portions of the Software."
+msgstr ""
+"The above copyright notice and this permission notice shall be included in\n"
+"all copies or substantial portions of the Software."
+
+#: res/LICENSE.res:13
+msgid ""
+"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
+"OR\n"
+"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING "
+"FROM,\n"
+"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
+"THE SOFTWARE."
+msgstr ""
+"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
+"OR\n"
+"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING "
+"FROM,\n"
+"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
+"THE SOFTWARE."
+
+#: res/KEYS.res:1
+msgid "Map motion:"
+msgstr "Karte bewegen:"
+
+#: res/KEYS.res:3
+msgid ""
+"    * Use the arrow keys (UP / DOWN / RIGHT / LEFT) to move the map or\n"
+"    * hold the right mouse button and drag\n"
+"    * Use the + and - keys to zoom or\n"
+"    * scroll to zoom"
+msgstr ""
+"    * Benutze die Pfeiltasten (OBEN / UNTEN / LINKS / RECHTS) um die Karte "
+"zu bewegen oder\n"
+"    * bewege die Karte mit der Maus (rechte Maustaste halten)\n"
+"    * Benutze die + und - Tasten zum Zoomen oder\n"
+"    * benutze das Scrollrad an Maus / Trackpad"
+
+#: res/KEYS.res:8
+msgid "Editing trackpoints:"
+msgstr "Wegpunkte bearbeiten:"
+
+#: res/KEYS.res:10
+msgid ""
+"    * Left-click the map to define a new trackpoint\n"
+"    * Hold the left mouse button on a trackpoint to drag it\n"
+"    * Left-click any trackpoint to select it\n"
+"    * Left-click and drag to select multiple trackpoints\n"
+"    * Hit DEL to delete selected trackpoints"
+msgstr ""
+"    * Klicke mit links um einen Wegpunkt zu definieren\n"
+"    * Halte die linke Maustaste gedrückt, um einen Wegpunkt zu verschieben\n"
+"    * Zum Auswählen klicke mit links auf einen Wegpunkt\n"
+"    * Klicke mit links und ziehe um mehrere Wegpunkte auszuwählen\n"
+"    * Drücke ENTF um ausgewählte Wegpunkte zu löschen"
+
 #: dlg_tileserver_ex.cpp:97
 msgid "A tile server with the same name already exists."
 msgstr "Ein gleichnamiger Kachelserver existiert bereits."
 
-#: dlg_ui_ex.cpp:177
+#: dlg_ui_ex.cpp:181
 msgid "About"
 msgstr "Über florb"
 
-#: fluid/dlg_txtdisp.cpp:7
+#: dlg_ui_ex.cpp:494
 msgid "About / License"
 msgstr "Über florb / Lizenz"
 
@@ -69,7 +160,7 @@ msgstr "Cache-Fehler: PUT"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: dlg_ui_ex.cpp:164
+#: dlg_ui_ex.cpp:168
 msgid "Clear"
 msgstr "Track löschen"
 
@@ -81,7 +172,7 @@ msgstr "Track löschen"
 msgid "Delay [ms]"
 msgstr "Verzögerung [ms]"
 
-#: dlg_ui_ex.cpp:166 fluid/dlg_ui.cpp:889
+#: dlg_ui_ex.cpp:170 fluid/dlg_ui.cpp:889
 msgid "Delete waypoints"
 msgstr "Wegpunkte löschen"
 
@@ -113,11 +204,11 @@ msgstr "Download fehlgeschlagen!"
 msgid "Download OK"
 msgstr "Download OK"
 
-#: dlg_ui_ex.cpp:168
+#: dlg_ui_ex.cpp:172
 msgid "Download from device"
 msgstr "Von Gerät herunterladen"
 
-#: dlg_ui_ex.cpp:159 fluid/dlg_settings.cpp:326 fluid/dlg_settings.cpp:350
+#: dlg_ui_ex.cpp:163 fluid/dlg_settings.cpp:326 fluid/dlg_settings.cpp:350
 #: fluid/dlg_settings.cpp:374 fluid/dlg_settings.cpp:398
 #: fluid/dlg_settings.cpp:422
 msgid "Edit"
@@ -131,7 +222,7 @@ msgstr "Kachelserver bearbeiten"
 msgid "Edit tileserver"
 msgstr "Kachelserver bearbeiten"
 
-#: dlg_ui_ex.cpp:165 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:879
+#: dlg_ui_ex.cpp:169 fluid/dlg_editselection.cpp:8 fluid/dlg_ui.cpp:879
 msgid "Edit waypoints"
 msgstr "Wegpunkte bearbeiten"
 
@@ -179,11 +270,11 @@ msgstr "Konnte Downloader nicht starten"
 msgid "Failure parsing zoomlevel description."
 msgstr "Fehler in der Zoomstufen-Beschreibung"
 
-#: dlg_ui_ex.cpp:154
+#: dlg_ui_ex.cpp:158
 msgid "File"
 msgstr "Datei"
 
-#: dlg_ui_ex.cpp:125 dlg_ui_ex.cpp:188
+#: dlg_ui_ex.cpp:129 dlg_ui_ex.cpp:192
 msgid "GPS"
 msgstr "GPS"
 
@@ -191,7 +282,7 @@ msgstr "GPS"
 msgid "GPS cursor color"
 msgstr "Farbe GPS cursor"
 
-#: dlg_ui_ex.cpp:171 fluid/dlg_settings.cpp:452
+#: dlg_ui_ex.cpp:175 fluid/dlg_settings.cpp:452
 msgid "GPSd"
 msgstr "GPSd"
 
@@ -203,11 +294,11 @@ msgstr "GPSd Fehler"
 msgid "GPX error"
 msgstr "GPX Fehler"
 
-#: dlg_ui_ex.cpp:172 fluid/dlg_ui.cpp:905
+#: dlg_ui_ex.cpp:176 fluid/dlg_ui.cpp:905
 msgid "Go to cursor"
 msgstr "Gehe zu Position"
 
-#: dlg_ui_ex.cpp:176
+#: dlg_ui_ex.cpp:180
 msgid "Help"
 msgstr "Hilfe"
 
@@ -247,7 +338,7 @@ msgstr "Ungültige Umwandlung"
 msgid "Invalid zoomlevel specified for this map."
 msgstr "Ungültige Zoomstufe für diese Karte"
 
-#: dlg_ui_ex.cpp:82
+#: dlg_ui_ex.cpp:86
 msgid "Lat: "
 msgstr "Breite: "
 
@@ -267,11 +358,11 @@ msgstr "GPX laden"
 msgid "Location"
 msgstr "Verzeichnis"
 
-#: dlg_ui_ex.cpp:174 fluid/dlg_ui.cpp:915
+#: dlg_ui_ex.cpp:178 fluid/dlg_ui.cpp:915
 msgid "Lock to cursor"
 msgstr "Position folgen"
 
-#: dlg_ui_ex.cpp:78
+#: dlg_ui_ex.cpp:82
 msgid "Lon: "
 msgstr "Länge: "
 
@@ -331,7 +422,7 @@ msgstr "Nautisch"
 msgid "No devices found"
 msgstr "Keine Geräte gefunden"
 
-#: dlg_ui_ex.cpp:208
+#: dlg_ui_ex.cpp:212
 msgid "None"
 msgstr "Kein"
 
@@ -342,7 +433,7 @@ msgstr "Kein"
 msgid "OK"
 msgstr "OK"
 
-#: dlg_ui_ex.cpp:155
+#: dlg_ui_ex.cpp:159
 msgid "Open GPX"
 msgstr "GPX laden"
 
@@ -362,11 +453,11 @@ msgstr "Bitte eine URL für diesen Server angeben!"
 msgid "Port"
 msgstr "Port"
 
-#: dlg_ui_ex.cpp:157
+#: dlg_ui_ex.cpp:161
 msgid "Quit"
 msgstr "Beenden"
 
-#: dlg_ui_ex.cpp:173 fluid/dlg_ui.cpp:926
+#: dlg_ui_ex.cpp:177 fluid/dlg_ui.cpp:926
 msgid "Record track"
 msgstr "Track aufzeichnen"
 
@@ -374,7 +465,7 @@ msgstr "Track aufzeichnen"
 msgid "Remove tileserver"
 msgstr "Kachelserver löschen"
 
-#: dlg_ui_ex.cpp:156
+#: dlg_ui_ex.cpp:160
 msgid "Save GPX as"
 msgstr "GPX speichern unter"
 
@@ -386,7 +477,7 @@ msgstr "GPX speichern unter"
 msgid "Scale error"
 msgstr "Maßstabfehler"
 
-#: dlg_ui_ex.cpp:161 fluid/dlg_search.cpp:7 fluid/dlg_search.cpp:26
+#: dlg_ui_ex.cpp:165 fluid/dlg_search.cpp:7 fluid/dlg_search.cpp:26
 msgid "Search"
 msgstr "Suchen"
 
@@ -398,11 +489,11 @@ msgstr "Cache Verzeichnis auswählen"
 msgid "Select color"
 msgstr "Farbe wählen"
 
-#: dlg_ui_ex.cpp:338
+#: dlg_ui_ex.cpp:342
 msgid "Select download area"
 msgstr "Bereich für Download wählen"
 
-#: dlg_ui_ex.cpp:337
+#: dlg_ui_ex.cpp:341
 msgid "Select the desired area on the map now"
 msgstr "Jetzt den gewünschten Bereich auf der Karte wählen"
 
@@ -418,11 +509,11 @@ msgstr "Auswahlfehler"
 msgid "Server"
 msgstr "Server"
 
-#: dlg_ui_ex.cpp:160 fluid/dlg_settings.cpp:298
+#: dlg_ui_ex.cpp:164 fluid/dlg_settings.cpp:298
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: dlg_ui_ex.cpp:167
+#: dlg_ui_ex.cpp:171
 msgid "Show waypoint markers"
 msgstr "Zeige Wegpunktmarkierungen"
 
@@ -438,7 +529,7 @@ msgstr "Kartenansicht"
 msgid "Tileservers"
 msgstr "Kachelserver"
 
-#: dlg_ui_ex.cpp:163
+#: dlg_ui_ex.cpp:167
 msgid "Track"
 msgstr "Track"
 
@@ -454,7 +545,7 @@ msgstr "Breite Track"
 msgid "Track title"
 msgstr "Track Name"
 
-#: dlg_ui_ex.cpp:102 dlg_eleprofile_ex.cpp:71
+#: dlg_ui_ex.cpp:106 dlg_eleprofile_ex.cpp:71
 msgid "Trip: "
 msgstr "Strecke: "
 
@@ -478,13 +569,17 @@ msgstr "Hochladen fehlgeschlagen!"
 msgid "Upload OK"
 msgstr "Hochladen OK"
 
-#: dlg_ui_ex.cpp:169
+#: dlg_ui_ex.cpp:173
 msgid "Upload to device"
 msgstr "Hochladen auf Gerät"
 
-#: dlg_ui_ex.cpp:178
+#: dlg_ui_ex.cpp:182 dlg_ui_ex.cpp:510
 msgid "Usage"
 msgstr "Bedienung"
+
+#: dlg_ui_ex.cpp:491
+msgid "Version: "
+msgstr "Version: "
 
 #: fluid/dlg_eleprofile.cpp:7
 msgid "View elevation profile"
@@ -498,7 +593,7 @@ msgstr "Zoom "
 msgid "Zoom levels"
 msgstr "Zoomstufen"
 
-#: dlg_ui_ex.cpp:70
+#: dlg_ui_ex.cpp:74
 msgid "Zoom: "
 msgstr "Zoom: "
 

@@ -11,11 +11,14 @@ decl {\#include <FL/Fl_Text_Buffer.H>} {public global
 decl {\#include <string>} {public global
 } 
 
+decl {\#include <vector>} {selected public global
+} 
+
 class dlg_txtdisp {open
 } {
   decl {Fl_Text_Buffer *m_buf;} {private local
   }
-  decl {std::string m_title;} {selected private local
+  decl {std::string m_title;} {private local
   }
   decl {void create_ex();} {private local
   }
@@ -29,8 +32,9 @@ class dlg_txtdisp {open
   }
   decl {void append_ex(const std::string& s);} {private local
   }
-  Function {dlg_txtdisp()} {open
-  } {
+  decl {void append_ex(const std::vector<std::string>& v, const std::string& delimiter, bool translate);} {private local
+  }
+  Function {dlg_txtdisp()} {} {
     Fl_Window m_window {open
       private xywh {1531 292 500 295} type Double resizable modal size_range {500 295 0 0} visible
     } {
@@ -108,7 +112,11 @@ class dlg_txtdisp {open
   } {
     code {append_ex(s);} {}
   }
-  Function {title(const std::string& t)} {open return_type void
+  Function {append(const std::vector<std::string>& v, const std::string& delimiter, bool translate)} {open return_type void
+  } {
+    code {append_ex(v, delimiter, translate);} {}
+  }
+  Function {title(const std::string& t)} {return_type void
   } {
     code {title_ex(t);} {}
   }

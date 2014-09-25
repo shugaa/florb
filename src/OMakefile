@@ -56,19 +56,13 @@ LDFLAGS = \
 # already generated .cpp files.
 OBJS_FLUID = $(rootname $(find . -name *.fl))
 OBJS_CPP   = $(rootname $(find . -name *.cpp))
-OBJS_RES   = $(set res/LICENSE.txt res/KEYS.txt)
+OBJS_RES   = $(rootname $(find . -name *.res))
 OBJS       = $(set $(OBJS_FLUID) $(OBJS_CPP) $(OBJS_RES))
 
 # Find all translations
 TRANSLATIONS =
     foreach(d => ..., $(find ./i18n/ -regex [a-z]{2\,2}_[A-Z]{2\,2}))
 		value $(d)
-
-# Rules for generating linkable resource objects
-res/LICENSE.txt.o: res/LICENSE.txt
-	$(LD) -r -b binary -o $@ $<
-res/KEYS.txt.o: res/KEYS.txt
-	$(LD) -r -b binary -o $@ $<
 
 # Generate version string (version.hpp) from repository information
 version.hpp: ../.git/HEAD ../.git/index ./mkversionhpp.sh
@@ -78,12 +72,16 @@ version.hpp: ../.git/HEAD ../.git/index ./mkversionhpp.sh
 %.cpp: %.fl
     fluid -c -o $@ -h $(replacesuffixes .cpp, .hpp, $@) $<
 
+# Rule for generating binary resources
+%.o: %.res
+    $(LD) -r -b binary -o $@ $<
+
 # Dependency scanner
 .SCANNER: %.o: %.cpp :value: $(digest-in-path-optional $(INCLUDES), $&)
     $(CXX) -MM $(addprefix -I, $(INCLUDES)) $<
 
 # Handle subdirectories
-.SUBDIRS: ./fluid
+.SUBDIRS: ./fluid ./res
 	INCLUDES[] += ../
 
 # Build the program
@@ -103,16 +101,19 @@ install:
 
 # clean target
 clean:
-	$(rm -f $(PROGRAM) $(addsuffix .cpp, $(OBJS_FLUID)) $(addsuffix .hpp, $(OBJS_FLUID)) $(addsuffix .o, $(OBJS)) version.hpp OMakefile.omc OMakeroot.omc)
+	$(rm -f $(PROGRAM) $(addsuffix .cpp, $(OBJS_FLUID)) $(addsuffix .hpp, $(OBJS_FLUID)) $(addsuffix .o, $(OBJS)) $(addsuffix .res.pot, $(OBJS_RES)) i18n/all.pot version.hpp OMakefile.omc OMakeroot.omc)
 
 # update translation files
 i18nupdate:
 	xgettext -d florb -s -o i18n/$(PROGRAM).pot --keyword=_ --from-code=utf-8  $(find ./ -name *.cpp) $(find ./ -name *.hpp)
+	foreach(t => ..., $(addsuffix .res, $(OBJS_RES)))
+		txt2po -P -i $(t) -o $(t).pot
+	msgcat -o i18n/all.pot $(addsuffix .res.pot, $(OBJS_RES)) i18n/$(PROGRAM).pot
 	foreach(t => ..., $(basename $(TRANSLATIONS)))
 	    if $(file-exists ./i18n/$(t)/$(PROGRAM).po)
-			msgmerge -U ./i18n/$(t)/$(PROGRAM).po i18n/$(PROGRAM).pot
+			msgmerge -U ./i18n/$(t)/$(PROGRAM).po i18n/all.pot
 	    else
-			msginit --no-translator -l $(t).utf8 -o ./i18n/$(t)/$(PROGRAM).po -i i18n/$(PROGRAM).pot
+			msginit --no-translator -l $(t).utf8 -o ./i18n/$(t)/$(PROGRAM).po -i i18n/all.pot
 		
 # compile translations
 i18ncompile:

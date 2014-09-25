@@ -30,6 +30,24 @@ void dlg_txtdisp::append_ex(const std::string& s)
     m_buf->append(s.c_str());
 }
 
+void dlg_txtdisp::append_ex(const std::vector<std::string>& v, const std::string& delimiter, bool translate)
+{
+    if (m_buf == NULL)
+        return;
+
+    std::vector<std::string>::const_iterator it;
+    for (it=v.begin();it!=v.end();++it)
+    {
+        if (translate)
+            m_buf->append(_((*it).c_str()));
+        else
+            m_buf->append((*it).c_str());
+
+        if ((it+1) != v.end())
+            m_buf->append(delimiter.c_str());
+    }
+}
+
 void dlg_txtdisp::title_ex(const std::string& t)
 {
     if (m_window == NULL)
