@@ -11,3 +11,4 @@ build/*.hpp
 *.omakedb
 install
 *.po~
+src/version.hpp
