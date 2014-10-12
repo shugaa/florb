@@ -101,7 +101,7 @@ install:
 
 # clean target
 clean:
-	$(rm -f $(PROGRAM) $(addsuffix .cpp, $(OBJS_FLUID)) $(addsuffix .hpp, $(OBJS_FLUID)) $(addsuffix .o, $(OBJS)) $(addsuffix .res.pot, $(OBJS_RES)) i18n/all.pot version.hpp OMakefile.omc OMakeroot.omc)
+	$(rm -f $(PROGRAM) $(addsuffix .cpp, $(OBJS_FLUID)) $(addsuffix .hpp, $(OBJS_FLUID)) $(addsuffix .o, $(OBJS)) $(addsuffix .res.pot, $(OBJS_RES)) i18n/all.pot OMakefile.omc OMakeroot.omc)
 
 # update translation files
 i18nupdate:
