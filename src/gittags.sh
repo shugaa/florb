@@ -12,4 +12,4 @@ if [ $? -ne 0 ]; then
     exit 0
 fi
 
-git tag > gittags.txt 2>&1
+git tag 2>&1

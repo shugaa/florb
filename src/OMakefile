@@ -65,8 +65,7 @@ TRANSLATIONS =
 		value $(d)
 
 # (Re-)generate version string (version.hpp) from repository information if present
-./mkgittags.sh
-version.hpp: :exists: ../.git/HEAD :exists: ../.git/index gittags.txt version.txt ./mkversionhpp.sh
+version.hpp: :exists: ../.git/HEAD :exists: ../.git/index gittags.txt :value: $(shell ./gittags.sh) version.txt ./mkversionhpp.sh
     ./mkversionhpp.sh
 
 # Rule for generating CPP code from fluid sources
