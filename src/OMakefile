@@ -64,8 +64,8 @@ TRANSLATIONS =
     foreach(d => ..., $(find ./i18n/ -regex [a-z]{2\,2}_[A-Z]{2\,2}))
 		value $(d)
 
-# Generate version string (version.hpp) from repository information
-version.hpp: ../.git/HEAD ../.git/index ./mkversionhpp.sh
+# (Re-)generate version string (version.hpp) from repository information if present
+version.hpp: :exists: ../.git/HEAD :exists: ../.git/index ./mkversionhpp.sh
     ./mkversionhpp.sh
 
 # Rule for generating CPP code from fluid sources
