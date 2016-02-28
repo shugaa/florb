@@ -150,6 +150,16 @@ bool dlg_ui::wgtmap_evt_endselect_ex(const florb::wgt_map::event_endselect *e)
 
 void dlg_ui::create_ex(void)
 {
+    // Init dialog window handles
+	m_dlg_search = NULL;
+    m_dlg_garminul = NULL;
+    m_dlg_garmindl = NULL;
+    m_dlg_settings = NULL;
+    m_dlg_editselection = NULL;
+    m_dlg_txtdisp = NULL;
+    m_dlg_bulkdl = NULL;
+    m_dlg_eleprofile = NULL;
+	
     // Set the window icon
     florb::utils::set_window_icon(m_window);
 
@@ -218,7 +228,7 @@ void dlg_ui::update_choice_map_ex(void)
         m_choice_overlay->add((*it).as<florb::cfg_tileserver>().name().c_str());
     }
 
-    // If there are any connfigured tileservers at all...
+    // If there are any configured tileservers at all...
     if (section.size() > 0)
     {
         // Invalid index, reset to default (first item)

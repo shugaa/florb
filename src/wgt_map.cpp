@@ -9,8 +9,12 @@
 florb::wgt_map::wgt_map(int x, int y, int w, int h, const char *label) : 
     Fl_Widget(x, y, w, h, label),
     m_basemap(NULL),
+    m_overlay(NULL),
+    m_scale(NULL),
     m_tracklayer(NULL),
+    m_markerlayer(NULL),
     m_gpsdlayer(NULL),
+    m_areaselectlayer(NULL),
     m_mousepos(0, 0),
     m_viewport(w, h),
     m_viewport_off(0, 0),
