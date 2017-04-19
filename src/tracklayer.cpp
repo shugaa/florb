@@ -285,7 +285,7 @@ void florb::tracklayer::load_track(const std::string &path)
 {
     // Load the XML
     tinyxml2::XMLDocument doc;
-    if (doc.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR)
+    if (doc.LoadFile(path.c_str()) != tinyxml2::XML_SUCCESS)
         throw std::runtime_error(_("Failed to open GPX file"));
 
     // Clear existing track and selection
@@ -411,7 +411,7 @@ void florb::tracklayer::save_track(const std::string &path)
     setlocale(LC_ALL, oldlc);
 
     // Throw in case of error
-    if (xmlerr !=  tinyxml2::XML_NO_ERROR)
+    if (xmlerr !=  tinyxml2::XML_SUCCESS)
         throw std::runtime_error(_("Failed to save GPX data"));
 }
 
