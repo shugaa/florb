@@ -117,7 +117,7 @@ double florb::utils::dist(const florb::point2d<double> &p1, const florb::point2d
 
     double ret = (6378.388 * acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)));
 
-    return (isnan(ret) > 0) ? 0.0 : ret;
+    return (std::isnan(ret) > 0) ? 0.0 : ret;
 }
 
 double florb::utils::dist_merc(const florb::point2d<double> &p1, const florb::point2d<double> &p2)

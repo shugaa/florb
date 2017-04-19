@@ -153,7 +153,7 @@ void dlg_search::process_download_ex()
             break;
 
         tinyxml2::XMLDocument doc;
-        if (doc.Parse(std::string(dtmp.buf().begin(), dtmp.buf().end()).c_str()) != tinyxml2::XML_NO_ERROR)
+        if (doc.Parse(std::string(dtmp.buf().begin(), dtmp.buf().end()).c_str()) != tinyxml2::XML_SUCCESS)
             break;
 
         tinyxml2::XMLElement* root = doc.RootElement();
