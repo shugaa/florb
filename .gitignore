@@ -12,3 +12,4 @@ build/*.hpp
 install
 *.po~
 src/version.hpp
+compile_commands.json

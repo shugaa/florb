@@ -74,7 +74,7 @@ namespace florb
     class image
     {
         public:
-            image(int type, const unsigned char *buffer, int bufsize);
+            image(int type, void const * const buffer, int bufsize);
             ~image();
 
             image_storage buf(void) { return m_buf; };

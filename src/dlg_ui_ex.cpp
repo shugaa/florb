@@ -1,5 +1,5 @@
 #include <sstream>
-#include <Fl/Fl_File_Chooser.H>
+#include <FL/Fl_File_Chooser.H>
 #include <FL/fl_ask.H>
 #include <curl/curl.h>
 #include <locale.h>
@@ -222,8 +222,8 @@ void dlg_ui::update_choice_map_ex(void)
     m_choice_overlay->add(_("None"));
 
     // Get the configured tileservers from the florb::settings and populate the widgets
-    florb::node section = florb::settings::get_instance()["tileservers"];
-    for(florb::node::iterator it=section.begin(); it!=section.end(); ++it) {
+    YAML::Node section = florb::settings::get_instance()["tileservers"];
+    for(YAML::Node::iterator it=section.begin(); it!=section.end(); ++it) {
         m_choice_basemap->add((*it).as<florb::cfg_tileserver>().name().c_str());
         m_choice_overlay->add((*it).as<florb::cfg_tileserver>().name().c_str());
     }

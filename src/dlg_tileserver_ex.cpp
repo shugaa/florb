@@ -81,8 +81,8 @@ bool dlg_tileserver::handle_ok_ex(bool add)
         // Make sure there is no other tile server with the same name
         if (add)
         {
-            florb::node section = florb::settings::get_instance()["tileservers"];
-            for(florb::node::iterator it=section.begin(); it!=section.end(); ++it) 
+            YAML::Node section = florb::settings::get_instance()["tileservers"];
+            for(YAML::Node::iterator it=section.begin(); it!=section.end(); ++it) 
             {
                 if ((*it).as<florb::cfg_tileserver>().name() == std::string(m_input_name->value()))
                 {

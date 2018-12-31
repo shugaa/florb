@@ -2,16 +2,9 @@
 #define SETTINGS_HPP
 
 #include <string>
-#include <iterator>
+#include <yaml-cpp/yaml.h>
 #include "gfx.hpp"
 #include "utils.hpp"
-
-// The YAML namespace defines an enumerator "None". This clashes with a
-// definition of "None" in X.h which is included by FLTK. So if there is any
-// module including FLTK and YAML headers, things get nasty. Thus this clumsy
-// attempt at hiding the YAML-cpp internals. It could have been so easy...
-// On a positive note it is now relatively easy to swap out YAML-cpp for some
-// other backend.
 
 namespace florb
 {
@@ -160,7 +153,6 @@ namespace florb
     class cfg_units
     {
         public:
-
             enum system
             {
                 METRIC,
@@ -174,64 +166,11 @@ namespace florb
             cfg_units() :
                 m_sl(system::METRIC) {};
 
-
             system system_length() const { return m_sl; }
             void system_length(system sl) { m_sl = sl; }
 
         private:    
             system m_sl; 
-    };
-
-    // Forward declaration of YAML-cpp node container and iterator container
-    class yaml_node;
-    class yaml_iterator;
-
-    // A configuration node
-    class node
-    {
-        public:
-            class iterator : public std::iterator<std::forward_iterator_tag, int>
-        {
-            public:
-                iterator(const node &n, int be);
-                ~iterator();
-                bool operator==(iterator const& rhs) const; 
-                bool operator!=(iterator const& rhs) const;
-                iterator& operator++();
-                iterator operator++(int); 
-#if 0
-                iterator& operator--(); 
-                iterator operator--(int); 
-#endif
-                node operator* () const; 
-            private:
-                yaml_iterator *m_ref;
-        };
-            iterator begin() { return iterator(*this, -1); }
-            iterator end() { return iterator(*this, 1); }  
-
-            node();
-            node(yaml_node *in) : m_ref(in) {};
-            node(const std::string& path);
-            node(const node& n);
-            ~node();
-
-            bool is_sequence();
-
-            node operator[] (const int idx);
-            node operator[] (const std::string &name);
-            node& operator= (const node& n);
-            template<typename T> node& operator= (const T& rhs);
-
-            explicit operator bool() const;
-
-            size_t size();
-            template<typename T> T as() const;
-            template<typename T> void push_back(const T& rhs);
-            void push_back(const node& rhs);
-            void serialize(const std::string& path);
-        private:
-            yaml_node *m_ref;
     };
 
     // Settings singleton
@@ -240,19 +179,237 @@ namespace florb
         public:
             ~settings();
             static settings& get_instance();
-            node& root() { return m_rootnode; };
-
-            node operator[] (const int idx) { return m_rootnode[idx]; };
-            node operator[] (const std::string &name) { return m_rootnode[name]; };
+            YAML::Node& root() { return m_rootnode; };
+            YAML::Node operator[] (const int idx) { return m_rootnode[idx]; };
+            YAML::Node operator[] (const std::string &name) { return m_rootnode[name]; };
         private:
             settings();
             settings(const settings& s);
             void defaults(const std::string& path);
-            node m_rootnode;
+            YAML::Node m_rootnode;
             std::string m_cfgfile;
     };
 
 };
+
+namespace YAML {
+    template<>
+        struct convert<florb::cfg_tileserver> {
+            static Node encode(const florb::cfg_tileserver& rhs) {
+                Node node;
+                node["name"] = rhs.name();
+                node["url"] = rhs.url();
+                node["zmin"] = rhs.zmin();
+                node["zmax"] = rhs.zmax();
+                node["parallel"] = rhs.parallel();
+
+                node["type"] = "PNG";
+                if      (rhs.type() == florb::image::PNG)
+                    node["type"] = "PNG";
+                else if (rhs.type() == florb::image::JPG)
+                    node["type"] = "JPG";
+
+                return node;
+            }
+
+            static bool decode(const Node& node, florb::cfg_tileserver& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                    return true;
+
+                if (node["name"])
+                    rhs.name(node["name"].as<std::string>());
+
+                if (node["url"])
+                    rhs.url(node["url"].as<std::string>());
+
+                if (node["zmin"])
+                    rhs.zmin(node["zmin"].as<int>());
+
+                if (node["zmax"])
+                    rhs.zmax(node["zmax"].as<int>());
+
+                if (node["parallel"])
+                    rhs.parallel(node["parallel"].as<int>());
+
+                if (node["type"])
+                {
+                    rhs.type(florb::image::PNG);
+                    std::string imgtype = node["type"].as<std::string>();
+                    if      (imgtype.compare("PNG") == 0)
+                        rhs.type(florb::image::PNG);
+                    else if (imgtype.compare("JPG") == 0)
+                        rhs.type(florb::image::JPG);
+                }
+
+                return true;
+            }
+        };
+
+    template<>
+        struct convert<florb::cfg_cache> {
+            static Node encode(const florb::cfg_cache& rhs) {
+                Node node;
+                node["location"] = rhs.location();
+                return node;
+            }
+
+            static bool decode(const Node& node, florb::cfg_cache& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                    return true;
+
+                if (node["location"])
+                    rhs.location(node["location"].as<std::string>());
+
+                return true;
+            }
+        };
+
+    template<>
+        struct convert<florb::cfg_units> {
+            static Node encode(const florb::cfg_units& rhs) {
+                Node node;
+
+                switch (rhs.system_length())
+                {
+                    case (florb::cfg_units::system::IMPERIAL):
+                        node["system_length"] = "imperial";
+                        break;
+                    case (florb::cfg_units::system::NAUTICAL):
+                        node["system_length"] = "nautical";
+                        break;
+                    default:
+                        node["system_length"] = "metric";
+                        break;
+                }
+
+                return node;
+            }
+
+            static bool decode(const Node& node, florb::cfg_units& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                    return true;
+
+                if (node["system_length"])
+                {
+                    std::string sm(node["system_length"].as<std::string>());
+                    if (sm == "imperial")
+                        rhs.system_length(florb::cfg_units::system::IMPERIAL);
+                    else if (sm == "nautical")
+                        rhs.system_length(florb::cfg_units::system::NAUTICAL);
+                    else
+                        rhs.system_length(florb::cfg_units::system::METRIC);
+                }
+
+                return true;
+            }
+        };
+
+    template<>
+        struct convert<florb::cfg_gpsd> {
+            static Node encode(const florb::cfg_gpsd& rhs) {
+                Node node;
+                node["enabled"] = rhs.enabled();
+                node["host"] = rhs.host();
+                node["port"] = rhs.port();
+                return node;
+            }
+
+            static bool decode(const Node& node, florb::cfg_gpsd& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                    return true;
+
+                if (node["enabled"])
+                    rhs.enabled(node["enabled"].as<bool>());
+
+                if (node["host"])
+                    rhs.host(node["host"].as<std::string>());
+
+                if (node["port"])
+                    rhs.port(node["port"].as<std::string>());
+
+                return true;
+            }
+        };
+
+    template<>
+        struct convert<florb::cfg_ui> {
+            static Node encode(const florb::cfg_ui& rhs) {
+                Node node;
+                node["markercolor"] = rhs.markercolor().rgb();
+                node["markercolorselected"] = rhs.markercolorselected().rgb();
+                node["trackcolor"] = rhs.trackcolor().rgb();
+                node["selectioncolor"] = rhs.selectioncolor().rgb();
+                node["gpscursorcolor"] = rhs.gpscursorcolor().rgb();
+                node["tracklinewidth"] = rhs.tracklinewidth();
+                return node;
+            }
+
+            static bool decode(const Node& node, florb::cfg_ui& rhs) 
+            {
+                // Use defaults
+                if((!node.IsMap()) || (node.size() == 0))
+                {
+                    return true;
+                }
+
+                if (node["markercolor"])
+                    rhs.markercolor(florb::color(node["markercolor"].as<unsigned int>()));
+
+                if (node["markercolorselected"])
+                    rhs.markercolorselected(florb::color(node["markercolorselected"].as<unsigned int>()));
+
+                if (node["trackcolor"])
+                    rhs.trackcolor(florb::color(node["trackcolor"].as<unsigned int>()));
+
+                if (node["selectioncolor"])
+                    rhs.selectioncolor(florb::color(node["selectioncolor"].as<unsigned int>()));
+
+                if (node["gpscursorcolor"])
+                    rhs.gpscursorcolor(florb::color(node["gpscursorcolor"].as<unsigned int>()));
+
+                if (node["tracklinewidth"])
+                    rhs.tracklinewidth(node["tracklinewidth"].as<unsigned int>());
+
+                return true;
+            }
+        };
+
+    template<>
+        struct convert<florb::cfg_viewport> {
+            static Node encode(const florb::cfg_viewport& rhs) {
+                Node node;
+                node["lon"] = rhs.lon();
+                node["lat"] = rhs.lat();
+                node["z"] = rhs.z();
+                return node;
+            }
+
+            static bool decode(const Node& node, florb::cfg_viewport& rhs) 
+            {
+                if((!node.IsMap()) || (node.size() == 0))
+                {
+                    return true;
+                }
+
+
+                if (node["lat"])
+                    rhs.lat(node["lat"].as<double>());
+
+                if (node["lon"])
+                    rhs.lon(node["lon"].as<double>());
+
+                if (node["z"])
+                    rhs.z(node["z"].as<unsigned int>());
+
+                return true;
+            }
+        };
+}
+
 
 #endif // SETTINGS_HPP
 

@@ -1,7 +1,7 @@
 #include <sstream>
 #include <iostream>
 #include <FL/Fl_Color_Chooser.H>
-#include <Fl/Fl_File_Chooser.H>
+#include <FL/Fl_File_Chooser.H>
 #include "settings.hpp"
 #include "utils.hpp"
 #include "unit.hpp"

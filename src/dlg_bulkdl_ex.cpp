@@ -32,8 +32,8 @@ bool dlg_bulkdl::show_ex()
 {
     // Populate the map selector
     m_choice_map->clear();
-    florb::node section = florb::settings::get_instance()["tileservers"];
-    for(florb::node::iterator it=section.begin(); it!=section.end(); ++it) {
+    YAML::Node section = florb::settings::get_instance()["tileservers"];
+    for(YAML::Node::iterator it=section.begin(); it!=section.end(); ++it) {
         m_choice_map->add((*it).as<florb::cfg_tileserver>().name().c_str());
     }
     m_choice_map->value(0);
