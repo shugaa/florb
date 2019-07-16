@@ -181,7 +181,11 @@ void florb::gpsdclient::worker(void)
         }
 
         // Read data
+#if GPSD_API_MAJOR_VERSION >= 7
+        if (gps_read(&m_gpsdata, NULL, 0) == -1) {
+#else
         if (gps_read(&m_gpsdata) == -1) {
+#endif
             // Error
             break;
         }
